@@ -1,0 +1,22 @@
+#container {
+    flex-direction: row;
+    justify-content: space-around;
+    height: 16px;
+    align-items: center;
+    -unity-text-align: middle-left;
+}
+
+#content {
+    flex-grow: 1;
+    flex-direction: row;
+}
+
+#content #title {
+    width: 60px;
+}
+
+#content #value-field {
+    width: 60px;
+    flex-grow: 1;
+    flex-direction: row;
+}

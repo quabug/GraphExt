@@ -1,0 +1,19 @@
+{
+    "name": "GraphExt.Backend.Prefab",
+    "rootNamespace": "GraphExt",
+    "references": [
+        "GUID:756d163a75d2d4509b594fdc3b57f09d",
+        "GUID:b77709ecde8b3449591a4e6984b53a06"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
