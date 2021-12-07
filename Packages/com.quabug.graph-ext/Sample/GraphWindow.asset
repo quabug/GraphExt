@@ -13,3 +13,12 @@ MonoBehaviour:
   m_Name: GraphWindow
   m_EditorClassIdentifier: 
   WindowName: Graph Window
+  Menu:
+  - id: 0
+  - id: 1
+  references:
+    version: 1
+    00000000:
+      type: {class: SelectionEntry, ns: GraphExt, asm: GraphExt.Core}
+    00000001:
+      type: {class: SeparatorEntry, ns: GraphExt, asm: GraphExt.Core}

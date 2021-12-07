@@ -1,9 +1,6 @@
-using System.Collections.Generic;
 using System.IO;
-using JetBrains.Annotations;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
-using UnityEditor.Experimental.SceneManagement;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -11,7 +8,7 @@ namespace GraphExt
 {
     public class GraphWindow : EditorWindow
     {
-        private Graph _view => rootVisualElement.Q<Graph>();
+        [SerializeField] private GraphConfig _config;
 
         public void CreateGUI()
         {
@@ -25,11 +22,20 @@ namespace GraphExt
             var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(ussPath);
             rootVisualElement.styleSheets.Add(styleSheet);
 
-            var miniMap = rootVisualElement.Q<MiniMap>();
-            var graph = _view;
-            if (miniMap != null && graph != null) miniMap.graphView = graph;
+            if (_config != null) Init(_config);
+        }
 
-            // ResetEditorView();
+        public void Init(GraphConfig config)
+        {
+            _config = config;
+            var graph = rootVisualElement.Q<GraphView>();
+            if (graph == null)
+            {
+                graph = new GraphView(config) { name = "graph" };
+                rootVisualElement.Q<VisualElement>("graph-content").Add(graph);
+            }
+            var miniMap = rootVisualElement.Q<MiniMap>();
+            if (miniMap != null) miniMap.graphView = graph;
         }
 
         private void Reset()

@@ -1,24 +1,21 @@
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using BinaryEgo.Editor.UI;
 using JetBrains.Annotations;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace GraphExt
 {
-    public class Graph : GraphView
+    public class GraphView : UnityEditor.Experimental.GraphView.GraphView
     {
-        public new class UxmlFactory : UxmlFactory<Graph, UxmlTraits> {}
-
+        private readonly GraphConfig _config;
         private IGraphModule _graph;
         // private IDictionary<int, Node> _nodes = new Dictionary<int, Node>();
 
-        public Graph()
+        public GraphView(GraphConfig config)
         {
+            _config = config;
             Insert(0, new GridBackground { name = "grid" });
 
             var miniMap = new MiniMap();
@@ -166,51 +163,14 @@ namespace GraphExt
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
             evt.StopPropagation();
-            var menuPosition = viewTransform.matrix.inverse.MultiplyPoint(evt.localMousePosition);
+            // var menuPosition = viewTransform.matrix.inverse.MultiplyPoint(evt.localMousePosition);
             var context = new GenericMenu();
-
-            FillSelectionActions();
-
+            foreach (var menu in _config.Menu) menu.MakeEntry(this, evt, context);
             var popup = GenericMenuPopup.Get(context, "");
             popup.showSearch = true;
             popup.showTooltip = false;
             popup.resizeToContent = true;
             popup.Show(evt.mousePosition);
-
-            void FillSelectionActions()
-            {
-                if (selection != null && selection.Any())
-                {
-                    context.AddItem(new GUIContent("Delete"), false, () => DeleteSelection());
-                    context.AddSeparator("");
-                }
-            }
-        // }
-        //
-        // // TODO: optimize?
-        // private BehaviorNodeView CreateNode(IGraphNode node)
-        // {
-        //     var nodeView = new NodeView(node);
-        //     _nodes.Add(nodeView.Id, nodeView);
-        //     AddElement(nodeView);
-        //     foreach (var child in node.Children)
-        //     {
-        //         var childView = CreateBehaviorNode(child);
-        //         var edge = nodeView.Output.ConnectTo(childView.Input);
-        //         AddElement(edge);
-        //     }
-        //     return nodeView;
-        // }
-        //
-        // private void CreateVariantSyntaxEdge(IConnectableVariantViewContainer container)
-        // {
-        //     foreach (var view in container.Views.Where(v => v.Variant.IsConnected))
-        //     {
-        //         var syntaxNode = (SyntaxNodeView)_nodes[view.Variant.NodeId];
-        //         syntaxNode.Connect(view.Variant, view.Variant.VariantPortIndex, view.Variant.SyntaxNodePortIndex);
-        //         var edge = view.Ports[view.Variant.VariantPortIndex].ConnectTo(syntaxNode.Ports[view.Variant.SyntaxNodePortIndex]);
-        //         AddElement(edge);
-        //     }
         }
     }
 }

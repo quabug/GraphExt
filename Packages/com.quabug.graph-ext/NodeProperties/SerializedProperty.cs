@@ -1,24 +1,23 @@
-using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 namespace GraphExt
 {
-    public class NodeSerializedProperty : INodeProperty
+    public class SerializedProperty : INodeProperty
     {
-        public SerializedProperty Value;
+        public UnityEditor.SerializedProperty Value;
 
         public class Factory : INodePropertyViewFactory
         {
             public VisualElement Create(INodeProperty property)
             {
-                return property is NodeSerializedProperty p ? new View(p) : null;
+                return property is SerializedProperty p ? new View(p) : null;
             }
         }
 
         public class View : BaseNodePropertyView
         {
-            public View(NodeSerializedProperty property)
+            public View(SerializedProperty property)
             {
                 var field = new PropertyField(property.Value);
                 SetField(field);

@@ -1,14 +1,15 @@
 {
-    "name": "GraphExt.Editor",
-    "rootNamespace": "GraphExt.Editor",
+    "name": "GraphExt.Memory",
+    "rootNamespace": "GraphExt.Memory",
     "references": [
-        "GUID:b77709ecde8b3449591a4e6984b53a06"
+        "GUID:756d163a75d2d4509b594fdc3b57f09d",
+        "GUID:f6ce7a0c60f1840f88f04ea7bc21f73c"
     ],
     "includePlatforms": [
         "Editor"
     ],
     "excludePlatforms": [],
-    "allowUnsafeCode": true,
+    "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,

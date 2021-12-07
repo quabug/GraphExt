@@ -1,4 +1,3 @@
-using UnityEditor;
 using UnityEngine;
 
 namespace GraphExt
@@ -8,12 +7,14 @@ namespace GraphExt
     {
         public string WindowName = "Graph Window";
 
+        [SerializeReference, SerializeReferenceDrawer] public IMenuEntry[] Menu;
+
         [ContextMenu("Open Window")]
         public void OpenWindow()
         {
             var window = Window.GetOrCreate<GraphWindow>(WindowName);
-            if (window.titleContent.text != WindowName) window = EditorWindow.CreateWindow<GraphWindow>(WindowName);
             window.titleContent.text = WindowName;
+            window.Init(this);
             window.Focus();
         }
     }

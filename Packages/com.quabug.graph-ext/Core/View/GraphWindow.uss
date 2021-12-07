@@ -1,4 +1,4 @@
-Graph {
+#graph-content {
     flex-grow: 1;
 }
 
@@ -35,4 +35,8 @@ Graph {
     top: 0;
     right: auto;
     bottom: auto;
+}
+
+#graph {
+    flex-grow: 1;
 }

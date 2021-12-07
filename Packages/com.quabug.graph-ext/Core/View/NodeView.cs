@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 
 namespace GraphExt
 {
-    public sealed class NodeView : Node, IDisposable
+    public sealed class NodeView : Node
     {
         private readonly IGraphNode _node;
         private readonly VisualElement _contentContainer;
@@ -17,11 +17,6 @@ namespace GraphExt
             style.left = node.Position.x;
             style.top = node.Position.y;
             _contentContainer = this.Q<VisualElement>("contents");
-        }
-
-        public void Dispose()
-        {
-            _node.Dispose();
         }
         //
         // public void ConnectTo([NotNull] BehaviorNodeView child)
