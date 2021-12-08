@@ -4,7 +4,6 @@ namespace GraphExt
 {
     public interface IGraphModule
     {
-        IEnumerable<IGraphNode> Nodes { get; }
+        IEnumerable<INodeModule> Nodes { get; }
     }
-
 }

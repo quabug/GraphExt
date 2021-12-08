@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
@@ -36,6 +37,8 @@ namespace GraphExt
             }
             var miniMap = rootVisualElement.Q<MiniMap>();
             if (miniMap != null) miniMap.graphView = graph;
+
+            graph.Module = (IGraphModule) Activator.CreateInstance(Type.GetType(config.Backend));
         }
 
         private void Reset()

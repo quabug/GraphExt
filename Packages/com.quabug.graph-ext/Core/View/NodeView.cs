@@ -7,15 +7,15 @@ namespace GraphExt
 {
     public sealed class NodeView : Node
     {
-        private readonly IGraphNode _node;
+        private readonly INodeModule _nodeModule;
         private readonly VisualElement _contentContainer;
 
-        public NodeView(IGraphNode node)
+        public NodeView(INodeModule nodeModule)
             : base(Path.Combine(Utilities.GetCurrentDirectoryProjectRelativePath(), "NodeView.uxml"))
         {
-            _node = node;
-            style.left = node.Position.x;
-            style.top = node.Position.y;
+            _nodeModule = nodeModule;
+            style.left = nodeModule.Position.x;
+            style.top = nodeModule.Position.y;
             _contentContainer = this.Q<VisualElement>("contents");
         }
         //

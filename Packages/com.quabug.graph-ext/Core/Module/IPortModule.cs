@@ -1,12 +1,10 @@
-#if UNITY_EDITOR
-
 using System;
 using JetBrains.Annotations;
 using UnityEditor.Experimental.GraphView;
 
 namespace GraphExt
 {
-    public interface INodePort
+    public interface IPortModule
     {
         Orientation Orientation { get; }
         Direction Direction { get; }
@@ -16,13 +14,11 @@ namespace GraphExt
 
     public static partial class NodePortExtension
     {
-        public static Port CreatePortView([NotNull] this INodePort port)
+        public static Port CreatePortView([NotNull] this IPortModule portModule)
         {
-            var p = Port.Create<Edge>(port.Orientation, port.Direction, port.Capacity, port.PortType);
+            var p = Port.Create<Edge>(portModule.Orientation, portModule.Direction, portModule.Capacity, portModule.PortType);
             p.portName = "";
             return p;
         }
     }
 }
-
-#endif

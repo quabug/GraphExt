@@ -3,9 +3,8 @@ using UnityEngine;
 
 namespace GraphExt
 {
-    public interface IGraphNode
+    public interface INodeModule
     {
-        int Id { get; }
         Vector2 Position { get; set; }
         IEnumerable<INodeProperty> Properties { get; }
     }

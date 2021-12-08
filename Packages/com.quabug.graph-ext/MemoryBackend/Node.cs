@@ -22,9 +22,8 @@ namespace GraphExt.Memory
         }
     }
 
-    public class Node : IGraphNode
+    public class Node : INodeModule
     {
-        public int Id { get; }
         public Vector2 Position { get; set; }
 
         public IEnumerable<INodeProperty> Properties
@@ -54,5 +53,10 @@ namespace GraphExt.Memory
         }
 
         public IMemoryNode Inner { get; }
+
+        public Node(IMemoryNode inner)
+        {
+            Inner = inner;
+        }
     }
 }

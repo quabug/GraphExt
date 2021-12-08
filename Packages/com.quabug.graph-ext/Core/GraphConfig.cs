@@ -6,7 +6,7 @@ namespace GraphExt
     public class GraphConfig : ScriptableObject
     {
         public string WindowName = "Graph Window";
-
+        [SerializedType(typeof(IGraphModule))] public string Backend;
         [SerializeReference, SerializeReferenceDrawer] public IMenuEntry[] Menu;
 
         [ContextMenu("Open Window")]

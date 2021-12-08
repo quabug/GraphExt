@@ -24,14 +24,14 @@ namespace GraphExt
             this.Q<VisualElement>("value-field").Add(field);
         }
 
-        protected void SetLeftPort(INodePort port)
+        protected void SetLeftPort(IPortModule portModule)
         {
-            this.Q<VisualElement>("left-port").Add(port.CreatePortView());
+            this.Q<VisualElement>("left-port").Add(portModule.CreatePortView());
         }
 
-        protected void SetRightPort(INodePort port)
+        protected void SetRightPort(IPortModule portModule)
         {
-            this.Q<VisualElement>("right-port").Add(port.CreatePortView());
+            this.Q<VisualElement>("right-port").Add(portModule.CreatePortView());
         }
     }
 }
