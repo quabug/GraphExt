@@ -21,17 +21,22 @@ namespace GraphExt
 
         protected void SetField(VisualElement field)
         {
+            field.name = "field";
             this.Q<VisualElement>("value-field").Add(field);
         }
 
         protected void SetLeftPort(IPortModule portModule)
         {
-            this.Q<VisualElement>("left-port").Add(portModule.CreatePortView());
+            var port = portModule.CreatePortView();
+            port.name = "left-port";
+            this.Q<VisualElement>("left-port").Add(port);
         }
 
         protected void SetRightPort(IPortModule portModule)
         {
-            this.Q<VisualElement>("right-port").Add(portModule.CreatePortView());
+            var port = portModule.CreatePortView();
+            port.name = "right-port";
+            this.Q<VisualElement>("right-port").Add(port);
         }
     }
 }

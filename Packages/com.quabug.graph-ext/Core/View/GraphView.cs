@@ -155,7 +155,7 @@ namespace GraphExt
 
             void CreateNode(INodeModule node)
             {
-                var nodeView = new NodeView(node);
+                var nodeView = new NodeView(node, _config);
                 _nodes.Add(node, nodeView);
                 AddElement(nodeView);
             }

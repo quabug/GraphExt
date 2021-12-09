@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GraphExt
 {
-    public class BiDictionary<T1, T2> : IDictionary<T1, T2>
+    internal class BiDictionary<T1, T2> : IDictionary<T1, T2>
     {
         private readonly IDictionary<T1, T2> _forward = new Dictionary<T1, T2>();
         private readonly IDictionary<T2, T1> _reverse = new Dictionary<T2, T1>();
