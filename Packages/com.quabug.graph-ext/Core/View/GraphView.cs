@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using BinaryEgo.Editor.UI;
 using UnityEditor;
@@ -10,7 +11,8 @@ namespace GraphExt
     {
         private readonly GraphConfig _config;
         public IGraphModule Module { get; internal set; }
-        // private IDictionary<int, Node> _nodes = new Dictionary<int, Node>();
+
+        private readonly BiDictionary<INodeModule, Node> _nodes = new BiDictionary<INodeModule, Node>();
 
         public GraphView(GraphConfig config)
         {
@@ -30,12 +32,6 @@ namespace GraphExt
             this.AddManipulator(new RectangleSelector());
 
             graphViewChanged += OnGraphChanged;
-        }
-
-        private void CreateNode(INodeModule node)
-        {
-            var nodeView = new NodeView(node);
-            AddElement(nodeView);
         }
 
         // public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
@@ -65,7 +61,6 @@ namespace GraphExt
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
             evt.StopPropagation();
-            // var menuPosition = viewTransform.matrix.inverse.MultiplyPoint(evt.localMousePosition);
             var context = new GenericMenu();
             foreach (var menu in _config.Menu) menu.MakeEntry(this, evt, context);
             var popup = GenericMenuPopup.Get(context, "");
@@ -80,16 +75,10 @@ namespace GraphExt
             if (@event.elementsToRemove != null)
             {
                 foreach (var edge in @event.elementsToRemove.OfType<Edge>()) OnEdgeDeleted(edge);
-                foreach (var node in @event.elementsToRemove.OfType<INodeView>().ToArray())
-                {
-                    // _nodes.Remove(node.Id);
-                    node.Dispose();
-                    edges.ForEach(edge =>
-                    {
-                        if (edge.input.node == node || edge.output.node == node)
-                            @event.elementsToRemove.Add(edge);
-                    });
-                }
+                foreach (var node in @event.elementsToRemove.OfType<Node>()
+                    .Where(_nodes.ContainsValue)
+                    .Select(_nodes.GetKey)
+                ) node.Dispose();
             }
 
             if (@event.edgesToCreate != null)
@@ -99,7 +88,11 @@ namespace GraphExt
 
             if (@event.movedElements != null)
             {
-                foreach (var node in @event.movedElements.OfType<INodeView>()) node.SyncPosition();
+                foreach (var (view, module) in
+                    from view in @event.movedElements.OfType<Node>()
+                    where _nodes.ContainsValue(view)
+                    select (view, module: _nodes.GetKey(view))
+                ) module.Position = view.GetPosition().position;
             }
 
             return @event;
@@ -149,27 +142,28 @@ namespace GraphExt
                 // if (view != null) view.Disconnect(edge);
             }
         }
-        //
-        // ConnectableVariantView FindConnectableVariantView(Edge edge)
-        // {
-        //     return FindConnectableVariantViewByPort(edge.input) ?? FindConnectableVariantViewByPort(edge.output);
-        // }
-        //
-        // ConnectableVariantView FindConnectableVariantViewByPort(Port port)
-        // {
-        //     if (port.node is IConnectableVariantViewContainer container)
-        //         return container.FindByPort(port);
-        //     return null;
-        // }
+
         public void Tick()
         {
-            // _nodes.Clear();
-            DeleteElements(graphElements.ToList());
-
-            if (Module != null)
+            var currentNodes = new HashSet<INodeModule>(_nodes.Keys);
+            foreach (var node in Module.Nodes)
             {
-                foreach (var node in Module.Nodes) CreateNode(node);
-                // foreach (var node in _nodes.Values.Cast<IConnectableVariantViewContainer>()) CreateEdges(node);
+                if (currentNodes.Contains(node)) currentNodes.Remove(node);
+                else CreateNode(node);
+            }
+            foreach (var removed in currentNodes) RemoveNode(removed);
+
+            void CreateNode(INodeModule node)
+            {
+                var nodeView = new NodeView(node);
+                _nodes.Add(node, nodeView);
+                AddElement(nodeView);
+            }
+
+            void RemoveNode(INodeModule node)
+            {
+                RemoveElement(_nodes[node]);
+                _nodes.Remove(node);
             }
         }
     }

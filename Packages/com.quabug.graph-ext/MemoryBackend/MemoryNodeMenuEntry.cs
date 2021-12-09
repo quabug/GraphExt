@@ -12,6 +12,7 @@ namespace GraphExt.Memory
         {
             if (!(graph.Module is Graph module)) return;
 
+            var menuPosition = graph.viewTransform.matrix.inverse.MultiplyPoint(evt.localMousePosition);
             var memoryNodes = TypeCache.GetTypesDerivedFrom<IMemoryNode>();
             foreach (var nodeType in memoryNodes
                 .Where(type => !type.IsAbstract && !type.IsGenericType)
@@ -22,7 +23,8 @@ namespace GraphExt.Memory
 
             void CreateNode(Type nodeType)
             {
-                module.NodeList.Add(new Node((IMemoryNode) Activator.CreateInstance(nodeType)));
+                var node = module.CreateNode((IMemoryNode) Activator.CreateInstance(nodeType));
+                node.Position = menuPosition;
             }
         }
     }

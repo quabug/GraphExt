@@ -1,9 +1,10 @@
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace GraphExt
 {
     public interface IGraphModule
     {
-        IEnumerable<INodeModule> Nodes { get; }
+        [NotNull] IEnumerable<INodeModule> Nodes { get; }
     }
 }

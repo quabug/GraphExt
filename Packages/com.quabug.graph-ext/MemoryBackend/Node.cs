@@ -25,6 +25,7 @@ namespace GraphExt.Memory
     public class Node : INodeModule
     {
         public Vector2 Position { get; set; }
+        public event Action OnDeleted;
 
         public IEnumerable<INodeProperty> Properties
         {
@@ -57,6 +58,12 @@ namespace GraphExt.Memory
         public Node(IMemoryNode inner)
         {
             Inner = inner;
+        }
+
+        public void Dispose()
+        {
+            OnDeleted?.Invoke();
+            OnDeleted = null;
         }
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
@@ -27,11 +26,6 @@ namespace GraphExt
         // public void DisconnectFrom([NotNull] BehaviorNodeView parent)
         // {
         //     Node.SetParent(null);
-        // }
-        //
-        // public void SyncPosition()
-        // {
-        //     Node.Position = GetPosition().position;
         // }
 
         public override void OnSelected()
