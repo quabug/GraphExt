@@ -91,45 +91,17 @@ namespace GraphExt
         void OnEdgeCreated(Edge edge, ref GraphViewChange @event)
         {
             edge.showInMiniMap = true;
-            if (edge.input.node is NodeView inputNode && edge.output.node is NodeView outputNode)
+            if (edge.input is PortView inputPort && edge.output is PortView outputPort)
             {
-                // outputNode.ConnectTo(inputNode);
-            }
-            else
-            {
-                // var view = FindConnectableVariantView(edge);
-                // if (view != null)
-                // {
-                //     view.Connect(edge);
-                //
-                //     // disconnect edges on the same ports of ConnectableVariantView
-                //     edges.ForEach(e =>
-                //     {
-                //         if (e != edge && view.IsConnected(e))
-                //         {
-                //             e.input.Disconnect(e);
-                //             e.output.Disconnect(e);
-                //             RemoveElement(e);
-                //         }
-                //     });
-                //     // NOTE: not working since remove events are not handled in following process of `Port`
-                //     // var removedEdges = edges.ToList().Where(e => e != edge && nodePropertyView.IsConnected(e));
-                //     // @event.elementsToRemove ??= new List<GraphElement>();
-                //     // @event.elementsToRemove.AddRange(removedEdges);
-                // }
+                inputPort.Connect(outputPort);
             }
         }
 
         void OnEdgeDeleted(Edge edge)
         {
-            if (edge.input.node is NodeView inputNode && edge.output.node is NodeView outputNode)
+            if (edge.input is PortView inputPort && edge.output is PortView outputPort)
             {
-                // inputNode.DisconnectFrom(outputNode);
-            }
-            else
-            {
-                // var view = FindConnectableVariantView(edge);
-                // if (view != null) view.Disconnect(edge);
+                inputPort.Disconnect(outputPort);
             }
         }
 

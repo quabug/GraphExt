@@ -10,8 +10,8 @@ public class MemoryFoo : IMemoryNode
     public int HiddenInt = 456;
 
     [NodePort(typeof(int))] public MemoryPort Port;
-    [NodePort(typeof(int), Direction = NodePortDirection.Input)] public MemoryPort InputPort;
-    [NodePort(typeof(int), Direction = NodePortDirection.Output)] public MemoryPort OutputPort;
+    [NodePort(typeof(float), Direction = NodePortDirection.Input)] public MemoryPort InputPort;
+    [NodePort(typeof(float), Direction = NodePortDirection.Output)] public MemoryPort OutputPort;
 
     public MemoryFoo()
     {
