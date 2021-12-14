@@ -18,6 +18,13 @@ namespace GraphExt.Memory
         void OnDisconnected(IMemoryPort port);
     }
 
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
+    public class NodeTitleAttribute : Attribute
+    {
+        public string ConstTitle;
+        public string TitlePropertyName;
+    }
+
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public class NodePropertyAttribute : Attribute
     {
@@ -64,11 +71,25 @@ namespace GraphExt.Memory
         {
             var innerType = Inner.GetType();
             var members = innerType.GetMembers(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            yield return new TitleProperty(innerType.Name);
+            yield return CreateTitleProperty();
             foreach (var mi in members)
             {
                 var property = TryCreateNodeProperty(mi) ?? TryCreateNodePort(mi);
                 if (property != null) yield return property;
+            }
+
+            TitleProperty CreateTitleProperty()
+            {
+                var titleAttribute = innerType.GetCustomAttribute<NodeTitleAttribute>();
+                var title = innerType.Name;
+                if (titleAttribute?.ConstTitle != null) title = titleAttribute.ConstTitle;
+                else if (titleAttribute?.TitlePropertyName != null)
+                    title = innerType
+                        .GetMember(titleAttribute.TitlePropertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                        .Single()
+                        .GetValue<string>(Inner)
+                    ;
+                return new TitleProperty(title);
             }
 
             INodeProperty TryCreateNodeProperty(MemberInfo mi)
