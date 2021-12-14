@@ -10,14 +10,6 @@ namespace GraphExt.Memory
 {
     public interface IMemoryNode {}
 
-    public interface IMemoryPort
-    {
-        IReadOnlyList<IMemoryPort> ConnectedPorts { get; }
-        bool IsCompatible(IMemoryPort port);
-        void OnConnected(IMemoryPort port);
-        void OnDisconnected(IMemoryPort port);
-    }
-
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
     public class NodeTitleAttribute : Attribute
     {
@@ -29,26 +21,6 @@ namespace GraphExt.Memory
     public class NodePropertyAttribute : Attribute
     {
         public bool ReadOnly = false;
-    }
-
-    [Flags]
-    public enum NodePortDirection
-    {
-        Input = 1 << 0, Output = 1 << 1
-    }
-
-    [AttributeUsage(AttributeTargets.Field)]
-    [BaseTypeRequired(typeof(IMemoryPort))]
-    public class NodePortAttribute : Attribute
-    {
-        public bool AllowMultipleConnections = false;
-        public NodePortDirection Direction = NodePortDirection.Input | NodePortDirection.Output;
-        public Type PortType { get; }
-
-        public NodePortAttribute(Type portType)
-        {
-            PortType = portType;
-        }
     }
 
     public class Node : INodeModule
@@ -120,22 +92,23 @@ namespace GraphExt.Memory
             INodeProperty TryCreateNodePort(MemberInfo mi)
             {
                 var attribute = mi.GetCustomAttribute<NodePortAttribute>();
-                if (attribute != null)
-                {
-                    var capacity = attribute.AllowMultipleConnections ? Port.Capacity.Multi : Port.Capacity.Single;
-                    PortProperty inputPort = null;
-                    PortProperty outputPort = null;
-                    if (attribute.Direction.HasFlag(NodePortDirection.Input))
-                        inputPort = new PortProperty(attribute.PortType, Direction.Input, capacity);
-                    if (attribute.Direction.HasFlag(NodePortDirection.Output))
-                        outputPort = new PortProperty(attribute.PortType, Direction.Output, capacity);
-                    return new LabelPortProperty(
-                        labelProperty: new LabelProperty(mi.Name),
-                        inputPortProperty: inputPort,
-                        outputPortProperty: outputPort
-                    );
-                }
-                return null;
+                if (attribute == null) return null;
+
+                var portValue = mi.GetValue<IMemoryPort>(Inner);
+                if (portValue == null) return null;
+
+                var capacity = attribute.AllowMultipleConnections ? UnityEditor.Experimental.GraphView.Port.Capacity.Multi : UnityEditor.Experimental.GraphView.Port.Capacity.Single;
+                PortProperty inputPort = null;
+                PortProperty outputPort = null;
+                if (attribute.Direction.HasFlag(NodePortDirection.Input))
+                    inputPort = new PortProperty(portValue, attribute.PortType, Direction.Input, capacity);
+                if (attribute.Direction.HasFlag(NodePortDirection.Output))
+                    outputPort = new PortProperty(portValue, attribute.PortType, Direction.Output, capacity);
+                return new LabelPortProperty(
+                    labelProperty: new LabelProperty(mi.Name),
+                    inputPortProperty: inputPort,
+                    outputPortProperty: outputPort
+                );
             }
         }
 

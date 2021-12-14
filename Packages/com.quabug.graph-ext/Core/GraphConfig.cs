@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -12,6 +14,27 @@ namespace GraphExt
         [SerializeReference, SerializeReferenceDrawer] public IMenuEntry[] Menu;
         [SerializeReference, SerializeReferenceDrawer(Nullable = false)]
         public INodePropertyViewFactory NodePropertyViewFactory;
+
+#if UNITY_EDITOR
+        private void Reset()
+        {
+            Menu = UnityEditor.TypeCache
+                .GetTypesDerivedFrom<IMenuEntry>()
+                .Where(type => !type.IsAbstract && !type.IsGenericType && type.GetConstructor(Array.Empty<Type>()) != null)
+                .Select(type => (IMenuEntry)Activator.CreateInstance(type))
+                .ToArray()
+            ;
+
+            NodePropertyViewFactory = new OrderedGroupNodePropertyViewFactory
+            {
+                Factories = UnityEditor.TypeCache.GetTypesDerivedFrom<INodePropertyViewFactory>()
+                    .Where(type => !type.IsAbstract && !type.IsGenericType && type.GetConstructor(Array.Empty<Type>()) != null)
+                    .Where(type => type != typeof(OrderedGroupNodePropertyViewFactory) && type != typeof(INodePropertyViewFactory.Null))
+                    .Select(type => (INodePropertyViewFactory) Activator.CreateInstance(type))
+                    .ToArray()
+            };
+        }
+#endif
 
         [ContextMenu("Open Window")]
         public void OpenWindow()

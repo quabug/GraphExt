@@ -18,19 +18,21 @@ MonoBehaviour:
   Menu:
   - id: 0
   - id: 1
+  - id: 2
   NodePropertyViewFactory:
-    id: 2
+    id: 3
   references:
     version: 1
     00000000:
       type: {class: SelectionEntry, ns: GraphExt, asm: GraphExt.Core}
     00000001:
-      type: {class: MemoryNodeMenuEntry, ns: GraphExt.Memory, asm: GraphExt.Memory}
+      type: {class: SeparatorEntry, ns: GraphExt, asm: GraphExt.Core}
     00000002:
+      type: {class: MemoryNodeMenuEntry, ns: GraphExt.Memory, asm: GraphExt.Memory}
+    00000003:
       type: {class: OrderedGroupNodePropertyViewFactory, ns: GraphExt, asm: GraphExt.Core}
       data:
         Factories:
-        - id: 3
         - id: 4
         - id: 5
         - id: 6
@@ -39,21 +41,25 @@ MonoBehaviour:
         - id: 9
         - id: 10
         - id: 11
-    00000003:
-      type: {class: TitleProperty/Factory, ns: GraphExt, asm: GraphExt.Properties}
+        - id: 12
+        - id: 13
     00000004:
-      type: {class: IntPropertyFactory, ns: GraphExt, asm: GraphExt.Properties}
+      type: {class: PortProperty/Factory, ns: GraphExt.Memory, asm: GraphExt.Memory}
     00000005:
-      type: {class: LongPropertyFactory, ns: GraphExt, asm: GraphExt.Properties}
+      type: {class: IntPropertyFactory, ns: GraphExt, asm: GraphExt.Properties}
     00000006:
-      type: {class: FloatPropertyFactory, ns: GraphExt, asm: GraphExt.Properties}
+      type: {class: LongPropertyFactory, ns: GraphExt, asm: GraphExt.Properties}
     00000007:
-      type: {class: DoublePropertyFactory, ns: GraphExt, asm: GraphExt.Properties}
+      type: {class: FloatPropertyFactory, ns: GraphExt, asm: GraphExt.Properties}
     00000008:
-      type: {class: LabelProperty/Factory, ns: GraphExt, asm: GraphExt.Properties}
+      type: {class: DoublePropertyFactory, ns: GraphExt, asm: GraphExt.Properties}
     00000009:
-      type: {class: LabelValueProperty/Factory, ns: GraphExt, asm: GraphExt.Properties}
-    0000000A:
-      type: {class: PortProperty/Factory, ns: GraphExt, asm: GraphExt.Properties}
-    0000000B:
       type: {class: LabelPortProperty/Factory, ns: GraphExt, asm: GraphExt.Properties}
+    0000000A:
+      type: {class: LabelProperty/Factory, ns: GraphExt, asm: GraphExt.Properties}
+    0000000B:
+      type: {class: LabelValueProperty/Factory, ns: GraphExt, asm: GraphExt.Properties}
+    0000000C:
+      type: {class: SerializedProperty/Factory, ns: GraphExt, asm: GraphExt.Properties}
+    0000000D:
+      type: {class: TitleProperty/Factory, ns: GraphExt, asm: GraphExt.Properties}

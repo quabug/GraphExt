@@ -34,29 +34,19 @@ namespace GraphExt
             graphViewChanged += OnGraphChanged;
         }
 
-        // public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
-        // {
-        //     var compatiblePorts = new List<Port>();
-        //     ports.ForEach(port =>
-        //     {
-        //         var isCompatibleBehaviorPorts =
-        //             port.orientation == Orientation.Vertical &&
-        //             port.direction != startPort.direction &&
-        //             port.node != startPort.node &&
-        //             port.orientation == startPort.orientation &&
-        //             port.portType == startPort.portType;
-        //         var isCompatibleSyntaxPorts =
-        //             port.orientation == Orientation.Horizontal &&
-        //             port.direction != startPort.direction &&
-        //             port.node != startPort.node &&
-        //             port.orientation == startPort.orientation &&
-        //             port.portType != null && startPort.portType != null &&
-        //             (port.portType.IsAssignableFrom(startPort.portType) || startPort.portType.IsAssignableFrom(port.portType));
-        //         if (isCompatibleBehaviorPorts || isCompatibleSyntaxPorts) compatiblePorts.Add(port);
-        //     });
-        //     return compatiblePorts;
-        // }
-        //
+        public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
+        {
+            var compatiblePorts = new List<Port>();
+            if (startPort is PortView startPortView)
+            {
+                ports.ForEach(endPort =>
+                {
+                    if (endPort is PortView endPortView && startPortView.IsCompatible(endPortView))
+                        compatiblePorts.Add(endPort);
+                });
+            }
+            return compatiblePorts;
+        }
 
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {

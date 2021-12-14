@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEditor.Experimental.GraphView;
 
@@ -10,15 +11,11 @@ namespace GraphExt
         Direction Direction { get; }
         Port.Capacity Capacity { get; }
         Type PortType { get; }
-    }
 
-    public static partial class NodePortExtension
-    {
-        public static Port CreatePortView([NotNull] this IPortModule portModule)
-        {
-            var p = Port.Create<Edge>(portModule.Orientation, portModule.Direction, portModule.Capacity, portModule.PortType);
-            p.portName = "";
-            return p;
-        }
+        ISet<IPortModule> Connected { get; }
+        void Connect([NotNull] IPortModule port);
+        void Disconnect([NotNull] IPortModule port);
+
+        bool IsCompatible([NotNull] IPortModule port);
     }
 }

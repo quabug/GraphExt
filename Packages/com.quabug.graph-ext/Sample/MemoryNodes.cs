@@ -12,16 +12,30 @@ public class MemoryFoo : IMemoryNode
     [NodePort(typeof(int))] public MemoryPort Port;
     [NodePort(typeof(int), Direction = NodePortDirection.Input)] public MemoryPort InputPort;
     [NodePort(typeof(int), Direction = NodePortDirection.Output)] public MemoryPort OutputPort;
+
+    public MemoryFoo()
+    {
+        Port = new MemoryPort(this);
+        InputPort = new MemoryPort(this);
+        OutputPort = new MemoryPort(this);
+    }
 }
 
 public class MemoryPort : IMemoryPort
 {
-    private readonly List<IMemoryPort> _connectedPorts = new List<IMemoryPort>();
-    public IReadOnlyList<IMemoryPort> ConnectedPorts => _connectedPorts;
+    public IMemoryNode Node { get; }
+
+    private readonly HashSet<IMemoryPort> _connectedPorts = new HashSet<IMemoryPort>();
+    public ISet<IMemoryPort> ConnectedPorts => _connectedPorts;
+
+    public MemoryPort(IMemoryNode node)
+    {
+        Node = node;
+    }
 
     public bool IsCompatible(IMemoryPort port)
     {
-        return true;
+        return !ConnectedPorts.Contains(port) && port.Node != Node;
     }
 
     public void OnConnected(IMemoryPort port)
