@@ -18,12 +18,8 @@ MonoBehaviour:
   Menu:
   - id: 0
   - id: 1
-  NodePropertyViewFactories:
-  - id: 2
-  - id: 3
-  - id: 4
-  - id: 5
-  - id: 6
+  NodePropertyViewFactory:
+    id: 2
   references:
     version: 1
     00000000:
@@ -31,12 +27,24 @@ MonoBehaviour:
     00000001:
       type: {class: MemoryNodeMenuEntry, ns: GraphExt.Memory, asm: GraphExt.Memory}
     00000002:
-      type: {class: SerializedProperty/Factory, ns: GraphExt, asm: GraphExt.Properties}
+      type: {class: OrderedGroupNodePropertyViewFactory, ns: GraphExt, asm: GraphExt.Core}
+      data:
+        Factories:
+        - id: 3
+        - id: 4
+        - id: 5
+        - id: 6
+        - id: 7
+        - id: 8
     00000003:
-      type: {class: DoublePropertyFactory, ns: GraphExt, asm: GraphExt.Properties}
-    00000004:
-      type: {class: FloatPropertyFactory, ns: GraphExt, asm: GraphExt.Properties}
-    00000005:
       type: {class: IntPropertyFactory, ns: GraphExt, asm: GraphExt.Properties}
-    00000006:
+    00000004:
       type: {class: LongPropertyFactory, ns: GraphExt, asm: GraphExt.Properties}
+    00000005:
+      type: {class: FloatPropertyFactory, ns: GraphExt, asm: GraphExt.Properties}
+    00000006:
+      type: {class: DoublePropertyFactory, ns: GraphExt, asm: GraphExt.Properties}
+    00000007:
+      type: {class: LabelProperty/Factory, ns: GraphExt, asm: GraphExt.Properties}
+    00000008:
+      type: {class: LabelValueProperty/Factory, ns: GraphExt, asm: GraphExt.Properties}

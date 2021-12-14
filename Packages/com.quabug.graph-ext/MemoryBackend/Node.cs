@@ -2,24 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using JetBrains.Annotations;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace GraphExt.Memory
 {
     public interface IMemoryNode {}
 
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public class NodePropertyAttribute : Attribute
     {
-        public Type NodePropertyType { get; }
-
-        public NodePropertyAttribute([NotNull] Type nodePropertyType)
-        {
-            Assert.IsTrue(typeof(INodeProperty).IsAssignableFrom(nodePropertyType));
-            NodePropertyType = nodePropertyType;
-        }
+        public bool ReadOnly = false;
     }
 
     public class Node : INodeModule
@@ -41,23 +32,31 @@ namespace GraphExt.Memory
         IEnumerable<INodeProperty> CreateProperties()
         {
             var innerType = Inner?.GetType();
-            var fields = innerType?.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            foreach (var (fi, attribute) in
-                from fi in fields
-                from attribute in fi.GetCustomAttributes<NodePropertyAttribute>()
-                select (fi, attribute)
+            var members = innerType?.GetMembers(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            foreach (var (mi, attribute) in
+                from mi in members
+                from attribute in mi.GetCustomAttributes<NodePropertyAttribute>()
+                select (mi, attribute)
             )
             {
-                yield return (INodeProperty) Activator.CreateInstance(attribute.NodePropertyType, Inner, fi);
-            }
-            var properties = innerType?.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            foreach (var (pi, attribute) in
-                from pi in properties
-                from attribute in pi.GetCustomAttributes<NodePropertyAttribute>()
-                select (pi, attribute)
-            )
-            {
-                yield return (INodeProperty) Activator.CreateInstance(attribute.NodePropertyType, Inner, pi);
+                Type propertyType = null;
+                if (mi is FieldInfo fi)
+                {
+                    if (attribute.ReadOnly) propertyType = typeof(ReadOnlyFieldInfoProperty<>).MakeGenericType(fi.FieldType);
+                    else propertyType = typeof(FieldInfoProperty<>).MakeGenericType(fi.FieldType);
+                }
+                else if (mi is PropertyInfo pi)
+                {
+                    if (attribute.ReadOnly || !pi.CanWrite) propertyType = typeof(ReadOnlyPropertyInfoProperty<>).MakeGenericType(pi.PropertyType);
+                    else propertyType = typeof(PropertyInfoProperty<>).MakeGenericType(pi.PropertyType);
+                }
+
+                if (propertyType != null)
+                {
+                    var valueProperty = (INodeProperty) Activator.CreateInstance(propertyType, Inner, mi);
+                    var labelProperty = new LabelProperty(mi.Name);
+                    yield return new LabelValueProperty(labelProperty, valueProperty);
+                }
             }
         }
 

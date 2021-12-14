@@ -17,7 +17,7 @@ namespace GraphExt
         public ReadOnlyValueProperty(Func<TValue> getter) => _getter = getter;
     }
 
-    public class ReadOnlyValuePropertyView<TValue, TField> : BaseNodePropertyView, ITickableElement
+    public class ReadOnlyValuePropertyView<TValue, TField> : VisualElement, ITickableElement
         where TField : TextValueField<TValue>, new()
     {
         private readonly IReadOnlyValueProperty<TValue> _property;
@@ -27,7 +27,7 @@ namespace GraphExt
         {
             _property = property;
             _field = new TField { value = property.Value, isReadOnly = true };
-            SetField(_field);
+            Add(_field);
         }
 
         public void Tick()
@@ -60,7 +60,7 @@ namespace GraphExt
         }
     }
 
-    public class ValuePropertyView<TValue, TField> : BaseNodePropertyView, IDisposable, ITickableElement
+    public class ValuePropertyView<TValue, TField> : VisualElement, IDisposable, ITickableElement
         where TField : TextValueField<TValue>, new()
     {
         private readonly IValueProperty<TValue> _property;
@@ -71,7 +71,7 @@ namespace GraphExt
             _property = property;
             _field = new TField { value = property.Value };
             _field.RegisterValueChangedCallback(OnValueChanged);
-            SetField(_field);
+            Add(_field);
         }
 
         public void Dispose()
@@ -94,7 +94,7 @@ namespace GraphExt
     public class ValuePropertyFactory<TValue, TField> : INodePropertyViewFactory
         where TField : TextValueField<TValue>, new()
     {
-        public VisualElement Create(INodeProperty property)
+        public VisualElement Create(INodeProperty property, INodePropertyViewFactory _)
         {
             if (property is IReadOnlyValueProperty<TValue> @readonly)
                 return new ReadOnlyValuePropertyView<TValue, TField>(@readonly);

@@ -1,4 +1,3 @@
-using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -11,7 +10,8 @@ namespace GraphExt
         public string WindowName = "Graph Window";
         [SerializedType(typeof(IGraphModule))] public string Backend;
         [SerializeReference, SerializeReferenceDrawer] public IMenuEntry[] Menu;
-        [SerializeReference, SerializeReferenceDrawer] public INodePropertyViewFactory[] NodePropertyViewFactories;
+        [SerializeReference, SerializeReferenceDrawer(Nullable = false)]
+        public INodePropertyViewFactory NodePropertyViewFactory;
 
         [ContextMenu("Open Window")]
         public void OpenWindow()
@@ -24,7 +24,7 @@ namespace GraphExt
 
         [CanBeNull] public VisualElement CreatePropertyView([NotNull] INodeProperty property)
         {
-            return NodePropertyViewFactories.Select(factory => factory.Create(property)).FirstOrDefault(view => view != null);
+            return NodePropertyViewFactory.Create(property, new INodePropertyViewFactory.Null());
         }
     }
 }

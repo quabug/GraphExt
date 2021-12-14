@@ -15,34 +15,16 @@
     border-bottom-right-radius: 5px;
     min-width: 100px;
     -unity-text-align: upper-center;
+    padding-top: 6px;
+    padding-bottom: 6px;
 }
 
 #input {
-    align-items: center;
-    justify-content: center;
-    height: 15px;
-}
-
-.action #input {
-    background-color: rgb(29, 157, 168);
-}
-
-.action #output {
     display: none;
 }
 
-.composite #input {
-    background-color: rgb(179, 183, 15);
-}
-
-.decorate #input {
-    background-color: rgb(97, 51, 178);
-}
-
 #output {
-    align-items: center;
-    justify-content: center;
-    height: 15px;
+    display: none;
 }
 
 #selection-border {
