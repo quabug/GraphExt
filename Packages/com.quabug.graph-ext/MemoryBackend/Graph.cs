@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Experimental.GraphView;
 
 namespace GraphExt.Memory
 {
@@ -12,6 +13,9 @@ namespace GraphExt.Memory
         private readonly Dictionary<Port, ISet<Port>> _connected = new Dictionary<Port, ISet<Port>>();
         public IReadOnlyCollection<Node> NodeList => _nodeList.Values;
         public IReadOnlyDictionary<Port, ISet<Port>> ConnectedPorts => _connected;
+
+        private ISet<EdgeData> _edgeCache = new HashSet<EdgeData>();
+        public IEnumerable<EdgeData> Edges => _edgeCache;
 
         public Graph()
         {
@@ -63,14 +67,18 @@ namespace GraphExt.Memory
             }
 
             if (!connectedSet.Contains(value)) connectedSet.Add(value);
+
+            if (key.Direction == Direction.Output)
+                _edgeCache.Add(new EdgeData(key.Id, value.Id));
         }
 
         private void RemoveConnection(Port key, Port value)
         {
             if (_connected.TryGetValue(key, out var connectedSet))
-            {
                 connectedSet.Remove(value);
-            }
+
+            if (key.Direction == Direction.Output)
+                _edgeCache.Remove(new EdgeData(key.Id, value.Id));
         }
 
         internal Node CreateNode(IMemoryNode innerNode)
@@ -83,19 +91,19 @@ namespace GraphExt.Memory
 
         public Node FindNodeByPort(Port port)
         {
-            return _nodeList[port.NodeId];
+            return _nodeList[port.Id.NodeId];
         }
 
-        public ISet<Port> FindConnectedPorts(Guid nodeId, int portId)
+        public ISet<Port> FindConnectedPorts(in PortId id)
         {
-            var node = _nodeList[nodeId];
-            var port = node.Ports[portId];
+            var node = _nodeList[id.NodeId];
+            var port = node.Ports[id.PortIndex];
             return _connected.TryGetValue(port, out var connected) ? connected : new HashSet<Port>();
         }
 
-        public ISet<Node> FindConnectedNode(Guid nodeId, int portId)
+        public ISet<Node> FindConnectedNode(in PortId id)
         {
-            return new HashSet<Node>(FindConnectedPorts(nodeId, portId).Select(FindNodeByPort));
+            return new HashSet<Node>(FindConnectedPorts(id).Select(FindNodeByPort));
         }
     }
 }

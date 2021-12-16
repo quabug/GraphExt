@@ -14,6 +14,7 @@ namespace GraphExt
         [NotNull] public IGraphModule Module { get; set; }
 
         private readonly BiDictionary<INodeModule, Node> _nodes = new BiDictionary<INodeModule, Node>();
+        private readonly BiDictionary<EdgeData, Edge> _edges = new BiDictionary<EdgeData, Edge>();
 
         public GraphView([NotNull] GraphConfig config)
         {
@@ -107,6 +108,17 @@ namespace GraphExt
         }
 
         public void Tick()
+        {
+            RefreshNodes();
+            RefreshEdges();
+        }
+
+        void RefreshEdges()
+        {
+
+        }
+
+        void RefreshNodes()
         {
             var currentNodes = new HashSet<INodeModule>(_nodes.Keys);
             foreach (var node in Module.Nodes)

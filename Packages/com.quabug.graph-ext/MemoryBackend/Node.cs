@@ -133,7 +133,7 @@ namespace GraphExt.Memory
 
                 PortProperty CreatePort(Direction direction)
                 {
-                    var port = new Port(Id, Ports.Count, portValue, attribute.PortType, direction, capacity);
+                    var port = new Port(new PortId(Id, Ports.Count), portValue, attribute.PortType, direction, capacity);
                     Ports.Add(port);
                     return new PortProperty(port);
                 }

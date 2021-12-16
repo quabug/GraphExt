@@ -44,8 +44,8 @@ public class AddNode : IVisualNode
 
     public float Calculate(Graph graph)
     {
-        return ((IVisualNode)graph.FindConnectedNode(Id, First.Id).Single()).Calculate(graph) +
-            ((IVisualNode)graph.FindConnectedNode(Id, Second.Id).Single()).Calculate(graph);
+        return ((IVisualNode)graph.FindConnectedNode(First.Id).Single()).Calculate(graph) +
+            ((IVisualNode)graph.FindConnectedNode(Second.Id).Single()).Calculate(graph);
     }
 }
 
@@ -59,7 +59,7 @@ public class PrintNode : IVisualNode
 
     public float Calculate(Graph graph)
     {
-        var result = ((IVisualNode)graph.FindConnectedNode(Id, Input.Id).Single()).Calculate(graph);
+        var result = ((IVisualNode)graph.FindConnectedNode(Input.Id).Single()).Calculate(graph);
         UnityEngine.Debug.Log(result);
         return result;
     }
