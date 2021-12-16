@@ -8,12 +8,22 @@ namespace GraphExt.Memory
     public class Graph : IGraphModule
     {
         public IEnumerable<INodeModule> Nodes => _nodeList;
-        private readonly List<Node> _nodeList = new List<Node>();
+        private readonly List<Node> _nodeList;
         private readonly Dictionary<IMemoryPort, ISet<IMemoryPort>> _connected =
             new Dictionary<IMemoryPort, ISet<IMemoryPort>>();
 
         public IReadOnlyList<Node> NodeList => _nodeList;
         public IReadOnlyDictionary<IMemoryPort, ISet<IMemoryPort>> ConnectedPorts => _connected;
+
+        public Graph()
+        {
+            _nodeList = new List<Node>();
+        }
+
+        public Graph(List<Node> nodeList)
+        {
+            _nodeList = nodeList;
+        }
 
         public bool IsCompatible(IPortModule input, IPortModule output)
         {

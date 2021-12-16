@@ -1,5 +1,7 @@
+using System;
 using GraphExt.Memory;
 
+[Serializable]
 [NodeTitle]
 public class MemoryFoo : IMemoryNode
 {

@@ -1,0 +1,35 @@
+{
+  "$type": "MemorySaveLoadMenu+SerializableGraph, GraphExt.Sample",
+  "Nodes": {
+    "$type": "MemorySaveLoadMenu+SerializableNode[], GraphExt.Sample",
+    "$values": [
+      {
+        "$type": "MemorySaveLoadMenu+SerializableNode, GraphExt.Sample",
+        "PositionX": 183.0,
+        "PositionY": 109.0,
+        "Node": {
+          "$type": "MemoryFoo, GraphExt.Sample",
+          "Int": 433232,
+          "Float": 1.23,
+          "Port": {
+            "$type": "GraphExt.Memory.MemoryPort, GraphExt.Memory",
+            "OnConnected": null,
+            "OnDisconnected": null
+          },
+          "InputPort": {
+            "$type": "GraphExt.Memory.MemoryPort, GraphExt.Memory",
+            "OnConnected": null,
+            "OnDisconnected": null
+          },
+          "OutputPort": {
+            "$type": "GraphExt.Memory.MemoryPort, GraphExt.Memory",
+            "OnConnected": null,
+            "OnDisconnected": null
+          },
+          "Double": 1234323.0,
+          "Long": 321
+        }
+      }
+    ]
+  }
+}
