@@ -6,6 +6,7 @@ namespace GraphExt.Memory
 {
     public interface IMemoryPort
     {
+        int RuntimeId { get; }
         bool IsCompatible(Graph graph, IMemoryPort port);
         Action<Graph, IMemoryPort> OnConnected { get; }
         Action<Graph, IMemoryPort> OnDisconnected { get; }
@@ -13,9 +14,10 @@ namespace GraphExt.Memory
 
     public struct MemoryPort : IMemoryPort
     {
-        public bool IsCompatible(Graph graph, IMemoryPort port) => true;
+        public int RuntimeId { get; }
         public Action<Graph, IMemoryPort> OnConnected { get; }
         public Action<Graph, IMemoryPort> OnDisconnected { get; }
+        public bool IsCompatible(Graph graph, IMemoryPort port) => true;
     }
 
     [Flags]

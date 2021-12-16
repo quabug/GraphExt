@@ -5,6 +5,8 @@ using GraphExt.Memory;
 [NodeTitle]
 public class MemoryFoo : IMemoryNode
 {
+    public int RuntimeId { get; }
+
     [NodeProperty] public int Int = 123;
     [NodeProperty(ReadOnly = true)] public float Float = 1.23f;
     [NodeProperty] public double Double { get; set; } = 3.21;

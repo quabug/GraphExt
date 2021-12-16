@@ -9,11 +9,11 @@ namespace GraphExt.Memory
     {
         public IEnumerable<INodeModule> Nodes => _nodeList;
         private readonly List<Node> _nodeList;
-        private readonly Dictionary<IMemoryPort, ISet<IMemoryPort>> _connected =
-            new Dictionary<IMemoryPort, ISet<IMemoryPort>>();
+        private readonly Dictionary<Port, ISet<Port>> _connected =
+            new Dictionary<Port, ISet<Port>>();
 
         public IReadOnlyList<Node> NodeList => _nodeList;
-        public IReadOnlyDictionary<IMemoryPort, ISet<IMemoryPort>> ConnectedPorts => _connected;
+        public IReadOnlyDictionary<Port, ISet<Port>> ConnectedPorts => _connected;
 
         public Graph()
         {
@@ -38,8 +38,8 @@ namespace GraphExt.Memory
         {
             if (input is Port @in && output is Port @out)
             {
-                AddConnection(@in.Inner, @out.Inner);
-                AddConnection(@out.Inner, @in.Inner);
+                AddConnection(@in, @out);
+                AddConnection(@out, @in);
                 @in.Inner.OnConnected?.Invoke(this, @out.Inner);
                 @out.Inner.OnConnected?.Invoke(this, @in.Inner);
             }
@@ -49,29 +49,29 @@ namespace GraphExt.Memory
         {
             if (input is Port @in && output is Port @out)
             {
-                _connected.Remove(@in.Inner);
+                RemoveConnection(@in, @out);
+                RemoveConnection(@out, @in);
                 @in.Inner.OnDisconnected?.Invoke(this, @out.Inner);
                 @out.Inner.OnDisconnected?.Invoke(this, @in.Inner);
             }
         }
 
-        private void AddConnection(IMemoryPort key, IMemoryPort value)
+        private void AddConnection(Port key, Port value)
         {
             if (!_connected.TryGetValue(key, out var connectedSet))
             {
-                connectedSet = new HashSet<IMemoryPort>();
+                connectedSet = new HashSet<Port>();
                 _connected.Add(key, connectedSet);
             }
 
             if (!connectedSet.Contains(value)) connectedSet.Add(value);
         }
 
-        private void RemoveConnection(IMemoryPort key, IMemoryPort value)
+        private void RemoveConnection(Port key, Port value)
         {
             if (_connected.TryGetValue(key, out var connectedSet))
             {
-                connectedSet = new HashSet<IMemoryPort>();
-                _connected.Add(key, connectedSet);
+                connectedSet.Remove(value);
             }
         }
 
@@ -91,7 +91,8 @@ namespace GraphExt.Memory
 
         public ISet<IMemoryPort> FindConnectedPorts(IMemoryPort port)
         {
-            return _connected.TryGetValue(port, out var connected) ? connected : new HashSet<IMemoryPort>();
+            return new HashSet<IMemoryPort>();
+            // return _connected.TryGetValue(port, out var connected) ? connected : new HashSet<IMemoryPort>();
         }
 
         public ISet<IMemoryNode> FindConnectedNode(IMemoryPort port)

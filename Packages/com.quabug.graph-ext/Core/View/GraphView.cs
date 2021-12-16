@@ -10,14 +10,14 @@ namespace GraphExt
 {
     public class GraphView : UnityEditor.Experimental.GraphView.GraphView, ITickableElement
     {
-        [NotNull] private readonly GraphConfig _config;
+        [NotNull] public GraphConfig Config { get; }
         [NotNull] public IGraphModule Module { get; set; }
 
         private readonly BiDictionary<INodeModule, Node> _nodes = new BiDictionary<INodeModule, Node>();
 
         public GraphView([NotNull] GraphConfig config)
         {
-            _config = config;
+            Config = config;
             Insert(0, new GridBackground { name = "grid" });
 
             var miniMap = new MiniMap();
@@ -53,7 +53,7 @@ namespace GraphExt
         {
             evt.StopPropagation();
             var context = new GenericMenu();
-            foreach (var menu in _config.Menu) menu.MakeEntry(this, evt, context);
+            foreach (var menu in Config.Menu) menu.MakeEntry(this, evt, context);
             var popup = GenericMenuPopup.Get(context, "");
             popup.showSearch = true;
             popup.showTooltip = false;
@@ -118,7 +118,7 @@ namespace GraphExt
 
             void CreateNode(INodeModule node)
             {
-                var nodeView = new NodeView(node, _config);
+                var nodeView = new NodeView(node, Config);
                 _nodes.Add(node, nodeView);
                 AddElement(nodeView);
             }

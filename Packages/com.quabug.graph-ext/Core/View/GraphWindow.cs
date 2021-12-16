@@ -2,14 +2,14 @@ using System;
 using System.IO;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace GraphExt
 {
     public class GraphWindow : EditorWindow
     {
-        [SerializeField] private GraphConfig _config;
+        public GraphConfig Config;
+        public GroupWindowExtension WindowExtension = new GroupWindowExtension();
 
         public void CreateGUI()
         {
@@ -23,12 +23,12 @@ namespace GraphExt
             var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(ussPath);
             rootVisualElement.styleSheets.Add(styleSheet);
 
-            if (_config != null) Init(_config);
+            if (Config != null) Init(Config);
         }
 
         public void Init(GraphConfig config)
         {
-            _config = config;
+            Config = config;
             var graph = rootVisualElement.Q<GraphView>();
             if (graph == null)
             {
@@ -39,6 +39,8 @@ namespace GraphExt
             if (miniMap != null) miniMap.graphView = graph;
 
             graph.Module = (IGraphModule) Activator.CreateInstance(Type.GetType(config.Backend));
+
+            WindowExtension?.OnInitialized(this, Config, graph);
         }
 
         private void Reset()

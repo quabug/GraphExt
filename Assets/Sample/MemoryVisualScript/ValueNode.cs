@@ -9,6 +9,7 @@ public interface IVisualNode : IMemoryNode
 
 public struct VisualPort : IMemoryPort
 {
+    public int RuntimeId { get; }
     public Action<Graph, IMemoryPort> OnConnected { get; }
     public Action<Graph, IMemoryPort> OnDisconnected { get; }
     public bool IsCompatible(Graph graph, IMemoryPort port) => port is VisualPort;
@@ -17,6 +18,8 @@ public struct VisualPort : IMemoryPort
 [Serializable]
 public class ValueNode : IVisualNode
 {
+    public int RuntimeId { get; }
+
     [NodeProperty] public float Value;
 
     [NodePort(typeof(float), Direction = NodePortDirection.Output, AllowMultipleConnections = true)]
@@ -31,6 +34,8 @@ public class ValueNode : IVisualNode
 [Serializable, NodeTitle]
 public class AddNode : IVisualNode
 {
+    public int RuntimeId { get; }
+
     [NodePort(typeof(float), Direction = NodePortDirection.Output, AllowMultipleConnections = true)]
     public VisualPort Output;
 
@@ -50,6 +55,8 @@ public class AddNode : IVisualNode
 [Serializable, NodeTitle]
 public class PrintNode : IVisualNode
 {
+    public int RuntimeId { get; }
+
     [NodePort(typeof(float), Direction = NodePortDirection.Input)]
     public VisualPort Input;
 

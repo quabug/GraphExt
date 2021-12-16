@@ -8,7 +8,10 @@ using UnityEngine;
 
 namespace GraphExt.Memory
 {
-    public interface IMemoryNode {}
+    public interface IMemoryNode
+    {
+        int RuntimeId { get; }
+    }
 
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
     public class NodeTitleAttribute : Attribute
