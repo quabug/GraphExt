@@ -5,134 +5,45 @@
     "$values": [
       {
         "$type": "JsonSaveLoad+SerializableNode, GraphExt.Sample",
-        "PositionX": 49.0,
-        "PositionY": 130.0,
-        "Node": {
-          "$type": "MemoryFoo, GraphExt.Sample",
-          "Int": 3321321,
-          "Float": 1.23,
-          "Port": {
-            "$type": "GraphExt.Memory.MemoryPort, GraphExt.Memory",
-            "RuntimeId": 0,
-            "OnConnected": null,
-            "OnDisconnected": null
-          },
-          "InputPort": {
-            "$type": "GraphExt.Memory.MemoryPort, GraphExt.Memory",
-            "RuntimeId": 0,
-            "OnConnected": null,
-            "OnDisconnected": null
-          },
-          "OutputPort": {
-            "$type": "GraphExt.Memory.MemoryPort, GraphExt.Memory",
-            "RuntimeId": 0,
-            "OnConnected": null,
-            "OnDisconnected": null
-          },
-          "RuntimeId": 0,
-          "Double": 43443.0,
-          "Long": 321
-        }
-      },
-      {
-        "$type": "JsonSaveLoad+SerializableNode, GraphExt.Sample",
-        "PositionX": 353.0,
-        "PositionY": 94.0,
-        "Node": {
-          "$type": "ValueNode, GraphExt.Sample",
-          "Value": 123.0,
-          "Output": {
-            "$type": "VisualPort, GraphExt.Sample",
-            "RuntimeId": 0,
-            "OnConnected": null,
-            "OnDisconnected": null
-          },
-          "RuntimeId": 0
-        }
-      },
-      {
-        "$type": "JsonSaveLoad+SerializableNode, GraphExt.Sample",
-        "PositionX": 270.5,
-        "PositionY": 252.0,
-        "Node": {
-          "$type": "ValueNode, GraphExt.Sample",
-          "Value": 55654.0,
-          "Output": {
-            "$type": "VisualPort, GraphExt.Sample",
-            "RuntimeId": 0,
-            "OnConnected": null,
-            "OnDisconnected": null
-          },
-          "RuntimeId": 0
-        }
-      },
-      {
-        "$type": "JsonSaveLoad+SerializableNode, GraphExt.Sample",
-        "PositionX": 593.0,
-        "PositionY": 95.0,
+        "PositionX": 617.0,
+        "PositionY": 11.0,
         "Node": {
           "$type": "AddNode, GraphExt.Sample",
           "Output": {
             "$type": "VisualPort, GraphExt.Sample",
-            "RuntimeId": 0,
+            "Id": 0,
             "OnConnected": null,
             "OnDisconnected": null
           },
           "First": {
             "$type": "VisualPort, GraphExt.Sample",
-            "RuntimeId": 0,
+            "Id": 0,
             "OnConnected": null,
             "OnDisconnected": null
           },
           "Second": {
             "$type": "VisualPort, GraphExt.Sample",
-            "RuntimeId": 0,
+            "Id": 0,
             "OnConnected": null,
             "OnDisconnected": null
           },
-          "RuntimeId": 0
+          "Id": "1c0c882c-a3fd-459a-bfac-5361ea23474d"
         }
       },
       {
         "$type": "JsonSaveLoad+SerializableNode, GraphExt.Sample",
-        "PositionX": 442.0,
-        "PositionY": 197.0,
+        "PositionX": 381.0,
+        "PositionY": 78.0,
         "Node": {
-          "$type": "AddNode, GraphExt.Sample",
+          "$type": "ValueNode, GraphExt.Sample",
+          "Value": 23.0,
           "Output": {
             "$type": "VisualPort, GraphExt.Sample",
-            "RuntimeId": 0,
+            "Id": 0,
             "OnConnected": null,
             "OnDisconnected": null
           },
-          "First": {
-            "$type": "VisualPort, GraphExt.Sample",
-            "RuntimeId": 0,
-            "OnConnected": null,
-            "OnDisconnected": null
-          },
-          "Second": {
-            "$type": "VisualPort, GraphExt.Sample",
-            "RuntimeId": 0,
-            "OnConnected": null,
-            "OnDisconnected": null
-          },
-          "RuntimeId": 0
-        }
-      },
-      {
-        "$type": "JsonSaveLoad+SerializableNode, GraphExt.Sample",
-        "PositionX": 771.0,
-        "PositionY": 101.0,
-        "Node": {
-          "$type": "PrintNode, GraphExt.Sample",
-          "Input": {
-            "$type": "VisualPort, GraphExt.Sample",
-            "RuntimeId": 0,
-            "OnConnected": null,
-            "OnDisconnected": null
-          },
-          "RuntimeId": 0
+          "Id": "7f219cbe-8e3e-4f8c-9b99-49a4fcf5b353"
         }
       }
     ]

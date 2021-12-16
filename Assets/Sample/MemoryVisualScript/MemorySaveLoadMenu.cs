@@ -3,6 +3,7 @@ using GraphExt.Memory;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using PopupWindow = UnityEditor.PopupWindow;
 
 public class MemorySaveLoadMenu : IMenuEntry
 {
@@ -12,11 +13,13 @@ public class MemorySaveLoadMenu : IMenuEntry
         {
             menu.AddItem(new GUIContent("Save"), false, () =>
             {
+                ClosePopupWindow();
                 var path = EditorUtility.SaveFilePanel("save path", Application.dataPath, "graph", "json");
                 if (JsonSaveLoad.Save(memoryGraph, path)) ChangeWindowFilePath(path);
             });
             menu.AddItem(new GUIContent("Load"), false, () =>
             {
+                ClosePopupWindow();
                 var path = EditorUtility.OpenFilePanel("load path", Application.dataPath, "json");
                 var newGraph = JsonSaveLoad.Load(path);
                 if (newGraph != null)
@@ -28,6 +31,7 @@ public class MemorySaveLoadMenu : IMenuEntry
 
             menu.AddItem(new GUIContent("Reset"), false, () =>
             {
+                ClosePopupWindow();
                 var path = CurrentFilePath();
                 if (!string.IsNullOrEmpty(path))
                 {
@@ -48,5 +52,11 @@ public class MemorySaveLoadMenu : IMenuEntry
     {
         var window = EditorWindow.focusedWindow as GraphWindow;
         return window?.WindowExtension.GetOrCreate<WindowLoadFile>().FilePath;
+    }
+
+    void ClosePopupWindow()
+    {
+        var window = EditorWindow.focusedWindow as PopupWindow;
+        window?.Close();
     }
 }

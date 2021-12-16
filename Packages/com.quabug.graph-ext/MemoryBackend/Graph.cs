@@ -7,22 +7,20 @@ namespace GraphExt.Memory
     [Serializable]
     public class Graph : IGraphModule
     {
-        public IEnumerable<INodeModule> Nodes => _nodeList;
-        private readonly List<Node> _nodeList;
-        private readonly Dictionary<Port, ISet<Port>> _connected =
-            new Dictionary<Port, ISet<Port>>();
-
-        public IReadOnlyList<Node> NodeList => _nodeList;
+        public IEnumerable<INodeModule> Nodes => _nodeList.Values;
+        private readonly Dictionary<Guid, Node> _nodeList;
+        private readonly Dictionary<Port, ISet<Port>> _connected = new Dictionary<Port, ISet<Port>>();
+        public IReadOnlyCollection<Node> NodeList => _nodeList.Values;
         public IReadOnlyDictionary<Port, ISet<Port>> ConnectedPorts => _connected;
 
         public Graph()
         {
-            _nodeList = new List<Node>();
+            _nodeList = new Dictionary<Guid, Node>();
         }
 
-        public Graph(List<Node> nodeList)
+        public Graph(IEnumerable<Node> nodeList)
         {
-            _nodeList = nodeList;
+            _nodeList = nodeList.ToDictionary(n => n.Id, n => n);
         }
 
         public bool IsCompatible(IPortModule input, IPortModule output)
@@ -78,26 +76,26 @@ namespace GraphExt.Memory
         internal Node CreateNode(IMemoryNode innerNode)
         {
             var node = new Node(innerNode);
-            _nodeList.Add(node);
-            node.OnDeleted += () => _nodeList.Remove(node);
+            _nodeList.Add(node.Id, node);
+            node.OnDeleted += () => _nodeList.Remove(node.Id);
             return node;
         }
 
-        public IMemoryNode FindNodeByPort(IMemoryPort port)
+        public Node FindNodeByPort(Port port)
         {
-            if (port == null) return null;
-            return null;
+            return _nodeList[port.NodeId];
         }
 
-        public ISet<IMemoryPort> FindConnectedPorts(IMemoryPort port)
+        public ISet<Port> FindConnectedPorts(Guid nodeId, int portId)
         {
-            return new HashSet<IMemoryPort>();
-            // return _connected.TryGetValue(port, out var connected) ? connected : new HashSet<IMemoryPort>();
+            var node = _nodeList[nodeId];
+            var port = node.Ports[portId];
+            return _connected.TryGetValue(port, out var connected) ? connected : new HashSet<Port>();
         }
 
-        public ISet<IMemoryNode> FindConnectedNode(IMemoryPort port)
+        public ISet<Node> FindConnectedNode(Guid nodeId, int portId)
         {
-            return new HashSet<IMemoryNode>(FindConnectedPorts(port).Select(FindNodeByPort));
+            return new HashSet<Node>(FindConnectedPorts(nodeId, portId).Select(FindNodeByPort));
         }
     }
 }

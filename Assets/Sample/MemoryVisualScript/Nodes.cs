@@ -7,23 +7,20 @@ public interface IVisualNode : IMemoryNode
     float Calculate(Graph graph);
 }
 
-public struct VisualPort : IMemoryPort
+public class VisualPort : MemoryPort
 {
-    public int RuntimeId { get; }
-    public Action<Graph, IMemoryPort> OnConnected { get; }
-    public Action<Graph, IMemoryPort> OnDisconnected { get; }
-    public bool IsCompatible(Graph graph, IMemoryPort port) => port is VisualPort;
+    public override bool IsCompatible(Graph graph, IMemoryPort port) => port is VisualPort;
 }
 
 [Serializable]
 public class ValueNode : IVisualNode
 {
-    public int RuntimeId { get; }
+    public Guid Id { get; } = Guid.NewGuid();
 
     [NodeProperty] public float Value;
 
     [NodePort(typeof(float), Direction = NodePortDirection.Output, AllowMultipleConnections = true)]
-    public VisualPort Output;
+    public VisualPort Output = new VisualPort();
 
     public float Calculate(Graph graph)
     {
@@ -34,35 +31,35 @@ public class ValueNode : IVisualNode
 [Serializable, NodeTitle]
 public class AddNode : IVisualNode
 {
-    public int RuntimeId { get; }
+    public Guid Id { get; } = Guid.NewGuid();
 
     [NodePort(typeof(float), Direction = NodePortDirection.Output, AllowMultipleConnections = true)]
-    public VisualPort Output;
+    public VisualPort Output = new VisualPort();
 
     [NodePort(typeof(float), Direction = NodePortDirection.Input)]
-    public VisualPort First;
+    public VisualPort First = new VisualPort();
 
     [NodePort(typeof(float), Direction = NodePortDirection.Input)]
-    public VisualPort Second;
+    public VisualPort Second = new VisualPort();
 
     public float Calculate(Graph graph)
     {
-        return ((IVisualNode)graph.FindConnectedNode(First).Single()).Calculate(graph) +
-            ((IVisualNode)graph.FindConnectedNode(Second).Single()).Calculate(graph);
+        return ((IVisualNode)graph.FindConnectedNode(Id, First.Id).Single()).Calculate(graph) +
+            ((IVisualNode)graph.FindConnectedNode(Id, Second.Id).Single()).Calculate(graph);
     }
 }
 
 [Serializable, NodeTitle]
 public class PrintNode : IVisualNode
 {
-    public int RuntimeId { get; }
+    public Guid Id { get; } = Guid.NewGuid();
 
     [NodePort(typeof(float), Direction = NodePortDirection.Input)]
     public VisualPort Input;
 
     public float Calculate(Graph graph)
     {
-        var result = ((IVisualNode)graph.FindConnectedNode(Input).Single()).Calculate(graph);
+        var result = ((IVisualNode)graph.FindConnectedNode(Id, Input.Id).Single()).Calculate(graph);
         UnityEngine.Debug.Log(result);
         return result;
     }

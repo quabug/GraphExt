@@ -10,7 +10,7 @@ namespace GraphExt.Memory
 {
     public interface IMemoryNode
     {
-        int RuntimeId { get; }
+        Guid Id { get; }
     }
 
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
@@ -30,6 +30,7 @@ namespace GraphExt.Memory
     [Serializable]
     public class Node : INodeModule
     {
+        public Guid Id => Inner.Id;
         public Vector2 Position { get; set; }
         public event Action OnDeleted;
 
@@ -39,6 +40,8 @@ namespace GraphExt.Memory
 
         public IMemoryNode Inner { get; }
 
+        public List<Port> Ports = new List<Port>();
+
         public Node([NotNull] IMemoryNode inner)
         {
             Inner = inner;
@@ -47,6 +50,8 @@ namespace GraphExt.Memory
 
         IEnumerable<INodeProperty> CreateProperties()
         {
+            Ports.Clear();
+
             var innerType = Inner.GetType();
             var members = innerType.GetMembers(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             var titleProperty = CreateTitleProperty();
@@ -128,7 +133,8 @@ namespace GraphExt.Memory
 
                 PortProperty CreatePort(Direction direction)
                 {
-                    var port = new Port(portValue, attribute.PortType, direction, capacity);
+                    var port = new Port(Id, Ports.Count, portValue, attribute.PortType, direction, capacity);
+                    Ports.Add(port);
                     return new PortProperty(port);
                 }
             }
