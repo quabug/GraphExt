@@ -6,7 +6,7 @@ namespace GraphExt.Memory
 {
     public interface IMemoryPort
     {
-        PortId Id { get; set; }
+        Guid Id { get; }
         bool IsCompatible(Graph graph, IMemoryPort port);
         Action<Graph, IMemoryPort> OnConnected { get; }
         Action<Graph, IMemoryPort> OnDisconnected { get; }
@@ -14,7 +14,7 @@ namespace GraphExt.Memory
 
     public class MemoryPort : IMemoryPort
     {
-        public PortId Id { get; set;  }
+        public Guid Id { get; } = Guid.NewGuid();
         public Action<Graph, IMemoryPort> OnConnected { get; }
         public Action<Graph, IMemoryPort> OnDisconnected { get; }
         public virtual bool IsCompatible(Graph graph, IMemoryPort port) => true;
@@ -43,18 +43,16 @@ namespace GraphExt.Memory
     public class Port : IPortModule
     {
         public IMemoryPort Inner { get; }
-
-        public PortId Id { get; }
+        public Guid Id => Inner.Id;
+        public Guid NodeId { get; }
         public Orientation Orientation => Orientation.Horizontal;
         public Direction Direction { get; }
         public UnityEditor.Experimental.GraphView.Port.Capacity Capacity { get; }
         public Type PortType { get; }
 
-        public Port(in PortId id, [NotNull] IMemoryPort inner, Type portType, Direction direction, UnityEditor.Experimental.GraphView.Port.Capacity capacity)
+        public Port(Guid nodeId, [NotNull] IMemoryPort inner, Type portType, Direction direction, UnityEditor.Experimental.GraphView.Port.Capacity capacity)
         {
-            inner.Id = id;
-
-            Id = id;
+            NodeId = nodeId;
             Inner = inner;
             Direction = direction;
             Capacity = capacity;

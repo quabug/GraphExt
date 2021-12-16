@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
@@ -8,7 +7,6 @@ namespace GraphExt.Memory
     public class PortProperty : INodeProperty
     {
         private readonly Port _port;
-        public IEnumerable<IPortModule> Ports => _port.Yield();
 
         public PortProperty([NotNull] Port port)
         {

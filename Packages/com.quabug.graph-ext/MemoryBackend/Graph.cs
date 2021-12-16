@@ -32,7 +32,6 @@ namespace GraphExt.Memory
         {
             var node = new Node(innerNode);
             NodeMap.Add(node.Id, node);
-            node.OnDeleted += () => NodeMap.Remove(node.Id);
             return node;
         }
     }

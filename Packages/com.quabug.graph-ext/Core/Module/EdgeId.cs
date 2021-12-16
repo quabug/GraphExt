@@ -2,25 +2,25 @@ using System;
 
 namespace GraphExt
 {
-    public readonly struct EdgeData : IEquatable<EdgeData>
+    public readonly struct EdgeId : IEquatable<EdgeId>
     {
-        public readonly PortId OutputPort;
-        public readonly PortId InputPort;
+        public readonly Guid OutputPort;
+        public readonly Guid InputPort;
 
-        public EdgeData(PortId outputPort, PortId inputPort)
+        public EdgeId(Guid outputPort, Guid inputPort)
         {
             OutputPort = outputPort;
             InputPort = inputPort;
         }
 
-        public bool Equals(EdgeData other)
+        public bool Equals(EdgeId other)
         {
             return InputPort.Equals(other.InputPort) && OutputPort.Equals(other.OutputPort);
         }
 
         public override bool Equals(object obj)
         {
-            return obj is EdgeData other && Equals(other);
+            return obj is EdgeId other && Equals(other);
         }
 
         public override int GetHashCode()

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
@@ -16,7 +15,6 @@ namespace GraphExt
         private readonly Func<TValue> _getter;
         public TValue Value => _getter();
         public ReadOnlyValueProperty(Func<TValue> getter) => _getter = getter;
-        public IEnumerable<IPortModule> Ports => Enumerable.Empty<IPortModule>();
     }
 
     public class ReadOnlyValuePropertyView<TValue, TField> : VisualElement, ITickableElement
@@ -48,7 +46,6 @@ namespace GraphExt
     {
         private readonly Func<TValue> _getter;
         private readonly Action<TValue> _setter;
-        public IEnumerable<IPortModule> Ports => Enumerable.Empty<IPortModule>();
 
         public TValue Value
         {

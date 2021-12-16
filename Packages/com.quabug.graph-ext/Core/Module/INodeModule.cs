@@ -5,11 +5,11 @@ using UnityEngine;
 
 namespace GraphExt
 {
-    public interface INodeModule : IDisposable
+    public interface INodeModule
     {
+        string UiFile { get; }
         Guid Id { get; }
         Vector2 Position { get; set; }
-        IEnumerable<INodeProperty> Properties { get; }
-        [CanBeNull] IPortModule FindPort(in PortId port);
+        [NotNull] IReadOnlyList<INodeProperty> Properties { get; }
     }
 }

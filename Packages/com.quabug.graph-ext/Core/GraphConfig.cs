@@ -12,8 +12,7 @@ namespace GraphExt
         public string WindowName = "Graph Window";
         [SerializedType(typeof(IGraphModule))] public string Backend;
         [SerializeReference, SerializeReferenceDrawer] public IMenuEntry[] Menu;
-        [SerializeReference, SerializeReferenceDrawer(Nullable = false)]
-        public INodePropertyViewFactory NodePropertyViewFactory;
+        public GroupNodePropertyViewFactory NodePropertyViewFactory;
 
 #if UNITY_EDITOR
         private void Reset()
@@ -25,11 +24,11 @@ namespace GraphExt
                 .ToArray()
             ;
 
-            NodePropertyViewFactory = new OrderedGroupNodePropertyViewFactory
+            NodePropertyViewFactory = new GroupNodePropertyViewFactory
             {
                 Factories = UnityEditor.TypeCache.GetTypesDerivedFrom<INodePropertyViewFactory>()
                     .Where(type => !type.IsAbstract && !type.IsGenericType && type.GetConstructor(Array.Empty<Type>()) != null)
-                    .Where(type => type != typeof(OrderedGroupNodePropertyViewFactory) &&
+                    .Where(type => type != typeof(GroupNodePropertyViewFactory) &&
                                    type != typeof(INodePropertyViewFactory.Null) &&
                                    type != typeof(INodePropertyViewFactory.Exception)
                                    )

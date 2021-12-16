@@ -10,7 +10,7 @@ namespace GraphExt
     {
         [CanBeNull] VisualElement Create([NotNull] INodeProperty property, [NotNull] INodePropertyViewFactory factory);
 
-        public class Null : INodePropertyViewFactory
+        public sealed class Null : INodePropertyViewFactory
         {
             public VisualElement Create(INodeProperty property, INodePropertyViewFactory factory)
             {
@@ -18,7 +18,7 @@ namespace GraphExt
             }
         }
 
-        public class Exception : INodePropertyViewFactory
+        public sealed class Exception : INodePropertyViewFactory
         {
             public VisualElement Create(INodeProperty property, INodePropertyViewFactory factory)
             {
@@ -28,7 +28,7 @@ namespace GraphExt
     }
 
     [Serializable]
-    public class OrderedGroupNodePropertyViewFactory : INodePropertyViewFactory
+    public class GroupNodePropertyViewFactory : INodePropertyViewFactory
     {
         [SerializeReference, SerializeReferenceDrawer(Nullable = false)]
         public INodePropertyViewFactory[] Factories;

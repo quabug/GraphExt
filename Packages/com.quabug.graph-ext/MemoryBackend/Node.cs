@@ -11,7 +11,7 @@ namespace GraphExt.Memory
 {
     public interface IMemoryNode
     {
-        Guid Id { get; }
+        System.Guid Id { get; }
     }
 
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
@@ -28,21 +28,13 @@ namespace GraphExt.Memory
         public bool HideLabel = false;
     }
 
-    [Serializable]
     public class Node : INodeModule
     {
+        public string UiFile => null; // use default node ui
         public Guid Id => Inner.Id;
         public Vector2 Position { get; set; }
-        public event Action OnDeleted;
 
-        [NonSerialized]
-        private readonly IReadOnlyList<INodeProperty> _properties;
-        public IEnumerable<INodeProperty> Properties => _properties;
-
-        public IPortModule FindPort(in PortId port)
-        {
-            return port.NodeId == Id ? Ports[port.PortIndex] : null;
-        }
+        public IReadOnlyList<INodeProperty> Properties { get; }
 
         public IMemoryNode Inner { get; }
 
@@ -51,7 +43,7 @@ namespace GraphExt.Memory
         public Node([NotNull] IMemoryNode inner)
         {
             Inner = inner;
-            _properties = CreateProperties().ToArray();
+            Properties = CreateProperties().ToArray();
         }
 
         IEnumerable<INodeProperty> CreateProperties()
@@ -139,17 +131,11 @@ namespace GraphExt.Memory
 
                 PortProperty CreatePort(Direction direction)
                 {
-                    var port = new Port(new PortId(Id, Ports.Count), portValue, attribute.PortType, direction, capacity);
+                    var port = new Port(Id, portValue, attribute.PortType, direction, capacity);
                     Ports.Add(port);
                     return new PortProperty(port);
                 }
             }
-        }
-
-        public void Dispose()
-        {
-            OnDeleted?.Invoke();
-            OnDeleted = null;
         }
     }
 }

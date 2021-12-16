@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using BinaryEgo.Editor.UI;
 using JetBrains.Annotations;
@@ -11,11 +12,13 @@ namespace GraphExt
 {
     public class GraphView : UnityEditor.Experimental.GraphView.GraphView, ITickableElement
     {
+        private static string _defaultNodeUi = Path.Combine(Utilities.GetCurrentDirectoryProjectRelativePath(), "NodeView.uxml");
+
         [NotNull] public GraphConfig Config { get; }
         [NotNull] public IGraphModule Module { get; set; }
 
-        private readonly BiDictionary<INodeModule, Node> _nodes = new BiDictionary<INodeModule, Node>();
-        private readonly BiDictionary<EdgeData, Edge> _edges = new BiDictionary<EdgeData, Edge>();
+        private readonly BiDictionary<Guid, Node> _nodes = new BiDictionary<Guid, Node>();
+        private readonly BiDictionary<EdgeId, Edge> _edges = new BiDictionary<EdgeId, Edge>();
 
         public GraphView([NotNull] GraphConfig config)
         {
@@ -68,10 +71,10 @@ namespace GraphExt
             if (@event.elementsToRemove != null)
             {
                 foreach (var edge in @event.elementsToRemove.OfType<Edge>()) OnEdgeDeleted(edge);
-                foreach (var node in @event.elementsToRemove.OfType<Node>()
+                foreach (var nodeId in @event.elementsToRemove.OfType<Node>()
                     .Where(_nodes.ContainsValue)
                     .Select(_nodes.GetKey)
-                ) node.Dispose();
+                ) Module.DeleteNode(nodeId);
             }
 
             if (@event.edgesToCreate != null)
@@ -81,11 +84,11 @@ namespace GraphExt
 
             if (@event.movedElements != null)
             {
-                foreach (var (view, module) in
-                    from view in @event.movedElements.OfType<Node>()
-                    where _nodes.ContainsValue(view)
-                    select (view, module: _nodes.GetKey(view))
-                ) module.Position = view.GetPosition().position;
+                foreach (var (nodeView, nodeId) in
+                    from nodeView in @event.movedElements.OfType<Node>()
+                    where _nodes.ContainsValue(nodeView)
+                    select (nodeView, nodeId: _nodes.GetKey(nodeView))
+                ) Module.SetNodePosition(nodeId, nodeView.GetPosition().position);
             }
 
             return @event;
@@ -96,7 +99,7 @@ namespace GraphExt
             edge.showInMiniMap = true;
             if (edge.input is PortView inputPort && edge.output is PortView outputPort)
             {
-                _edges.Add(new EdgeData(outputPort: outputPort.Id, inputPort: inputPort.Id), edge);
+                _edges.Add(new EdgeId(outputPort: outputPort.Id, inputPort: inputPort.Id), edge);
                 Module.Connect(inputPort.Module, outputPort.Module);
             }
         }
@@ -105,7 +108,7 @@ namespace GraphExt
         {
             if (edge.input is PortView inputPort && edge.output is PortView outputPort)
             {
-                _edges.Remove(new EdgeData(outputPort: outputPort.Id, inputPort: inputPort.Id));
+                _edges.Remove(new EdgeId(outputPort: outputPort.Id, inputPort: inputPort.Id));
                 Module.Disconnect(inputPort.Module, outputPort.Module);
             }
         }
@@ -118,7 +121,7 @@ namespace GraphExt
 
         void RefreshEdges()
         {
-            // var currentEdges = new HashSet<EdgeData>(_edges.Keys);
+            // var currentEdges = new HashSet<EdgeId>(_edges.Keys);
             // foreach (var edge in Module.Edges)
             // {
             //     if (currentEdges.Contains(edge)) currentEdges.Remove(edge);
@@ -126,7 +129,7 @@ namespace GraphExt
             // }
             // foreach (var removed in currentNodes) RemoveNode(removed);
             //
-            // void CreateEdge(EdgeData edge)
+            // void CreateEdge(EdgeId edge)
             // {
             //     var nodeView = new NodeView(node, Config);
             //     _nodes.Add(node, nodeView);
@@ -142,25 +145,32 @@ namespace GraphExt
 
         void RefreshNodes()
         {
-            var currentNodes = new HashSet<INodeModule>(_nodes.Keys);
+            var currentNodes = new HashSet<Guid>(_nodes.Keys);
             foreach (var node in Module.Nodes)
             {
-                if (currentNodes.Contains(node)) currentNodes.Remove(node);
+                if (currentNodes.Contains(node.Id)) currentNodes.Remove(node.Id);
                 else CreateNode(node);
             }
             foreach (var removed in currentNodes) RemoveNode(removed);
 
             void CreateNode(INodeModule node)
             {
-                var nodeView = new NodeView(node, Config);
-                _nodes.Add(node, nodeView);
+                var nodeView = new Node(node.UiFile ?? _defaultNodeUi);
+                var container = nodeView.ContentContainer();
+                foreach (var property in node.Properties)
+                {
+                    var propertyView = Config.CreatePropertyView(property);
+                    container.Add(propertyView);
+                }
                 AddElement(nodeView);
+                nodeView.SetPosition(node.Position);
+                _nodes.Add(node.Id, nodeView);
             }
 
-            void RemoveNode(INodeModule node)
+            void RemoveNode(Guid nodeId)
             {
-                RemoveElement(_nodes[node]);
-                _nodes.Remove(node);
+                RemoveElement(_nodes[nodeId]);
+                _nodes.Remove(nodeId);
             }
         }
     }

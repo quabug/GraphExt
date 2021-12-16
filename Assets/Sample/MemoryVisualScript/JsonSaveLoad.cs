@@ -11,7 +11,7 @@ public static class JsonSaveLoad
 
     static JsonSaveLoad()
     {
-        _jsonSerializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+        _jsonSerializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
     }
 
     public static bool Save(Graph graph, string path)
