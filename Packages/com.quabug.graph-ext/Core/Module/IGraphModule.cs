@@ -69,7 +69,7 @@ namespace GraphExt
             {
                 AddConnection(@in, @out);
                 AddConnection(@out, @in);
-                _edgeCache.Add(new EdgeId(outputPort: output.Id, inputPort: input.Id));
+                _edgeCache.Add(new EdgeId(first: output.Id, second: input.Id));
                 OnConnected(@in, @out);
             }
         }

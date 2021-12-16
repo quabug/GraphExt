@@ -99,7 +99,7 @@ namespace GraphExt
             edge.showInMiniMap = true;
             if (edge.input is PortView inputPort && edge.output is PortView outputPort)
             {
-                _edges.Add(new EdgeId(outputPort: outputPort.Id, inputPort: inputPort.Id), edge);
+                _edges.Add(new EdgeId(outputPort.Id, inputPort.Id), edge);
                 Module.Connect(inputPort.Module, outputPort.Module);
             }
         }
@@ -108,7 +108,7 @@ namespace GraphExt
         {
             if (edge.input is PortView inputPort && edge.output is PortView outputPort)
             {
-                _edges.Remove(new EdgeId(outputPort: outputPort.Id, inputPort: inputPort.Id));
+                _edges.Remove(new EdgeId(outputPort.Id, inputPort.Id));
                 Module.Disconnect(inputPort.Module, outputPort.Module);
             }
         }

@@ -4,18 +4,20 @@ namespace GraphExt
 {
     public readonly struct EdgeId : IEquatable<EdgeId>
     {
-        public readonly Guid OutputPort;
-        public readonly Guid InputPort;
+        public readonly Guid First;
+        public readonly Guid Second;
 
-        public EdgeId(Guid outputPort, Guid inputPort)
+        public EdgeId(Guid first, Guid second)
         {
-            OutputPort = outputPort;
-            InputPort = inputPort;
+            First = first;
+            Second = second;
         }
 
         public bool Equals(EdgeId other)
         {
-            return InputPort.Equals(other.InputPort) && OutputPort.Equals(other.OutputPort);
+            return (Second.Equals(other.Second) && First.Equals(other.First)) ||
+                   (Second.Equals(other.First) && First.Equals(other.Second))
+            ;
         }
 
         public override bool Equals(object obj)
@@ -27,8 +29,18 @@ namespace GraphExt
         {
             unchecked
             {
-                return (InputPort.GetHashCode() * 397) ^ OutputPort.GetHashCode();
+                return (Second.GetHashCode() ^ First.GetHashCode()) * 397;
             }
+        }
+
+        public static bool operator ==(EdgeId lhs, EdgeId rhs)
+        {
+            return lhs.Equals(rhs);
+        }
+
+        public static bool operator !=(EdgeId lhs, EdgeId rhs)
+        {
+            return !(lhs == rhs);
         }
     }
 }
