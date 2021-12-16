@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GraphExt
 {
-    internal class BiDictionary<T1, T2> : IDictionary<T1, T2>
+    public class BiDictionary<T1, T2> : IDictionary<T1, T2>
     {
         private readonly IDictionary<T1, T2> _forward = new Dictionary<T1, T2>();
         private readonly IDictionary<T2, T1> _reverse = new Dictionary<T2, T1>();
@@ -29,9 +29,9 @@ namespace GraphExt
             return Remove(key, _forward, _reverse);
         }
 
-        public bool RemoveValue(T2 t2)
+        public bool RemoveValue(T2 value)
         {
-            return Remove(t2, _reverse, _forward);
+            return Remove(value, _reverse, _forward);
         }
 
         private bool Remove<TKey, TValue>(TKey key, IDictionary<TKey, TValue> forward, IDictionary<TValue, TKey> reverse)

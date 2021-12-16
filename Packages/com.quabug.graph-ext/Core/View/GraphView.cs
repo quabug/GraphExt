@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BinaryEgo.Editor.UI;
+using JetBrains.Annotations;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
@@ -9,12 +10,12 @@ namespace GraphExt
 {
     public class GraphView : UnityEditor.Experimental.GraphView.GraphView, ITickableElement
     {
-        private readonly GraphConfig _config;
-        public IGraphModule Module { get; internal set; }
+        [NotNull] private readonly GraphConfig _config;
+        [NotNull] public IGraphModule Module { get; set; }
 
         private readonly BiDictionary<INodeModule, Node> _nodes = new BiDictionary<INodeModule, Node>();
 
-        public GraphView(GraphConfig config)
+        public GraphView([NotNull] GraphConfig config)
         {
             _config = config;
             Insert(0, new GridBackground { name = "grid" });
@@ -41,7 +42,7 @@ namespace GraphExt
             {
                 ports.ForEach(endPort =>
                 {
-                    if (endPort is PortView endPortView && startPortView.IsCompatible(endPortView))
+                    if (endPort is PortView endPortView && Module.IsCompatible(startPortView.Module, endPortView.Module))
                         compatiblePorts.Add(endPort);
                 });
             }
@@ -93,7 +94,7 @@ namespace GraphExt
             edge.showInMiniMap = true;
             if (edge.input is PortView inputPort && edge.output is PortView outputPort)
             {
-                inputPort.Connect(outputPort);
+                Module.Connect(inputPort.Module, outputPort.Module);
             }
         }
 
@@ -101,7 +102,7 @@ namespace GraphExt
         {
             if (edge.input is PortView inputPort && edge.output is PortView outputPort)
             {
-                inputPort.Disconnect(outputPort);
+                Module.Disconnect(inputPort.Module, outputPort.Module);
             }
         }
 

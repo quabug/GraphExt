@@ -1,6 +1,6 @@
 {
     "name": "GraphExt.Core",
-    "rootNamespace": "GraphExt.Core",
+    "rootNamespace": "GraphExt",
     "references": [],
     "includePlatforms": [
         "Editor"

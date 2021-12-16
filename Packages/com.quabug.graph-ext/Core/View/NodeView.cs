@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor.Experimental.GraphView;
@@ -33,7 +34,9 @@ namespace GraphExt
 
             foreach (var removed in currentProperties)
             {
-                _contentContainer.Remove(_properties[removed]);
+                var removedProperty = _properties[removed];
+                _contentContainer.Remove(removedProperty);
+                if (removedProperty is IDisposable disposable) disposable.Dispose();
             }
 
             void AddProperty(INodeProperty property)

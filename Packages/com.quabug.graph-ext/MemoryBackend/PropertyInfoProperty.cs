@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
 using UnityEngine.Assertions;
@@ -10,6 +12,7 @@ namespace GraphExt
         private readonly object _target;
         private readonly MethodInfo _getter;
         private readonly MethodInfo _setter;
+        public IEnumerable<IPortModule> Ports => Enumerable.Empty<IPortModule>();
 
         public T Value
         {
@@ -34,6 +37,7 @@ namespace GraphExt
     {
         private readonly object _target;
         private readonly MethodInfo _getter;
+        public IEnumerable<IPortModule> Ports => Enumerable.Empty<IPortModule>();
 
         public T Value => (T)_getter.Invoke(_target, Array.Empty<object>());
 

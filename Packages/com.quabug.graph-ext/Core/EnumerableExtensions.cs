@@ -14,5 +14,10 @@ namespace GraphExt
             }
             return -1;
         }
+
+        public static IEnumerable<T> Yield<T>(this T element)
+        {
+            yield return element;
+        }
     }
 }

@@ -43,6 +43,7 @@ MonoBehaviour:
         - id: 11
         - id: 12
         - id: 13
+        - id: 14
     00000004:
       type: {class: PortProperty/Factory, ns: GraphExt.Memory, asm: GraphExt.Memory}
     00000005:
@@ -63,3 +64,5 @@ MonoBehaviour:
       type: {class: SerializedProperty/Factory, ns: GraphExt, asm: GraphExt.Properties}
     0000000D:
       type: {class: TitleProperty/Factory, ns: GraphExt, asm: GraphExt.Properties}
+    0000000E:
+      type: {class: INodePropertyViewFactory/Exception, ns: GraphExt, asm: GraphExt.Core}

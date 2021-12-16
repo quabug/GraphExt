@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using JetBrains.Annotations;
 using UnityEditor.Experimental.GraphView;
 
 namespace GraphExt
@@ -11,11 +9,5 @@ namespace GraphExt
         Direction Direction { get; }
         Port.Capacity Capacity { get; }
         Type PortType { get; }
-
-        ISet<IPortModule> Connected { get; }
-        void Connect([NotNull] IPortModule port);
-        void Disconnect([NotNull] IPortModule port);
-
-        bool IsCompatible([NotNull] IPortModule port);
     }
 }

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -7,6 +9,7 @@ namespace GraphExt
     {
         public INodeProperty LabelProperty { get; }
         public INodeProperty ValueProperty { get; }
+        public IEnumerable<IPortModule> Ports => Enumerable.Empty<IPortModule>();
 
         public LabelValueProperty(INodeProperty labelProperty, INodeProperty valueProperty)
         {

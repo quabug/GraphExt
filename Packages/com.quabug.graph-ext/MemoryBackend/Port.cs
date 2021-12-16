@@ -1,18 +1,21 @@
 using System;
-using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEditor.Experimental.GraphView;
-using UnityEngine.Assertions;
 
 namespace GraphExt.Memory
 {
     public interface IMemoryPort
     {
-        IMemoryNode Node { get; }
-        ISet<IMemoryPort> ConnectedPorts { get; }
-        bool IsCompatible(IMemoryPort port);
-        void OnConnected(IMemoryPort port);
-        void OnDisconnected(IMemoryPort port);
+        bool IsCompatible(Graph graph, IMemoryPort port);
+        Action<Graph, IMemoryPort> OnConnected { get; }
+        Action<Graph, IMemoryPort> OnDisconnected { get; }
+    }
+
+    public struct MemoryPort : IMemoryPort
+    {
+        public bool IsCompatible(Graph graph, IMemoryPort port) => true;
+        public Action<Graph, IMemoryPort> OnConnected { get; }
+        public Action<Graph, IMemoryPort> OnDisconnected { get; }
     }
 
     [Flags]
@@ -44,40 +47,12 @@ namespace GraphExt.Memory
         public UnityEditor.Experimental.GraphView.Port.Capacity Capacity { get; }
         public Type PortType { get; }
 
-        public ISet<IPortModule> Connected { get; } = new HashSet<IPortModule>();
-
-        public Port([NotNull] IMemoryPort inner, Direction direction, UnityEditor.Experimental.GraphView.Port.Capacity capacity, Type portType)
+        public Port([NotNull] IMemoryPort inner, Type portType, Direction direction, UnityEditor.Experimental.GraphView.Port.Capacity capacity)
         {
             Inner = inner;
             Direction = direction;
             Capacity = capacity;
             PortType = portType;
-        }
-
-        public void Connect(IPortModule port)
-        {
-            Assert.IsFalse(Connected.Contains(port), "already connected");
-            Assert.IsTrue(IsCompatible(port), "not compatible");
-            Assert.IsTrue(port is Port, "connect to `Port` only");
-            Connected.Add(port);
-            Inner.OnConnected(((Port)port).Inner);
-        }
-
-        public void Disconnect(IPortModule port)
-        {
-            Assert.IsTrue(Connected.Contains(port), "already disconnected");
-            Assert.IsTrue(port is Port, "disconnect from `Port` only");
-            Connected.Remove(port);
-            Inner.OnDisconnected(((Port)port).Inner);
-        }
-
-        public bool IsCompatible(IPortModule port)
-        {
-            return !Connected.Contains(port) &&
-                   port.Direction != Direction &&
-                   port.PortType == PortType &&
-                   port is Port p && Inner.IsCompatible(p.Inner)
-           ;
         }
     }
 }

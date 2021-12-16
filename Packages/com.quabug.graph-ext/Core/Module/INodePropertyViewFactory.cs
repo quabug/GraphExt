@@ -17,6 +17,14 @@ namespace GraphExt
                 return null;
             }
         }
+
+        public class Exception : INodePropertyViewFactory
+        {
+            public VisualElement Create(INodeProperty property, INodePropertyViewFactory factory)
+            {
+                throw new NotImplementedException();
+            }
+        }
     }
 
     [Serializable]

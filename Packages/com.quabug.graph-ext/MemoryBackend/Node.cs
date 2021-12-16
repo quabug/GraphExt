@@ -21,13 +21,16 @@ namespace GraphExt.Memory
     public class NodePropertyAttribute : Attribute
     {
         public bool ReadOnly = false;
+        public bool HideLabel = false;
     }
 
+    [Serializable]
     public class Node : INodeModule
     {
         public Vector2 Position { get; set; }
         public event Action OnDeleted;
 
+        [NonSerialized]
         private readonly IReadOnlyList<INodeProperty> _properties;
         public IEnumerable<INodeProperty> Properties => _properties;
 
@@ -43,7 +46,8 @@ namespace GraphExt.Memory
         {
             var innerType = Inner.GetType();
             var members = innerType.GetMembers(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            yield return CreateTitleProperty();
+            var titleProperty = CreateTitleProperty();
+            if (titleProperty != null) yield return titleProperty;
             foreach (var mi in members)
             {
                 var property = TryCreateNodeProperty(mi) ?? TryCreateNodePort(mi);
@@ -53,15 +57,24 @@ namespace GraphExt.Memory
             TitleProperty CreateTitleProperty()
             {
                 var titleAttribute = innerType.GetCustomAttribute<NodeTitleAttribute>();
-                var title = innerType.Name;
-                if (titleAttribute?.ConstTitle != null) title = titleAttribute.ConstTitle;
+                string title = null;
+                if (titleAttribute?.ConstTitle != null)
+                {
+                    title = titleAttribute.ConstTitle;
+                }
                 else if (titleAttribute?.TitlePropertyName != null)
+                {
                     title = innerType
                         .GetMember(titleAttribute.TitlePropertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                         .Single()
                         .GetValue<string>(Inner)
                     ;
-                return new TitleProperty(title);
+                }
+                else if (titleAttribute != null)
+                {
+                    title = innerType.Name;
+                }
+                return title == null ? null : new TitleProperty(title);
             }
 
             INodeProperty TryCreateNodeProperty(MemberInfo mi)
@@ -101,14 +114,20 @@ namespace GraphExt.Memory
                 PortProperty inputPort = null;
                 PortProperty outputPort = null;
                 if (attribute.Direction.HasFlag(NodePortDirection.Input))
-                    inputPort = new PortProperty(portValue, attribute.PortType, Direction.Input, capacity);
+                    inputPort = CreatePort(Direction.Input);
                 if (attribute.Direction.HasFlag(NodePortDirection.Output))
-                    outputPort = new PortProperty(portValue, attribute.PortType, Direction.Output, capacity);
+                    outputPort = CreatePort(Direction.Output);
                 return new LabelPortProperty(
                     labelProperty: new LabelProperty(mi.Name),
                     inputPortProperty: inputPort,
                     outputPortProperty: outputPort
                 );
+
+                PortProperty CreatePort(Direction direction)
+                {
+                    var port = new Port(portValue, attribute.PortType, direction, capacity);
+                    return new PortProperty(port);
+                }
             }
         }
 

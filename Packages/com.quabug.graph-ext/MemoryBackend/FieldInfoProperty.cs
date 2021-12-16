@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
 
@@ -7,6 +9,7 @@ namespace GraphExt.Memory
     {
         private readonly object _target;
         private readonly FieldInfo _fieldInfo;
+        public IEnumerable<IPortModule> Ports => Enumerable.Empty<IPortModule>();
 
         public T Value
         {
@@ -25,6 +28,7 @@ namespace GraphExt.Memory
     {
         private readonly object _target;
         private readonly FieldInfo _fieldInfo;
+        public IEnumerable<IPortModule> Ports => Enumerable.Empty<IPortModule>();
 
         public T Value => (T) _fieldInfo.GetValue(_target);
 

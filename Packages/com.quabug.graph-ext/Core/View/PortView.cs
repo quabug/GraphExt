@@ -14,21 +14,6 @@ namespace GraphExt
             Module = module;
         }
 
-        public bool IsCompatible(PortView port)
-        {
-            return Module.IsCompatible(port.Module);
-        }
-
-        public void Connect(PortView port)
-        {
-            Module.Connect(port.Module);
-        }
-
-        public void Disconnect(PortView port)
-        {
-            Module.Disconnect(port.Module);
-        }
-
 #region Copy From `Port`
 
         public static PortView Create<TEdge>(IPortModule module) where TEdge : Edge, new()
