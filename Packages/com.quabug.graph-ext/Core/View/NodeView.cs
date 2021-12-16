@@ -21,6 +21,7 @@ namespace GraphExt
             style.left = nodeModule.Position.x;
             style.top = nodeModule.Position.y;
             _contentContainer = this.Q<VisualElement>("contents");
+            foreach (var property in _nodeModule.Properties) AddProperty(property);
         }
 
         public void Tick()
@@ -38,15 +39,15 @@ namespace GraphExt
                 _contentContainer.Remove(removedProperty);
                 if (removedProperty is IDisposable disposable) disposable.Dispose();
             }
+        }
 
-            void AddProperty(INodeProperty property)
+        void AddProperty(INodeProperty property)
+        {
+            var view = _config.CreatePropertyView(property);
+            if (view != null)
             {
-                var view = _config.CreatePropertyView(property);
-                if (view != null)
-                {
-                    _contentContainer.Add(view);
-                    _properties.Add(property, view);
-                }
+                _contentContainer.Add(view);
+                _properties.Add(property, view);
             }
         }
     }

@@ -8,6 +8,7 @@ namespace GraphExt
     public class PortView : Port
     {
         internal IPortModule Module { get; }
+        public PortId Id => Module.Id;
 
         public PortView(IPortModule module) : base(module.Orientation, module.Direction, module.Capacity, module.PortType)
         {

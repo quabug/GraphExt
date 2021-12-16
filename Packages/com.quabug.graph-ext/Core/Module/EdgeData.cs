@@ -4,13 +4,13 @@ namespace GraphExt
 {
     public readonly struct EdgeData : IEquatable<EdgeData>
     {
-        public readonly PortId InputPort;
         public readonly PortId OutputPort;
+        public readonly PortId InputPort;
 
-        public EdgeData(PortId inputPort, PortId outputPort)
+        public EdgeData(PortId outputPort, PortId inputPort)
         {
-            InputPort = inputPort;
             OutputPort = outputPort;
+            InputPort = inputPort;
         }
 
         public bool Equals(EdgeData other)

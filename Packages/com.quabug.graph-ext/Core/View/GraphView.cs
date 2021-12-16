@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using BinaryEgo.Editor.UI;
@@ -95,6 +96,7 @@ namespace GraphExt
             edge.showInMiniMap = true;
             if (edge.input is PortView inputPort && edge.output is PortView outputPort)
             {
+                _edges.Add(new EdgeData(outputPort: outputPort.Id, inputPort: inputPort.Id), edge);
                 Module.Connect(inputPort.Module, outputPort.Module);
             }
         }
@@ -103,6 +105,7 @@ namespace GraphExt
         {
             if (edge.input is PortView inputPort && edge.output is PortView outputPort)
             {
+                _edges.Remove(new EdgeData(outputPort: outputPort.Id, inputPort: inputPort.Id));
                 Module.Disconnect(inputPort.Module, outputPort.Module);
             }
         }
@@ -115,7 +118,26 @@ namespace GraphExt
 
         void RefreshEdges()
         {
-
+            // var currentEdges = new HashSet<EdgeData>(_edges.Keys);
+            // foreach (var edge in Module.Edges)
+            // {
+            //     if (currentEdges.Contains(edge)) currentEdges.Remove(edge);
+            //     else CreateEdge(edge);
+            // }
+            // foreach (var removed in currentNodes) RemoveNode(removed);
+            //
+            // void CreateEdge(EdgeData edge)
+            // {
+            //     var nodeView = new NodeView(node, Config);
+            //     _nodes.Add(node, nodeView);
+            //     AddElement(nodeView);
+            // }
+            //
+            // void RemoveNode(INodeModule node)
+            // {
+            //     RemoveElement(_nodes[node]);
+            //     _nodes.Remove(node);
+            // }
         }
 
         void RefreshNodes()

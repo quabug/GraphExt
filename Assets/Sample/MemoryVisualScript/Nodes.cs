@@ -55,7 +55,7 @@ public class PrintNode : IVisualNode
     public Guid Id { get; } = Guid.NewGuid();
 
     [NodePort(typeof(float), Direction = NodePortDirection.Input)]
-    public VisualPort Input;
+    public VisualPort Input = new VisualPort();
 
     public float Calculate(Graph graph)
     {

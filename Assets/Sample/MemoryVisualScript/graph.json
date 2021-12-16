@@ -5,45 +5,182 @@
     "$values": [
       {
         "$type": "JsonSaveLoad+SerializableNode, GraphExt.Sample",
-        "PositionX": 617.0,
-        "PositionY": 11.0,
+        "PositionX": 201.0,
+        "PositionY": 223.0,
+        "Node": {
+          "$type": "MemoryFoo, GraphExt.Sample",
+          "Int": 432,
+          "Float": 1.23,
+          "Port": {
+            "$type": "GraphExt.Memory.MemoryPort, GraphExt.Memory",
+            "Id": {
+              "$type": "GraphExt.PortId, GraphExt.Core",
+              "NodeId": "c0f565f0-3918-4a58-a19c-b65dd29d4b96",
+              "PortIndex": 1
+            },
+            "OnConnected": null,
+            "OnDisconnected": null
+          },
+          "InputPort": {
+            "$type": "GraphExt.Memory.MemoryPort, GraphExt.Memory",
+            "Id": {
+              "$type": "GraphExt.PortId, GraphExt.Core",
+              "NodeId": "c0f565f0-3918-4a58-a19c-b65dd29d4b96",
+              "PortIndex": 2
+            },
+            "OnConnected": null,
+            "OnDisconnected": null
+          },
+          "OutputPort": {
+            "$type": "GraphExt.Memory.MemoryPort, GraphExt.Memory",
+            "Id": {
+              "$type": "GraphExt.PortId, GraphExt.Core",
+              "NodeId": "c0f565f0-3918-4a58-a19c-b65dd29d4b96",
+              "PortIndex": 3
+            },
+            "OnConnected": null,
+            "OnDisconnected": null
+          },
+          "Id": "c0f565f0-3918-4a58-a19c-b65dd29d4b96",
+          "Double": 1233.0,
+          "Long": 321
+        }
+      },
+      {
+        "$type": "JsonSaveLoad+SerializableNode, GraphExt.Sample",
+        "PositionX": 773.0,
+        "PositionY": 98.0,
         "Node": {
           "$type": "AddNode, GraphExt.Sample",
           "Output": {
             "$type": "VisualPort, GraphExt.Sample",
-            "Id": 0,
+            "Id": {
+              "$type": "GraphExt.PortId, GraphExt.Core",
+              "NodeId": "d30e647c-22de-412e-8970-d9462652d17d",
+              "PortIndex": 0
+            },
             "OnConnected": null,
             "OnDisconnected": null
           },
           "First": {
             "$type": "VisualPort, GraphExt.Sample",
-            "Id": 0,
+            "Id": {
+              "$type": "GraphExt.PortId, GraphExt.Core",
+              "NodeId": "d30e647c-22de-412e-8970-d9462652d17d",
+              "PortIndex": 1
+            },
             "OnConnected": null,
             "OnDisconnected": null
           },
           "Second": {
             "$type": "VisualPort, GraphExt.Sample",
-            "Id": 0,
+            "Id": {
+              "$type": "GraphExt.PortId, GraphExt.Core",
+              "NodeId": "d30e647c-22de-412e-8970-d9462652d17d",
+              "PortIndex": 2
+            },
             "OnConnected": null,
             "OnDisconnected": null
           },
-          "Id": "1c0c882c-a3fd-459a-bfac-5361ea23474d"
+          "Id": "d30e647c-22de-412e-8970-d9462652d17d"
         }
       },
       {
         "$type": "JsonSaveLoad+SerializableNode, GraphExt.Sample",
-        "PositionX": 381.0,
-        "PositionY": 78.0,
+        "PositionX": 502.0,
+        "PositionY": 141.0,
+        "Node": {
+          "$type": "ValueNode, GraphExt.Sample",
+          "Value": 111.0,
+          "Output": {
+            "$type": "VisualPort, GraphExt.Sample",
+            "Id": {
+              "$type": "GraphExt.PortId, GraphExt.Core",
+              "NodeId": "81d2f089-e7e2-4d32-9335-62d18afcd9fe",
+              "PortIndex": 0
+            },
+            "OnConnected": null,
+            "OnDisconnected": null
+          },
+          "Id": "81d2f089-e7e2-4d32-9335-62d18afcd9fe"
+        }
+      },
+      {
+        "$type": "JsonSaveLoad+SerializableNode, GraphExt.Sample",
+        "PositionX": 601.0,
+        "PositionY": 265.0,
+        "Node": {
+          "$type": "AddNode, GraphExt.Sample",
+          "Output": {
+            "$type": "VisualPort, GraphExt.Sample",
+            "Id": {
+              "$type": "GraphExt.PortId, GraphExt.Core",
+              "NodeId": "9d383877-bc66-4b99-aef1-d670e9ea372d",
+              "PortIndex": 0
+            },
+            "OnConnected": null,
+            "OnDisconnected": null
+          },
+          "First": {
+            "$type": "VisualPort, GraphExt.Sample",
+            "Id": {
+              "$type": "GraphExt.PortId, GraphExt.Core",
+              "NodeId": "9d383877-bc66-4b99-aef1-d670e9ea372d",
+              "PortIndex": 1
+            },
+            "OnConnected": null,
+            "OnDisconnected": null
+          },
+          "Second": {
+            "$type": "VisualPort, GraphExt.Sample",
+            "Id": {
+              "$type": "GraphExt.PortId, GraphExt.Core",
+              "NodeId": "9d383877-bc66-4b99-aef1-d670e9ea372d",
+              "PortIndex": 2
+            },
+            "OnConnected": null,
+            "OnDisconnected": null
+          },
+          "Id": "9d383877-bc66-4b99-aef1-d670e9ea372d"
+        }
+      },
+      {
+        "$type": "JsonSaveLoad+SerializableNode, GraphExt.Sample",
+        "PositionX": 392.0,
+        "PositionY": 314.0,
         "Node": {
           "$type": "ValueNode, GraphExt.Sample",
           "Value": 23.0,
           "Output": {
             "$type": "VisualPort, GraphExt.Sample",
-            "Id": 0,
+            "Id": {
+              "$type": "GraphExt.PortId, GraphExt.Core",
+              "NodeId": "79ed836d-9d7b-43a2-926f-504b9a6cd9ea",
+              "PortIndex": 0
+            },
             "OnConnected": null,
             "OnDisconnected": null
           },
-          "Id": "7f219cbe-8e3e-4f8c-9b99-49a4fcf5b353"
+          "Id": "79ed836d-9d7b-43a2-926f-504b9a6cd9ea"
+        }
+      },
+      {
+        "$type": "JsonSaveLoad+SerializableNode, GraphExt.Sample",
+        "PositionX": 1004.0,
+        "PositionY": 120.0,
+        "Node": {
+          "$type": "PrintNode, GraphExt.Sample",
+          "Input": {
+            "$type": "VisualPort, GraphExt.Sample",
+            "Id": {
+              "$type": "GraphExt.PortId, GraphExt.Core",
+              "NodeId": "7e44e4c0-5681-46bb-8ff1-44723bccb13e",
+              "PortIndex": 0
+            },
+            "OnConnected": null,
+            "OnDisconnected": null
+          },
+          "Id": "7e44e4c0-5681-46bb-8ff1-44723bccb13e"
         }
       }
     ]

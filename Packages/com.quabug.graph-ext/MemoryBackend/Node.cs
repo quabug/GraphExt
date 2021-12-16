@@ -5,6 +5,7 @@ using System.Reflection;
 using JetBrains.Annotations;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace GraphExt.Memory
 {
@@ -37,6 +38,11 @@ namespace GraphExt.Memory
         [NonSerialized]
         private readonly IReadOnlyList<INodeProperty> _properties;
         public IEnumerable<INodeProperty> Properties => _properties;
+
+        public IPortModule FindPort(in PortId port)
+        {
+            return port.NodeId == Id ? Ports[port.PortIndex] : null;
+        }
 
         public IMemoryNode Inner { get; }
 
