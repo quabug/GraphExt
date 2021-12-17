@@ -10,10 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f5ba7f039e774f7b9f34a9386ac259ed, type: 3}
-  m_Name: 
+  m_Name: GraphConfig
   m_EditorClassIdentifier: 
   WindowName: Graph Window
-  Backend: 
+  Backend: GraphExt.Memory.Graph, GraphExt.Memory, Version=0.0.0.0, Culture=neutral,
+    PublicKeyToken=null
   Menu:
   - id: 0
   - id: 1
@@ -31,7 +32,6 @@ MonoBehaviour:
     - id: 11
     - id: 12
     - id: 13
-    - id: 14
   references:
     version: 1
     00000000:
@@ -43,7 +43,7 @@ MonoBehaviour:
     00000003:
       type: {class: MemoryNodeMenuEntry, ns: GraphExt.Memory, asm: GraphExt.Memory}
     00000004:
-      type: {class: PortProperty/Factory, ns: GraphExt.Memory, asm: GraphExt.Memory}
+      type: {class: PortContainerProperty/Factory, ns: GraphExt.Memory, asm: GraphExt.Memory}
     00000005:
       type: {class: IntPropertyFactory, ns: GraphExt, asm: GraphExt.Properties}
     00000006:
@@ -57,10 +57,8 @@ MonoBehaviour:
     0000000A:
       type: {class: LabelProperty/Factory, ns: GraphExt, asm: GraphExt.Properties}
     0000000B:
-      type: {class: LabelValueProperty/Factory, ns: GraphExt, asm: GraphExt.Properties}
+      type: {class: LabelValuePortProperty/Factory, ns: GraphExt, asm: GraphExt.Properties}
     0000000C:
       type: {class: SerializedProperty/Factory, ns: GraphExt, asm: GraphExt.Properties}
     0000000D:
       type: {class: TitleProperty/Factory, ns: GraphExt, asm: GraphExt.Properties}
-    0000000E:
-      type: {class: INodePropertyViewFactory/Exception, ns: GraphExt, asm: GraphExt.Core}

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,7 +16,8 @@ namespace GraphExt
         [NotNull] public GraphConfig Config { get; }
         [NotNull] public IGraphModule Module { get; set; }
 
-        private readonly BiDictionary<Guid, Node> _nodes = new BiDictionary<Guid, Node>();
+        private readonly BiDictionary<NodeId, Node> _nodes = new BiDictionary<NodeId, Node>();
+        private readonly BiDictionary<PortId, Port> _ports = new BiDictionary<PortId, Port>();
         private readonly BiDictionary<EdgeId, Edge> _edges = new BiDictionary<EdgeId, Edge>();
 
         public GraphView([NotNull] GraphConfig config)
@@ -43,14 +43,11 @@ namespace GraphExt
         public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
         {
             var compatiblePorts = new List<Port>();
-            if (startPort is PortView startPortView)
+            ports.ForEach(endPort =>
             {
-                ports.ForEach(endPort =>
-                {
-                    if (endPort is PortView endPortView && Module.IsCompatible(startPortView.Module, endPortView.Module))
-                        compatiblePorts.Add(endPort);
-                });
-            }
+                if (Module.IsCompatible(output: _ports.GetKey(startPort), input: _ports.GetKey(endPort)))
+                    compatiblePorts.Add(endPort);
+            });
             return compatiblePorts;
         }
 
@@ -72,9 +69,8 @@ namespace GraphExt
             {
                 foreach (var edge in @event.elementsToRemove.OfType<Edge>()) OnEdgeDeleted(edge);
                 foreach (var nodeId in @event.elementsToRemove.OfType<Node>()
-                    .Where(_nodes.ContainsValue)
-                    .Select(_nodes.GetKey)
-                ) Module.DeleteNode(nodeId);
+                    .Where(node => _nodes.ContainsValue(node))
+                    .Select(node => _nodes.GetKey(node))) Module.DeleteNode(nodeId);
             }
 
             if (@event.edgesToCreate != null)
@@ -97,20 +93,18 @@ namespace GraphExt
         void OnEdgeCreated(Edge edge, ref GraphViewChange @event)
         {
             edge.showInMiniMap = true;
-            if (edge.input is PortView inputPort && edge.output is PortView outputPort)
-            {
-                _edges.Add(new EdgeId(outputPort.Id, inputPort.Id), edge);
-                Module.Connect(inputPort.Module, outputPort.Module);
-            }
+            var inputId = _ports.GetKey(edge.input);
+            var outputId = _ports.GetKey(edge.output);
+            _edges.Add(new EdgeId(inputId, outputId), edge);
+            Module.Connect(input: inputId, output: outputId);
         }
 
         void OnEdgeDeleted(Edge edge)
         {
-            if (edge.input is PortView inputPort && edge.output is PortView outputPort)
-            {
-                _edges.Remove(new EdgeId(outputPort.Id, inputPort.Id));
-                Module.Disconnect(inputPort.Module, outputPort.Module);
-            }
+            var inputId = _ports.GetKey(edge.input);
+            var outputId = _ports.GetKey(edge.output);
+            _edges.Remove(new EdgeId(inputId, outputId));
+            Module.Disconnect(input: inputId, output: outputId);
         }
 
         public void Tick()
@@ -145,7 +139,8 @@ namespace GraphExt
 
         void RefreshNodes()
         {
-            var currentNodes = new HashSet<Guid>(_nodes.Keys);
+            var currentNodes = new HashSet<NodeId>(_nodes.Keys);
+
             foreach (var node in Module.Nodes)
             {
                 if (currentNodes.Contains(node.Id)) currentNodes.Remove(node.Id);
@@ -167,7 +162,7 @@ namespace GraphExt
                 _nodes.Add(node.Id, nodeView);
             }
 
-            void RemoveNode(Guid nodeId)
+            void RemoveNode(in NodeId nodeId)
             {
                 RemoveElement(_nodes[nodeId]);
                 _nodes.Remove(nodeId);

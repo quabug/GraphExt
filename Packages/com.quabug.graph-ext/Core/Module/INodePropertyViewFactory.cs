@@ -8,7 +8,7 @@ namespace GraphExt
 {
     public interface INodePropertyViewFactory
     {
-        [CanBeNull] VisualElement Create([NotNull] INodeProperty property, [NotNull] INodePropertyViewFactory factory);
+        [CanBeNull] VisualElement Create(INodeProperty property, INodePropertyViewFactory factory);
 
         public sealed class Null : INodePropertyViewFactory
         {
@@ -27,6 +27,16 @@ namespace GraphExt
         }
     }
 
+    public abstract class NodePropertyViewFactory<T> : INodePropertyViewFactory where T : INodeProperty
+    {
+        public VisualElement Create(INodeProperty property, INodePropertyViewFactory factory)
+        {
+            return property is T p ? Create(p, factory) : null;
+        }
+
+        protected abstract VisualElement Create(T property, INodePropertyViewFactory factory);
+    }
+
     [Serializable]
     public class GroupNodePropertyViewFactory : INodePropertyViewFactory
     {
@@ -35,7 +45,7 @@ namespace GraphExt
 
         public VisualElement Create(INodeProperty property, INodePropertyViewFactory factory)
         {
-            return Factories.Append(factory).Select(f => f.Create(property, this)).FirstOrDefault(element => element != null);
+            return property == null ? null : Factories.Select(f => f.Create(property, this)).FirstOrDefault(element => element != null);
         }
     }
 }

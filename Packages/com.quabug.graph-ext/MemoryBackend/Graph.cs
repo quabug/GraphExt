@@ -4,28 +4,34 @@ using System.Collections.Generic;
 namespace GraphExt.Memory
 {
     [Serializable]
-    public class Graph : GraphModule<Node, Port>
+    public class Graph : GraphModule<Node, PortData>
     {
         public IReadOnlyCollection<Node> NodeList => NodeMap.Values;
 
         public Graph() {}
         public Graph(IEnumerable<Node> nodes) : base(nodes) {}
 
-        public override bool IsCompatible(Port input, Port output)
+        public override bool IsCompatible(PortData input, PortData output)
         {
-            return input.Inner.IsCompatible(this, output.Inner) && output.Inner.IsCompatible(this, input.Inner);
+            return input.Direction != output.Direction &&
+                   input.PortType == output.PortType &&
+                   GetInnerNode(input).IsPortCompatible(this, output.Id, input.Id) &&
+                   GetInnerNode(output).IsPortCompatible(this, output.Id, input.Id)
+            ;
         }
 
-        public override void OnConnected(Port input, Port output)
+        private IMemoryNode GetInnerNode(PortData port) => NodeMap[port.NodeId].Inner;
+
+        public override void OnConnected(PortData input, PortData output)
         {
-            input.Inner.OnConnected?.Invoke(this, output.Inner);
-            output.Inner.OnConnected?.Invoke(this, input.Inner);
+            GetInnerNode(input).OnConnected(this, output.Id, input.Id);
+            GetInnerNode(output).OnConnected(this, output.Id, input.Id);
         }
 
-        public override void OnDisconnected(Port input, Port output)
+        public override void OnDisconnected(PortData input, PortData output)
         {
-            input.Inner.OnDisconnected?.Invoke(this, output.Inner);
-            output.Inner.OnDisconnected?.Invoke(this, input.Inner);
+            GetInnerNode(input).OnDisconnected(this, output.Id, input.Id);
+            GetInnerNode(output).OnDisconnected(this, output.Id, input.Id);
         }
 
         public Node CreateNode(IMemoryNode innerNode)

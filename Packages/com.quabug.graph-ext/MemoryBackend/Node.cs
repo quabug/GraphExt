@@ -11,7 +11,18 @@ namespace GraphExt.Memory
 {
     public interface IMemoryNode
     {
-        System.Guid Id { get; }
+        NodeId Id { get; }
+        bool IsPortCompatible(Graph graph, in PortId start, in PortId end);
+        void OnConnected(Graph graph, in PortId start, in PortId end);
+        void OnDisconnected(Graph graph, in PortId start, in PortId end);
+    }
+
+    public abstract class MemoryNode : IMemoryNode
+    {
+        public NodeId Id { get; } = Guid.NewGuid();
+        public virtual bool IsPortCompatible(Graph graph, in PortId start, in PortId end) => true;
+        public virtual void OnConnected(Graph graph, in PortId start, in PortId end) {}
+        public virtual void OnDisconnected(Graph graph, in PortId start, in PortId end) {}
     }
 
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
@@ -26,38 +37,56 @@ namespace GraphExt.Memory
     {
         public bool ReadOnly = false;
         public bool HideLabel = false;
+        public bool HideValue = false;
+        public string InputPort = null;
+        public string OutputPort = null;
     }
 
     public class Node : INodeModule
     {
         public string UiFile => null; // use default node ui
-        public Guid Id => Inner.Id;
+        public NodeId Id => Inner.Id;
         public Vector2 Position { get; set; }
 
-        public IReadOnlyList<INodeProperty> Properties { get; }
+        private readonly Lazy<IReadOnlyList<INodeProperty>> _properties;
+        public IReadOnlyList<INodeProperty> Properties => _properties.Value;
 
         public IMemoryNode Inner { get; }
-
-        public List<Port> Ports = new List<Port>();
 
         public Node([NotNull] IMemoryNode inner)
         {
             Inner = inner;
-            Properties = CreateProperties().ToArray();
+            _properties = new Lazy<IReadOnlyList<INodeProperty>>(() => CreateProperties().ToArray());
         }
 
         IEnumerable<INodeProperty> CreateProperties()
         {
-            Ports.Clear();
-
             var innerType = Inner.GetType();
-            var members = innerType.GetMembers(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            var members = innerType.GetMembers(BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            var nodePropertyPorts = new HashSet<string>();
+            foreach (var mi in members)
+            {
+                var nodePropertyAttribute = mi.GetCustomAttribute<NodePropertyAttribute>();
+                AddPropertyPort(nodePropertyAttribute?.InputPort, mi);
+                AddPropertyPort(nodePropertyAttribute?.OutputPort, mi);
+            }
+
             var titleProperty = CreateTitleProperty();
             if (titleProperty != null) yield return titleProperty;
             foreach (var mi in members)
             {
                 var property = TryCreateNodeProperty(mi) ?? TryCreateNodePort(mi);
                 if (property != null) yield return property;
+            }
+
+            void AddPropertyPort(string portName, MemberInfo mi)
+            {
+                if (portName == null) return;
+                if (nodePropertyPorts.Contains(portName))
+                    throw new Exception($"port {portName} of {innerType.Name}.{mi.Name} have already been used in another property");
+                if (innerType.GetField(portName, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic) == null)
+                    throw new Exception($"invalid port {portName} of {innerType.Name}.{mi.Name}");
+                nodePropertyPorts.Add(portName);
             }
 
             TitleProperty CreateTitleProperty()
@@ -91,11 +120,10 @@ namespace GraphExt.Memory
                 {
                     propertyType = mi switch
                     {
-                        FieldInfo fi when attribute.ReadOnly =>
-                            typeof(ReadOnlyFieldInfoProperty<>).MakeGenericType(fi.FieldType),
+                        FieldInfo fi when attribute.ReadOnly => typeof(ReadOnlyFieldInfoProperty<>).MakeGenericType(fi.FieldType),
+                        FieldInfo { IsInitOnly: true } fi => typeof(ReadOnlyFieldInfoProperty<>).MakeGenericType(fi.FieldType),
                         FieldInfo fi => typeof(FieldInfoProperty<>).MakeGenericType(fi.FieldType),
-                        PropertyInfo pi when attribute.ReadOnly || !pi.CanWrite =>
-                            typeof(ReadOnlyPropertyInfoProperty<>).MakeGenericType(pi.PropertyType),
+                        PropertyInfo pi when attribute.ReadOnly || !pi.CanWrite => typeof(ReadOnlyPropertyInfoProperty<>).MakeGenericType(pi.PropertyType),
                         PropertyInfo pi => typeof(PropertyInfoProperty<>).MakeGenericType(pi.PropertyType),
                         _ => null
                     };
@@ -103,38 +131,30 @@ namespace GraphExt.Memory
 
                 if (propertyType == null) return null;
 
-                var valueProperty = (INodeProperty) Activator.CreateInstance(propertyType, Inner, mi);
-                var labelProperty = new LabelProperty(mi.Name);
-                return new LabelValueProperty(labelProperty, valueProperty);
+                return new LabelValuePortProperty(
+                    labelProperty: attribute.HideLabel ? null : new LabelProperty(mi.Name),
+                    valueProperty: attribute.HideValue ? null : (INodeProperty) Activator.CreateInstance(propertyType, Inner, mi),
+                    leftPort: attribute.InputPort == null ? null : new PortContainerProperty(new PortId(Id, attribute.InputPort)),
+                    rightPort: attribute.OutputPort == null ? null : new PortContainerProperty(new PortId(Id, attribute.OutputPort))
+                );
             }
 
             INodeProperty TryCreateNodePort(MemberInfo mi)
             {
                 var attribute = mi.GetCustomAttribute<NodePortAttribute>();
                 if (attribute == null) return null;
+                Assert.IsTrue(mi is FieldInfo { IsStatic: true }, $"port must be a static field: {innerType.Name}.{mi.Name}");
+                if (attribute.Hide) return null;
+                var portId = mi.Name;
+                if (nodePropertyPorts.Contains(portId)) return null;
 
-                var portValue = mi.GetValue<IMemoryPort>(Inner);
-                if (portValue == null) return null;
-
-                var capacity = attribute.AllowMultipleConnections ? UnityEditor.Experimental.GraphView.Port.Capacity.Multi : UnityEditor.Experimental.GraphView.Port.Capacity.Single;
-                PortProperty inputPort = null;
-                PortProperty outputPort = null;
-                if (attribute.Direction.HasFlag(NodePortDirection.Input))
-                    inputPort = CreatePort(Direction.Input);
-                if (attribute.Direction.HasFlag(NodePortDirection.Output))
-                    outputPort = CreatePort(Direction.Output);
-                return new LabelPortProperty(
-                    labelProperty: new LabelProperty(mi.Name),
-                    inputPortProperty: inputPort,
-                    outputPortProperty: outputPort
+                var port = new PortContainerProperty(new PortId(Id, portId));
+                return new LabelValuePortProperty(
+                    labelProperty: attribute.HideLabel ? null : new LabelProperty(attribute.Name ?? portId),
+                    valueProperty: null,
+                    leftPort: attribute.Direction == Direction.Input ? port : null,
+                    rightPort: attribute.Direction == Direction.Output ? port : null
                 );
-
-                PortProperty CreatePort(Direction direction)
-                {
-                    var port = new Port(Id, portValue, attribute.PortType, direction, capacity);
-                    Ports.Add(port);
-                    return new PortProperty(port);
-                }
             }
         }
     }

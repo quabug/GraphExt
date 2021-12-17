@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
@@ -11,19 +10,19 @@ namespace GraphExt
         [NotNull] IEnumerable<INodeModule> Nodes { get; }
         [NotNull] IEnumerable<EdgeId> Edges { get; }
 
-        void DeleteNode(Guid nodeId);
-        void SetNodePosition(Guid nodeId, Vector2 position);
+        void DeleteNode(NodeId nodeId);
+        void SetNodePosition(NodeId nodeId, Vector2 position);
 
-        bool IsCompatible([NotNull] IPortModule input, [NotNull] IPortModule output);
-        void Connect([NotNull] IPortModule input, [NotNull] IPortModule output);
-        void Disconnect([NotNull] IPortModule input, [NotNull] IPortModule output);
+        bool IsCompatible(PortId input, PortId output);
+        void Connect(PortId input, PortId output);
+        void Disconnect(PortId input, PortId output);
     }
 
     public abstract class GraphModule<TNode, TPort> : IGraphModule where TNode : INodeModule where TPort : IPortModule
     {
-        protected readonly Dictionary<Guid, TNode> NodeMap;
-        protected readonly Dictionary<Guid, TPort> PortMap = new Dictionary<Guid, TPort>();
-        protected readonly Dictionary<TPort, ISet<TPort>> Connections = new Dictionary<TPort, ISet<TPort>>();
+        protected readonly Dictionary<NodeId, TNode> NodeMap;
+        protected readonly Dictionary<PortId, TPort> PortMap = new Dictionary<PortId, TPort>();
+        protected readonly Dictionary<PortId, ISet<PortId>> Connections = new Dictionary<PortId, ISet<PortId>>();
 
         public IEnumerable<INodeModule> Nodes => NodeMap.Values.Cast<INodeModule>();
 
@@ -32,7 +31,7 @@ namespace GraphExt
 
         public GraphModule()
         {
-            NodeMap = new Dictionary<Guid, TNode>();
+            NodeMap = new Dictionary<NodeId, TNode>();
         }
 
         public GraphModule(IEnumerable<TNode> nodeList)
@@ -40,7 +39,10 @@ namespace GraphExt
             NodeMap = nodeList.ToDictionary(n => n.Id, n => n);
         }
 
-        public void DeleteNode(Guid nodeId)
+        public TPort this[PortId portId] => PortMap[portId];
+        public TNode this[NodeId nodeId] => NodeMap[nodeId];
+
+        public void DeleteNode(NodeId nodeId)
         {
             if (NodeMap.TryGetValue(nodeId, out var node))
             {
@@ -49,68 +51,64 @@ namespace GraphExt
             }
         }
 
-        public void SetNodePosition(Guid nodeId, Vector2 position)
+        public void SetNodePosition(NodeId nodeId, Vector2 position)
         {
             if (NodeMap.TryGetValue(nodeId, out var node)) node.Position = position;
         }
 
-        public bool IsCompatible(IPortModule input, IPortModule output)
+        public bool IsCompatible(PortId inputPortId, PortId outputPortId)
         {
-            return input.Direction != output.Direction &&
-                   input.PortType == output.PortType &&
-                   input is TPort @in && output is TPort @out &&
-                   IsCompatible(@in, @out)
-            ;
+            var input = PortMap[inputPortId];
+            var output = PortMap[outputPortId];
+            return IsCompatible(input, output);
         }
 
-        public void Connect(IPortModule input, IPortModule output)
+        public void Connect(PortId input, PortId output)
         {
-            if (input is TPort @in && output is TPort @out)
-            {
-                AddConnection(@in, @out);
-                AddConnection(@out, @in);
-                _edgeCache.Add(new EdgeId(first: output.Id, second: input.Id));
-                OnConnected(@in, @out);
-            }
+            AddConnection(input, output);
+            AddConnection(output, input);
+            _edgeCache.Add(new EdgeId(input, output));
+            OnConnected(PortMap[input], PortMap[output]);
         }
 
-        public void Disconnect(IPortModule input, IPortModule output)
+        public void Disconnect(PortId input, PortId output)
         {
-            if (input is TPort @in && output is TPort @out)
-            {
-                RemoveConnection(@in, @out);
-                RemoveConnection(@out, @in);
-                _edgeCache.Remove(new EdgeId(output.Id, input.Id));
-                OnDisconnected(@in, @out);
-            }
+            RemoveConnection(input, output);
+            RemoveConnection(output, input);
+            _edgeCache.Remove(new EdgeId(input, output));
+            OnDisconnected(PortMap[input], PortMap[output]);
         }
 
-        private void AddConnection(TPort key, TPort value)
+        private void AddConnection(PortId key, PortId value)
         {
             if (!Connections.TryGetValue(key, out var connectedSet))
             {
-                connectedSet = new HashSet<TPort>();
+                connectedSet = new HashSet<PortId>();
                 Connections.Add(key, connectedSet);
             }
 
             if (!connectedSet.Contains(value)) connectedSet.Add(value);
         }
 
-        private void RemoveConnection(TPort key, TPort value)
+        private void RemoveConnection(PortId key, PortId value)
         {
             if (Connections.TryGetValue(key, out var connectedSet))
                 connectedSet.Remove(value);
         }
 
-        public IEnumerable<TPort> FindConnectedPorts(Guid portId)
+        public TNode FindNodeByPort(PortId portId)
         {
-            var port = PortMap[portId];
-            return Connections.TryGetValue(port, out var connected) ? connected : new HashSet<TPort>();
+            return NodeMap[portId.NodeId];
         }
 
-        public IEnumerable<TNode> FindConnectedNode(Guid portId)
+        [NotNull] public IEnumerable<PortId> FindConnectedPorts(PortId portId)
         {
-            return FindConnectedPorts(portId).Select(port => NodeMap[port.NodeId]);
+            return Connections.TryGetValue(portId, out var connected) ? connected : Enumerable.Empty<PortId>();
+        }
+
+        [NotNull] public IEnumerable<NodeId> FindConnectedNodes(PortId portId)
+        {
+            return FindConnectedPorts(portId).Select(port => port.NodeId);
         }
 
         public virtual bool IsCompatible(TPort input, TPort output) => true;

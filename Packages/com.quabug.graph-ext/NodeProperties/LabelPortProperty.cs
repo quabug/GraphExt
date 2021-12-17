@@ -1,3 +1,4 @@
+using System.IO;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -27,7 +28,7 @@ namespace GraphExt
                     container.style.flexDirection = new StyleEnum<FlexDirection>(FlexDirection.Row);
                     container.style.justifyContent = new StyleEnum<Justify>(Justify.SpaceBetween);
 
-                    var input = CreatePort(labelPort.InputPortProperty);
+                    var input = CreatePortContainer(labelPort.InputPortProperty);
                     input.name = "input-port";
                     container.Add(input);
 
@@ -36,7 +37,7 @@ namespace GraphExt
                     label.style.unityTextAlign = new StyleEnum<TextAnchor>(TextAnchor.MiddleCenter);
                     container.Add(label);
 
-                    var output = CreatePort(labelPort.OutputPortProperty);
+                    var output = CreatePortContainer(labelPort.OutputPortProperty);
                     output.name = "output-port";
                     container.Add(output);
 
@@ -44,11 +45,9 @@ namespace GraphExt
                 }
                 return null;
 
-                VisualElement CreatePort(INodeProperty portProperty)
+                VisualElement CreatePortContainer(INodeProperty portProperty)
                 {
-                    VisualElement port;
-                    if (portProperty == null) port = new VisualElement();
-                    else port = factory.Create(portProperty, factory) ?? new VisualElement();
+                    var port = factory.Create(portProperty, factory) ?? new VisualElement();
                     port.style.width = 40;
                     return port;
                 }

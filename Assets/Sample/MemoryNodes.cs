@@ -1,18 +1,21 @@
 using System;
 using GraphExt.Memory;
+using UnityEditor.Experimental.GraphView;
 
 [Serializable]
 [NodeTitle]
-public class MemoryFoo : IMemoryNode
+public class MemoryFoo : MemoryNode
 {
-    public Guid Id { get; } = Guid.NewGuid();
+    [NodeProperty(OutputPort = nameof(_intOut))] public int Int = 123;
+    [NodePort] private static int _intOut;
 
-    [NodeProperty] public int Int = 123;
-    [NodeProperty(ReadOnly = true)] public float Float = 1.23f;
+    [NodeProperty(ReadOnly = true, InputPort = nameof(_floatIn), OutputPort = nameof(_floatOut))] public float Float = 1.23f;
+    [NodePort] private static float _floatIn;
+    [NodePort] private static float _floatOut;
+
     [NodeProperty] public double Double { get; set; } = 3.21;
-    [NodeProperty] public long Long { get; } = 321;
 
-    [NodePort(typeof(int))] public MemoryPort Port = new MemoryPort();
-    [NodePort(typeof(float), Direction = NodePortDirection.Input)] public MemoryPort InputPort = new MemoryPort();
-    [NodePort(typeof(float), Direction = NodePortDirection.Output)] public MemoryPort OutputPort = new MemoryPort();
+    [NodePort(Direction = Direction.Input, Name = "String")] private static string _StringIn;
+
+    [NodeProperty] public long Long { get; } = 321;
 }

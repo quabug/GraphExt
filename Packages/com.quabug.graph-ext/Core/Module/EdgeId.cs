@@ -4,10 +4,10 @@ namespace GraphExt
 {
     public readonly struct EdgeId : IEquatable<EdgeId>
     {
-        public readonly Guid First;
-        public readonly Guid Second;
+        public readonly PortId First;
+        public readonly PortId Second;
 
-        public EdgeId(Guid first, Guid second)
+        public EdgeId(PortId first, PortId second)
         {
             First = first;
             Second = second;

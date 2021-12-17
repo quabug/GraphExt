@@ -5,8 +5,8 @@ namespace GraphExt
 {
     public interface IPortModule
     {
-        Guid Id { get; }
-        Guid NodeId { get; }
+        PortId Id { get; }
+        NodeId NodeId { get; }
         Orientation Orientation { get; }
         Direction Direction { get; }
         Port.Capacity Capacity { get; }
