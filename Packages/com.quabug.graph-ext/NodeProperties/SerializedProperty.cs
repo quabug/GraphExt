@@ -7,11 +7,11 @@ namespace GraphExt
     {
         public UnityEditor.SerializedProperty Value;
 
-        public class Factory : INodePropertyViewFactory
+        public class Factory : NodePropertyViewFactory<SerializedProperty>
         {
-            public VisualElement Create(INodeProperty property, INodePropertyViewFactory _)
+            protected override VisualElement Create(SerializedProperty property, INodePropertyViewFactory _)
             {
-                return property is SerializedProperty p ? new PropertyField(p.Value) : null;
+                return new PropertyField(property.Value);
             }
         }
     }

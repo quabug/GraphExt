@@ -8,22 +8,18 @@ namespace GraphExt
         public string Value;
         public TitleProperty(string value) => Value = value;
 
-        public class Factory : INodePropertyViewFactory
+        public class Factory : NodePropertyViewFactory<TitleProperty>
         {
-            public VisualElement Create(INodeProperty property, INodePropertyViewFactory _)
+            protected override VisualElement Create(TitleProperty property, INodePropertyViewFactory _)
             {
-                if (property is TitleProperty title)
-                {
-                    var titleLabel = new Label(title.Value);
-                    titleLabel.name = "title-property";
-                    titleLabel.style.height = 40;
-                    titleLabel.style.flexGrow = 1;
-                    titleLabel.style.unityTextAlign = new StyleEnum<TextAnchor>(TextAnchor.MiddleCenter);
-                    titleLabel.style.fontSize = new StyleLength(14);
-                    titleLabel.style.unityFontStyleAndWeight = new StyleEnum<FontStyle>(FontStyle.Bold);
-                    return titleLabel;
-                }
-                return null;
+                var titleLabel = new Label(property.Value);
+                titleLabel.name = "title-property";
+                titleLabel.style.height = 40;
+                titleLabel.style.flexGrow = 1;
+                titleLabel.style.unityTextAlign = new StyleEnum<TextAnchor>(TextAnchor.MiddleCenter);
+                titleLabel.style.fontSize = new StyleLength(14);
+                titleLabel.style.unityFontStyleAndWeight = new StyleEnum<FontStyle>(FontStyle.Bold);
+                return titleLabel;
             }
         }
     }

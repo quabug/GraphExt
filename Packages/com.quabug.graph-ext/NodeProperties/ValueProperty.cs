@@ -91,16 +91,12 @@ namespace GraphExt
         }
     }
 
-    public class ValuePropertyFactory<TValue, TField> : INodePropertyViewFactory
+    public class ValuePropertyFactory<TValue, TField> : NodePropertyViewFactory<IValueProperty<TValue>>
         where TField : TextValueField<TValue>, new()
     {
-        public VisualElement Create(INodeProperty property, INodePropertyViewFactory _)
+        protected override VisualElement Create(IValueProperty<TValue> property, INodePropertyViewFactory _)
         {
-            if (property is IReadOnlyValueProperty<TValue> @readonly)
-                return new ReadOnlyValuePropertyView<TValue, TField>(@readonly);
-            if (property is IValueProperty<TValue> readwrite)
-                return new ValuePropertyView<TValue, TField>(readwrite);
-            return null;
+            return new ValuePropertyView<TValue, TField>(property);
         }
     }
 
@@ -108,4 +104,18 @@ namespace GraphExt
     public class LongPropertyFactory : ValuePropertyFactory<long, LongField> {}
     public class FloatPropertyFactory : ValuePropertyFactory<float, FloatField> {}
     public class DoublePropertyFactory : ValuePropertyFactory<double, DoubleField> {}
+
+    public class ReadOnlyValuePropertyFactory<TValue, TField> : NodePropertyViewFactory<IReadOnlyValueProperty<TValue>>
+        where TField : TextValueField<TValue>, new()
+    {
+        protected override VisualElement Create(IReadOnlyValueProperty<TValue> property, INodePropertyViewFactory _)
+        {
+            return new ReadOnlyValuePropertyView<TValue, TField>(property);
+        }
+    }
+
+    public class IntReadOnlyPropertyFactory : ValuePropertyFactory<int, IntegerField> {}
+    public class LongReadOnlyPropertyFactory : ValuePropertyFactory<long, LongField> {}
+    public class FloatReadOnlyPropertyFactory : ValuePropertyFactory<float, FloatField> {}
+    public class DoubleReadOnlyPropertyFactory : ValuePropertyFactory<double, DoubleField> {}
 }

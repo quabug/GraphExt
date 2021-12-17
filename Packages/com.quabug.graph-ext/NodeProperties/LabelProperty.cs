@@ -7,11 +7,11 @@ namespace GraphExt
         public string Value;
         public LabelProperty(string value) => Value = value;
 
-        public class Factory : INodePropertyViewFactory
+        public class Factory : NodePropertyViewFactory<LabelProperty>
         {
-            public VisualElement Create(INodeProperty property, INodePropertyViewFactory _)
+            protected override VisualElement Create(LabelProperty property, INodePropertyViewFactory _)
             {
-                return property is LabelProperty label ? new Label(label.Value) : null;
+                return new Label(property.Value);
             }
         }
     }

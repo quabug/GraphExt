@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using JetBrains.Annotations;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -34,7 +35,27 @@ namespace GraphExt
             return property is T p ? Create(p, factory) : null;
         }
 
-        protected abstract VisualElement Create(T property, INodePropertyViewFactory factory);
+        protected abstract VisualElement Create([NotNull] T property, INodePropertyViewFactory factory);
+    }
+
+    public class DefaultPropertyViewFactory : INodePropertyViewFactory
+    {
+        private static GroupNodePropertyViewFactory _groupFactory;
+
+        static DefaultPropertyViewFactory()
+        {
+            var factories = TypeCache.GetTypesDerivedFrom(typeof(NodePropertyViewFactory<>))
+                .Where(type => !type.IsAbstract && !type.IsGenericType)
+                .Select(type => (INodePropertyViewFactory)Activator.CreateInstance(type))
+                .ToArray()
+            ;
+            _groupFactory = new GroupNodePropertyViewFactory { Factories = factories };
+        }
+
+        public VisualElement Create(INodeProperty property, INodePropertyViewFactory factory)
+        {
+            return _groupFactory.Create(property, factory);
+        }
     }
 
     [Serializable]

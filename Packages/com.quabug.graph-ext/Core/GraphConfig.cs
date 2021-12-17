@@ -26,14 +26,7 @@ namespace GraphExt
 
             NodePropertyViewFactory = new GroupNodePropertyViewFactory
             {
-                Factories = UnityEditor.TypeCache.GetTypesDerivedFrom<INodePropertyViewFactory>()
-                    .Where(type => !type.IsAbstract && !type.IsGenericType && type.GetConstructor(Array.Empty<Type>()) != null)
-                    .Where(type => type != typeof(GroupNodePropertyViewFactory) &&
-                                   type != typeof(INodePropertyViewFactory.Null) &&
-                                   type != typeof(INodePropertyViewFactory.Exception)
-                                   )
-                    .Select(type => (INodePropertyViewFactory) Activator.CreateInstance(type))
-                    .ToArray()
+                Factories = new INodePropertyViewFactory[]{ new DefaultPropertyViewFactory() }
             };
         }
 #endif
