@@ -130,6 +130,8 @@ namespace GraphExt
                 var container = FindPortContainer(port.Id);
                 if (container == null) return; // log?
                 var portView = Port.Create<Edge>(port.Orientation, port.Direction, port.Capacity, port.PortType);
+                portView.style.paddingLeft = 0;
+                portView.style.paddingRight = 0;
                 container.AddPort(portView);
                 _ports.Add(port.Id, portView);
             }

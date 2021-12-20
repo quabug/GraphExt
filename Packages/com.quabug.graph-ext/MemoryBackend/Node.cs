@@ -101,7 +101,10 @@ namespace GraphExt.Memory
                     orientation = PortOrientation.Horizontal;
                     capacity = capacity == PortCapacity.Invalid ? PortCapacity.Single : capacity;
                 }
-                Assert.IsTrue(direction != PortDirection.Invalid && orientation != PortOrientation.Invalid && capacity != PortCapacity.Invalid && portType != null);
+                Assert.AreNotEqual(direction, PortDirection.Invalid);
+                Assert.AreNotEqual(orientation, PortOrientation.Invalid);
+                Assert.AreNotEqual(capacity, PortCapacity.Invalid);
+                Assert.IsNotNull(portType);
                 yield return new PortData(portId, orientation.Convert(), direction.Convert(), capacity.Convert(), portType);
             }
 
