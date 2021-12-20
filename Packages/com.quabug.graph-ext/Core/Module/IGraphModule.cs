@@ -7,6 +7,7 @@ namespace GraphExt
 {
     public interface IGraphModule
     {
+        [NotNull] IEnumerable<IPortModule> Ports { get; }
         [NotNull] IEnumerable<INodeModule> Nodes { get; }
         [NotNull] IEnumerable<EdgeId> Edges { get; }
 
@@ -24,6 +25,7 @@ namespace GraphExt
         protected readonly Dictionary<PortId, TPort> PortMap = new Dictionary<PortId, TPort>();
         protected readonly Dictionary<PortId, ISet<PortId>> Connections = new Dictionary<PortId, ISet<PortId>>();
 
+        public IEnumerable<IPortModule> Ports => PortMap.Values.Cast<IPortModule>();
         public IEnumerable<INodeModule> Nodes => NodeMap.Values.Cast<INodeModule>();
 
         private readonly ISet<EdgeId> _edgeCache = new HashSet<EdgeId>();

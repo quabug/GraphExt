@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -53,10 +52,63 @@ namespace GraphExt.Memory
 
         public IMemoryNode Inner { get; }
 
+        public IReadOnlyList<PortData> Ports;
+
         public Node([NotNull] IMemoryNode inner)
         {
             Inner = inner;
+            Ports = CollectPorts(inner).ToArray();
             _properties = new Lazy<IReadOnlyList<INodeProperty>>(() => CreateProperties().ToArray());
+        }
+
+        IEnumerable<PortData> CollectPorts(IMemoryNode inner)
+        {
+            var propertyInputPorts = new HashSet<string>();
+            var propertyOutputPorts = new HashSet<string>();
+            foreach (var (input, output) in
+                     from mi in inner.GetType().GetMembers(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                     from propertyAttribute in mi.GetCustomAttributes<NodePropertyAttribute>()
+                     select (propertyAttribute.InputPort, propertyAttribute.OutputPort)
+                    )
+            {
+                AssertPropertyPort(input);
+                AssertPropertyPort(output);
+                if (!string.IsNullOrEmpty(input)) propertyInputPorts.Add(input);
+                if (!string.IsNullOrEmpty(output)) propertyOutputPorts.Add(output);
+            }
+
+            foreach (var (fi, portAttribute) in
+                     from fi in inner.GetType().GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+                     from portAttribute in fi.GetCustomAttributes<NodePortAttribute>()
+                     select (fi, portAttribute)
+                    )
+            {
+                var portId = new PortId(inner.Id, fi.Name);
+                var direction = portAttribute.Direction;
+                var orientation = portAttribute.Orientation;
+                var capacity = portAttribute.Capacity;
+                var portType = portAttribute.PortType ?? fi.FieldType;
+
+                if (propertyInputPorts.Contains(portId.Name))
+                {
+                    direction = PortDirection.Input;
+                    orientation = PortOrientation.Horizontal;
+                    capacity = capacity == PortCapacity.Invalid ? PortCapacity.Multi : capacity;
+                }
+                else if (propertyOutputPorts.Contains(portId.Name))
+                {
+                    direction = PortDirection.Output;
+                    orientation = PortOrientation.Horizontal;
+                    capacity = capacity == PortCapacity.Invalid ? PortCapacity.Single : capacity;
+                }
+                Assert.IsTrue(direction != PortDirection.Invalid && orientation != PortOrientation.Invalid && capacity != PortCapacity.Invalid && portType != null);
+                yield return new PortData(portId, orientation.Convert(), direction.Convert(), capacity.Convert(), portType);
+            }
+
+            void AssertPropertyPort(string portName)
+            {
+                Assert.IsFalse(propertyInputPorts.Contains(portName) || propertyOutputPorts.Contains(portName), $"port {portName} can only be assign to one property only.");
+            }
         }
 
         IEnumerable<INodeProperty> CreateProperties()
@@ -152,8 +204,8 @@ namespace GraphExt.Memory
                 return new LabelValuePortProperty(
                     labelProperty: attribute.HideLabel ? null : new LabelProperty(attribute.Name ?? portId),
                     valueProperty: null,
-                    leftPort: attribute.Direction == Direction.Input ? port : null,
-                    rightPort: attribute.Direction == Direction.Output ? port : null
+                    leftPort: attribute.Direction == PortDirection.Input ? port : null,
+                    rightPort: attribute.Direction == PortDirection.Output ? port : null
                 );
             }
         }

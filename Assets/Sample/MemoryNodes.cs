@@ -1,6 +1,5 @@
 using System;
 using GraphExt.Memory;
-using UnityEditor.Experimental.GraphView;
 
 [Serializable]
 [NodeTitle]
@@ -15,7 +14,7 @@ public class MemoryFoo : MemoryNode
 
     [NodeProperty] public double Double { get; set; } = 3.21;
 
-    [NodePort(Direction = Direction.Input, Name = "String")] private static string _StringIn;
+    [NodePort(Direction = PortDirection.Input, Name = "String")] private static string _StringIn;
 
     [NodeProperty] public long Long { get; } = 321;
 }

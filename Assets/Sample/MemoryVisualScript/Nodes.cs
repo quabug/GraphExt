@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using GraphExt;
 using GraphExt.Memory;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -70,10 +69,10 @@ public class AddNode : VisualNode
     [NodeProperty(InputPort = nameof(_inputPort), OutputPort = nameof(_outputPort), HideLabel = true, HideValue = true)]
     private const int _ = 0;
 
-    [NodePort(Capacity = Port.Capacity.Multi)]
+    [NodePort(Capacity = PortCapacity.Multi)]
     private static float _outputPort;
 
-    [NodePort(Capacity = Port.Capacity.Multi)]
+    [NodePort(Capacity = PortCapacity.Multi)]
     public static float _inputPort;
 
     public override float GetValue(Graph graph, string port)
@@ -86,7 +85,7 @@ public class AddNode : VisualNode
 [Serializable, NodeTitle]
 public class PrintNode : VisualNode
 {
-    [NodePort(Direction = Direction.Input)]
+    [NodePort(Direction = PortDirection.Input)]
     private static float _input;
 
     public override float GetValue(Graph graph, string port)

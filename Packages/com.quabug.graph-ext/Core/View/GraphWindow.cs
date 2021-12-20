@@ -43,17 +43,6 @@ namespace GraphExt
             WindowExtension?.OnInitialized(this, Config, graph);
         }
 
-        private void Reset()
-        {
-            // BehaviorTreeGraph graph = null;
-            // if (prefabStage != null)
-            // {
-            //     var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabStage.assetPath);
-            //     graph = new BehaviorTreeGraph(prefab, prefabStage);
-            // }
-            // rootVisualElement.Q<Graph>().Reset(graph);
-        }
-
         // TODO: optimize
         private void Update()
         {

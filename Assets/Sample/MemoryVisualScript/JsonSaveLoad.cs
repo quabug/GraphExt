@@ -7,7 +7,7 @@ using UnityEngine;
 
 public static class JsonSaveLoad
 {
-    private static JsonSerializerSettings _jsonSerializerSettings;
+    private static readonly JsonSerializerSettings _jsonSerializerSettings;
 
     static JsonSaveLoad()
     {

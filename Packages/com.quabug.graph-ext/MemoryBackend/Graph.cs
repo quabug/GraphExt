@@ -38,6 +38,7 @@ namespace GraphExt.Memory
         {
             var node = new Node(innerNode);
             NodeMap.Add(node.Id, node);
+            foreach (var port in node.Ports) PortMap.Add(port.Id, port);
             return node;
         }
     }

@@ -110,7 +110,42 @@ namespace GraphExt
         public void Tick()
         {
             RefreshNodes();
+            RefreshPorts();
             RefreshEdges();
+        }
+
+        void RefreshPorts()
+        {
+            var currentPorts = new HashSet<PortId>(_ports.Keys);
+
+            foreach (var port in Module.Ports)
+            {
+                if (currentPorts.Contains(port.Id)) currentPorts.Remove(port.Id);
+                else CreatePort(port);
+            }
+            foreach (var removed in currentPorts) RemovePort(removed);
+
+            void CreatePort(IPortModule port)
+            {
+                var container = FindPortContainer(port.Id);
+                if (container == null) return; // log?
+                var portView = Port.Create<Edge>(port.Orientation, port.Direction, port.Capacity, port.PortType);
+                container.AddPort(portView);
+                _ports.Add(port.Id, portView);
+            }
+
+            void RemovePort(in PortId portId)
+            {
+                var container = FindPortContainer(portId);
+                if (container == null) return; // log?
+                container.RemovePort();
+            }
+        }
+
+        PortContainer FindPortContainer(PortId portId)
+        {
+            var node = _nodes[portId.NodeId];
+            return node.Query<PortContainer>().Where(p => p.PortId == portId).First();
         }
 
         void RefreshEdges()
