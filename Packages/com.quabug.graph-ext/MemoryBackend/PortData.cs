@@ -49,27 +49,8 @@ namespace GraphExt.Memory
         public bool HideLabel = false;
         public Type PortType = null;
         public PortDirection Direction = PortDirection.Invalid;
-        public PortCapacity Capacity = PortCapacity.Single;
+        public PortCapacity Capacity = PortCapacity.Invalid;
         public PortOrientation Orientation = PortOrientation.Horizontal;
         public string Name = null;
-    }
-
-    public class PortData : IPortModule
-    {
-        public PortId Id { get; }
-        public NodeId NodeId => Id.NodeId;
-        public Orientation Orientation { get; }
-        public Direction Direction { get; }
-        public Port.Capacity Capacity { get; }
-        public Type PortType { get; }
-
-        public PortData(in PortId id, Orientation orientation, Direction direction, Port.Capacity capacity, Type portType)
-        {
-            Id = id;
-            Orientation = orientation;
-            Direction = direction;
-            Capacity = capacity;
-            PortType = portType;
-        }
     }
 }

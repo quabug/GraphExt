@@ -7,7 +7,7 @@ namespace GraphExt
 {
     public interface IGraphModule
     {
-        [NotNull] IEnumerable<IPortModule> Ports { get; }
+        [NotNull] IEnumerable<PortData> Ports { get; }
         [NotNull] IEnumerable<INodeModule> Nodes { get; }
         [NotNull] IEnumerable<EdgeId> Edges { get; }
 
@@ -19,13 +19,13 @@ namespace GraphExt
         void Disconnect(PortId input, PortId output);
     }
 
-    public abstract class GraphModule<TNode, TPort> : IGraphModule where TNode : INodeModule where TPort : IPortModule
+    public abstract class GraphModule<TNode> : IGraphModule where TNode : INodeModule
     {
         protected readonly Dictionary<NodeId, TNode> NodeMap;
-        protected readonly Dictionary<PortId, TPort> PortMap = new Dictionary<PortId, TPort>();
+        protected readonly Dictionary<PortId, PortData> PortMap = new Dictionary<PortId, PortData>();
         protected readonly Dictionary<PortId, ISet<PortId>> Connections = new Dictionary<PortId, ISet<PortId>>();
 
-        public IEnumerable<IPortModule> Ports => PortMap.Values.Cast<IPortModule>();
+        public IEnumerable<PortData> Ports => PortMap.Values;
         public IEnumerable<INodeModule> Nodes => NodeMap.Values.Cast<INodeModule>();
 
         private readonly ISet<EdgeId> _edgeCache = new HashSet<EdgeId>();
@@ -39,9 +39,10 @@ namespace GraphExt
         public GraphModule(IEnumerable<TNode> nodeList)
         {
             NodeMap = nodeList.ToDictionary(n => n.Id, n => n);
+            PortMap = NodeMap.SelectMany(keyValue => keyValue.Value.Ports).ToDictionary(port => port.Id, port => port);
         }
 
-        public TPort this[PortId portId] => PortMap[portId];
+        public PortData this[PortId portId] => PortMap[portId];
         public TNode this[NodeId nodeId] => NodeMap[nodeId];
 
         public void DeleteNode(NodeId nodeId)
@@ -113,8 +114,8 @@ namespace GraphExt
             return FindConnectedPorts(portId).Select(port => port.NodeId);
         }
 
-        public virtual bool IsCompatible(TPort input, TPort output) => true;
-        public virtual void OnConnected(TPort input, TPort output) {}
-        public virtual void OnDisconnected(TPort input, TPort output) {}
+        public virtual bool IsCompatible(PortData input, PortData output) => true;
+        public virtual void OnConnected(PortData input, PortData output) {}
+        public virtual void OnDisconnected(PortData input, PortData output) {}
     }
 }

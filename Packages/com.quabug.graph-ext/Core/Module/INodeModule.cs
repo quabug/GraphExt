@@ -10,5 +10,6 @@ namespace GraphExt
         NodeId Id { get; }
         Vector2 Position { get; set; }
         [NotNull] IReadOnlyList<INodeProperty> Properties { get; }
+        [NotNull] IReadOnlyList<PortData> Ports { get; }
     }
 }

@@ -49,10 +49,9 @@ namespace GraphExt.Memory
 
         private readonly Lazy<IReadOnlyList<INodeProperty>> _properties;
         public IReadOnlyList<INodeProperty> Properties => _properties.Value;
+        public IReadOnlyList<PortData> Ports { get; }
 
         public IMemoryNode Inner { get; }
-
-        public IReadOnlyList<PortData> Ports;
 
         public Node([NotNull] IMemoryNode inner)
         {
@@ -66,7 +65,7 @@ namespace GraphExt.Memory
             var propertyInputPorts = new HashSet<string>();
             var propertyOutputPorts = new HashSet<string>();
             foreach (var (input, output) in
-                     from mi in inner.GetType().GetMembers(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                     from mi in inner.GetType().GetMembers(BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                      from propertyAttribute in mi.GetCustomAttributes<NodePropertyAttribute>()
                      select (propertyAttribute.InputPort, propertyAttribute.OutputPort)
                     )
@@ -93,13 +92,13 @@ namespace GraphExt.Memory
                 {
                     direction = PortDirection.Input;
                     orientation = PortOrientation.Horizontal;
-                    capacity = capacity == PortCapacity.Invalid ? PortCapacity.Multi : capacity;
+                    capacity = capacity == PortCapacity.Invalid ? PortCapacity.Single : capacity;
                 }
                 else if (propertyOutputPorts.Contains(portId.Name))
                 {
                     direction = PortDirection.Output;
                     orientation = PortOrientation.Horizontal;
-                    capacity = capacity == PortCapacity.Invalid ? PortCapacity.Single : capacity;
+                    capacity = capacity == PortCapacity.Invalid ? PortCapacity.Multi : capacity;
                 }
                 Assert.AreNotEqual(direction, PortDirection.Invalid);
                 Assert.AreNotEqual(orientation, PortOrientation.Invalid);

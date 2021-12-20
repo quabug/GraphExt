@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using GraphExt;
 using GraphExt.Memory;
-using UnityEngine;
 using UnityEngine.Assertions;
 
 public interface IVisualNode : IMemoryNode
@@ -30,7 +29,6 @@ public abstract class VisualNode : MemoryNode, IVisualNode
     }
 }
 
-[Serializable]
 public class ValueNode : VisualNode
 {
     [NodeProperty(OutputPort = nameof(_outPort))] public float Value;
@@ -43,7 +41,6 @@ public class ValueNode : VisualNode
     }
 }
 
-[Serializable]
 public class MultipleValueNode : VisualNode
 {
     [NodeProperty(OutputPort = nameof(_outPort1))] public float Value1;
@@ -63,35 +60,17 @@ public class MultipleValueNode : VisualNode
     }
 }
 
-[Serializable, NodeTitle]
+[NodeTitle(ConstTitle = "add")]
 public class AddNode : VisualNode
 {
     [NodeProperty(InputPort = nameof(_inputPort), OutputPort = nameof(_outputPort), HideLabel = true, HideValue = true)]
     private const int _ = 0;
-
-    [NodePort(Capacity = PortCapacity.Multi)]
-    private static float _outputPort;
-
-    [NodePort(Capacity = PortCapacity.Multi)]
-    public static float _inputPort;
+    [NodePort] private static float _outputPort;
+    [NodePort(Capacity = PortCapacity.Multi)] public static float _inputPort;
 
     public override float GetValue(Graph graph, string port)
     {
         Assert.AreEqual(port, nameof(_outputPort));
         return GetConnectedValues(graph, nameof(_inputPort)).Sum();
-    }
-}
-
-[Serializable, NodeTitle]
-public class PrintNode : VisualNode
-{
-    [NodePort(Direction = PortDirection.Input)]
-    private static float _input;
-
-    public override float GetValue(Graph graph, string port)
-    {
-        var result = GetConnectedValues(graph, nameof(_input)).SingleOrDefault();
-        Debug.Log($"value = {result}");
-        return result;
     }
 }

@@ -14,7 +14,7 @@ public class MemoryFoo : MemoryNode
 
     [NodeProperty] public double Double { get; set; } = 3.21;
 
-    [NodePort(Direction = PortDirection.Input, Name = "String")] private static string _StringIn;
+    [NodePort(Direction = PortDirection.Input, Capacity = PortCapacity.Single, Name = "String")] private static string _StringIn;
 
     [NodeProperty] public long Long { get; } = 321;
 }

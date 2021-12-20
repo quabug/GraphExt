@@ -1,0 +1,61 @@
+{
+  "Nodes": [
+    {
+      "PositionX": 433.0,
+      "PositionY": 208.0,
+      "Node": {
+        "$type": "MemoryFoo, GraphExt.Sample",
+        "Int": 123,
+        "Float": 1.23,
+        "Double": 3.21,
+        "Long": 321,
+        "Id": {
+          "Id": "2bb24926-e754-4385-bf1a-33ba671fbe54"
+        }
+      }
+    },
+    {
+      "PositionX": 921.0,
+      "PositionY": 181.0,
+      "Node": {
+        "$type": "AddNode, GraphExt.Sample",
+        "Id": {
+          "Id": "80ffe89e-ba5d-4989-978b-f84b3ae4b005"
+        }
+      }
+    },
+    {
+      "PositionX": 1079.0,
+      "PositionY": 296.0,
+      "Node": {
+        "$type": "AddNode, GraphExt.Sample",
+        "Id": {
+          "Id": "d4dfe51c-ea44-47ee-ae92-e1ab16cad6a7"
+        }
+      }
+    },
+    {
+      "PositionX": 661.0,
+      "PositionY": 316.0,
+      "Node": {
+        "$type": "MultipleValueNode, GraphExt.Sample",
+        "Value1": 2.0,
+        "Value2": 3.0,
+        "Id": {
+          "Id": "710d308b-f3f2-4e20-b21e-e77d5cc1d06a"
+        }
+      }
+    },
+    {
+      "PositionX": 669.0,
+      "PositionY": 216.0,
+      "Node": {
+        "$type": "ValueNode, GraphExt.Sample",
+        "Value": 1.0,
+        "Id": {
+          "Id": "dcb6e051-634e-499e-aa06-da21dea9579c"
+        }
+      }
+    }
+  ]
+}
