@@ -9,7 +9,7 @@ namespace GraphExt.Memory
         public IReadOnlyCollection<Node> NodeList => NodeMap.Values;
 
         public Graph() {}
-        public Graph(IEnumerable<Node> nodes) : base(nodes) {}
+        public Graph(IEnumerable<Node> nodes, IEnumerable<EdgeId> edges) : base(nodes, edges) {}
 
         public override bool IsCompatible(PortData input, PortData output)
         {

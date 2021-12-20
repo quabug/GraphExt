@@ -39,6 +39,12 @@ public class MemorySaveLoadMenu : IMenuEntry
                     if (newGraph != null) graph.Module = newGraph;
                 }
             });
+
+            menu.AddItem(new GUIContent("Clear"), false, () =>
+            {
+                ClosePopupWindow();
+                graph.Module = new Graph();
+            });
         }
     }
 

@@ -5,7 +5,6 @@ using BinaryEgo.Editor.UI;
 using JetBrains.Annotations;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
-using UnityEngine.Assertions;
 using UnityEngine.UIElements;
 using Edge = UnityEditor.Experimental.GraphView.Edge;
 using Node = UnityEditor.Experimental.GraphView.Node;
@@ -131,10 +130,9 @@ namespace GraphExt
             _edges.UpdateElements(Module.Edges.Select(edge => (edge, edge)));
         }
 
-        private PortContainer FindPortContainer(PortId portId)
+        [CanBeNull] private PortContainer FindPortContainer(PortId portId)
         {
-            var node = _nodes.Elements[portId.NodeId];
-            return node.Query<PortContainer>().Where(p => p.PortId == portId).First();
+            return _nodes.Elements.TryGetValue(portId.NodeId, out var node) ? node.Query<PortContainer>().Where(p => p.PortId == portId).First() : null;
         }
 
         private Node CreateNodeView(INodeModule data)
@@ -159,22 +157,24 @@ namespace GraphExt
             }
         }
 
-        private Port CreatePortView(PortData data)
+        [CanBeNull] private Port CreatePortView(PortData data)
         {
             var container = FindPortContainer(data.Id);
-            Assert.IsNotNull(container);
-            var port = Port.Create<Edge>(data.Orientation, data.Direction, data.Capacity, data.PortType);
-            port.style.paddingLeft = 0;
-            port.style.paddingRight = 0;
-            container.AddPort(port);
-            return port;
+            if (container != null)
+            {
+                var port = Port.Create<Edge>(data.Orientation, data.Direction, data.Capacity, data.PortType);
+                port.style.paddingLeft = 0;
+                port.style.paddingRight = 0;
+                container.AddPort(port);
+                return port;
+            }
+            return null;
         }
 
         private void RemovePortView(PortId id)
         {
             var container = FindPortContainer(id);
-            Assert.IsNotNull(container);
-            container.RemovePort().DisconnectAll();
+            container?.RemovePort().DisconnectAll();
         }
 
         private Edge CreateEdgeView(EdgeId data)
@@ -183,7 +183,9 @@ namespace GraphExt
 
             var port1 = _ports.Elements[data.First];
             var port2 = _ports.Elements[data.Second];
-            return port1.ConnectTo(port2);
+            var edge = port1.ConnectTo(port2);
+            AddElement(edge);
+            return edge;
         }
 
         private void RemoveEdgeView(EdgeId id)

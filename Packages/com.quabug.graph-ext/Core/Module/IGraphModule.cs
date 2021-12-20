@@ -22,24 +22,26 @@ namespace GraphExt
     public abstract class GraphModule<TNode> : IGraphModule where TNode : INodeModule
     {
         protected readonly Dictionary<NodeId, TNode> NodeMap;
-        protected readonly Dictionary<PortId, PortData> PortMap = new Dictionary<PortId, PortData>();
-        protected readonly Dictionary<PortId, ISet<PortId>> Connections = new Dictionary<PortId, ISet<PortId>>();
+        protected readonly Dictionary<PortId, PortData> PortMap;
+        protected readonly Dictionary<PortId, ISet<EdgeId>> Connections;
 
         public IEnumerable<PortData> Ports => PortMap.Values;
         public IEnumerable<INodeModule> Nodes => NodeMap.Values.Cast<INodeModule>();
-
-        private readonly ISet<EdgeId> _edgeCache = new HashSet<EdgeId>();
-        public IEnumerable<EdgeId> Edges => _edgeCache;
+        public IEnumerable<EdgeId> Edges => Connections.Values.SelectMany(edges => edges);
 
         public GraphModule()
         {
             NodeMap = new Dictionary<NodeId, TNode>();
+            PortMap = new Dictionary<PortId, PortData>();
+            Connections = new Dictionary<PortId, ISet<EdgeId>>();
         }
 
-        public GraphModule(IEnumerable<TNode> nodeList)
+        public GraphModule(IEnumerable<TNode> nodeList, IEnumerable<EdgeId> edges)
         {
             NodeMap = nodeList.ToDictionary(n => n.Id, n => n);
             PortMap = NodeMap.SelectMany(keyValue => keyValue.Value.Ports).ToDictionary(port => port.Id, port => port);
+            Connections = new Dictionary<PortId, ISet<EdgeId>>();
+            foreach (var edge in edges) AddConnection(edge);
         }
 
         public PortData this[PortId portId] => PortMap[portId];
@@ -68,45 +70,49 @@ namespace GraphExt
 
         public void Connect(PortId input, PortId output)
         {
-            AddConnection(input, output);
-            AddConnection(output, input);
-            _edgeCache.Add(new EdgeId(input, output));
+            AddConnection(new EdgeId(input, output));
             OnConnected(PortMap[input], PortMap[output]);
         }
 
         public void Disconnect(PortId input, PortId output)
         {
-            RemoveConnection(input, output);
-            RemoveConnection(output, input);
-            _edgeCache.Remove(new EdgeId(input, output));
+            RemoveConnection(new EdgeId(input, output));
             OnDisconnected(PortMap[input], PortMap[output]);
         }
 
-        private void AddConnection(PortId key, PortId value)
+        private void AddConnection(in EdgeId edge)
+        {
+            GetOrCreateEdgeSet(edge.First).Add(edge);
+            GetOrCreateEdgeSet(edge.Second).Add(edge);
+        }
+
+        private void RemoveConnection(in EdgeId edge)
+        {
+            GetOrCreateEdgeSet(edge.First).Remove(edge);
+            GetOrCreateEdgeSet(edge.Second).Remove(edge);
+        }
+
+        ISet<EdgeId> GetOrCreateEdgeSet(in PortId key)
         {
             if (!Connections.TryGetValue(key, out var connectedSet))
             {
-                connectedSet = new HashSet<PortId>();
+                connectedSet = new HashSet<EdgeId>();
                 Connections.Add(key, connectedSet);
             }
-
-            if (!connectedSet.Contains(value)) connectedSet.Add(value);
+            return connectedSet;
         }
 
-        private void RemoveConnection(PortId key, PortId value)
-        {
-            if (Connections.TryGetValue(key, out var connectedSet))
-                connectedSet.Remove(value);
-        }
-
-        public TNode FindNodeByPort(PortId portId)
+        public TNode FindNodeByPort(in PortId portId)
         {
             return NodeMap[portId.NodeId];
         }
 
         [NotNull] public IEnumerable<PortId> FindConnectedPorts(PortId portId)
         {
-            return Connections.TryGetValue(portId, out var connected) ? connected : Enumerable.Empty<PortId>();
+            return Connections.TryGetValue(portId, out var connected) ?
+                connected.Select(edge => edge.First == portId ? edge.Second : edge.First) :
+                Enumerable.Empty<PortId>()
+            ;
         }
 
         [NotNull] public IEnumerable<NodeId> FindConnectedNodes(PortId portId)

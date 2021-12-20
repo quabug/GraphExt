@@ -6,6 +6,7 @@ namespace GraphExt
     {
         public readonly Guid Id;
         public NodeId(Guid id) => Id = id;
+
         public static explicit operator Guid(NodeId nodeId) => nodeId.Id;
         public static implicit operator NodeId(Guid id) => new NodeId(id);
 
