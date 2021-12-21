@@ -69,6 +69,10 @@ namespace GraphExt
             popup.Show(evt.mousePosition);
         }
 
+        public NodeId GetNodeId(Node node) => _nodes.Elements.GetKey(node);
+        public PortId GetPortId(Port port) => _ports.Elements.GetKey(port);
+        public EdgeId GetEdgeId(Edge edge) => _edges.Elements.GetKey(edge);
+
         private GraphViewChange OnGraphChanged(GraphViewChange @event)
         {
             if (@event.elementsToRemove != null)

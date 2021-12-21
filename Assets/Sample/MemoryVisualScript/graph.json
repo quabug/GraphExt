@@ -25,8 +25,8 @@
       "PositionY": 247.0,
       "Node": {
         "$type": "MultipleValueNode, GraphExt.Sample",
-        "Value1": 0.0,
-        "Value2": 0.0,
+        "Value1": 1.0,
+        "Value2": 2.0,
         "Id": {
           "Id": "51ef9cf0-2608-4d28-8b41-1b8866e24b65"
         }
@@ -37,7 +37,7 @@
       "PositionY": 368.0,
       "Node": {
         "$type": "ValueNode, GraphExt.Sample",
-        "Value": 0.0,
+        "Value": 3.0,
         "Id": {
           "Id": "410adba0-dae6-403b-b2e6-b14ba7f013b9"
         }
@@ -66,14 +66,14 @@
     {
       "Node1": "db380432-da75-4de3-998b-c486382f3b89",
       "Port1": "_inputPort",
-      "Node2": "51ef9cf0-2608-4d28-8b41-1b8866e24b65",
-      "Port2": "_outPort1"
+      "Node2": "410adba0-dae6-403b-b2e6-b14ba7f013b9",
+      "Port2": "_outPort"
     },
     {
       "Node1": "db380432-da75-4de3-998b-c486382f3b89",
       "Port1": "_inputPort",
-      "Node2": "410adba0-dae6-403b-b2e6-b14ba7f013b9",
-      "Port2": "_outPort"
+      "Node2": "51ef9cf0-2608-4d28-8b41-1b8866e24b65",
+      "Port2": "_outPort1"
     }
   ]
 }

@@ -7,12 +7,12 @@ using UnityEngine.Assertions;
 
 public interface IVisualNode : IMemoryNode
 {
-    float GetValue(Graph graph, string port);
+    float GetValue(Graph graph, string port = null);
 }
 
 public abstract class VisualNode : MemoryNode, IVisualNode
 {
-    public abstract float GetValue(Graph graph, string port);
+    public abstract float GetValue(Graph graph, string port = null);
 
     public override bool IsPortCompatible(Graph graph, in PortId start, in PortId end)
     {
@@ -34,9 +34,9 @@ public class ValueNode : VisualNode
     [NodeProperty(OutputPort = nameof(_outPort))] public float Value;
     [NodePort] private static float _outPort;
 
-    public override float GetValue(Graph graph, string port)
+    public override float GetValue(Graph graph, string port = null)
     {
-        Assert.AreEqual(port, nameof(_outPort));
+        Assert.IsTrue(port == null || port == nameof(_outPort));
         return Value;
     }
 }
@@ -49,10 +49,11 @@ public class MultipleValueNode : VisualNode
     [NodeProperty(OutputPort = nameof(_outPort2))] public float Value2;
     [NodePort] private static float _outPort2;
 
-    public override float GetValue(Graph graph, string port)
+    public override float GetValue(Graph graph, string port = null)
     {
         return port switch
         {
+            null => Value1,
             nameof(_outPort1) => Value1,
             nameof(_outPort2) => Value2,
             _ => throw new NotImplementedException()
@@ -60,17 +61,16 @@ public class MultipleValueNode : VisualNode
     }
 }
 
-[NodeTitle(ConstTitle = "add")]
 public class AddNode : VisualNode
 {
-    [NodeProperty(InputPort = nameof(_inputPort), OutputPort = nameof(_outputPort), HideLabel = true, HideValue = true)]
-    private const int _ = 0;
+    [NodeProperty(InputPort = nameof(_inputPort), OutputPort = nameof(_outputPort), HideValue = true)]
+    private const int Add = 0;
     [NodePort] private static float _outputPort;
     [NodePort(Capacity = PortCapacity.Multi)] public static float _inputPort;
 
-    public override float GetValue(Graph graph, string port)
+    public override float GetValue(Graph graph, string port = null)
     {
-        Assert.AreEqual(port, nameof(_outputPort));
+        Assert.IsTrue(port == null || port == nameof(_outputPort));
         return GetConnectedValues(graph, nameof(_inputPort)).Sum();
     }
 }
