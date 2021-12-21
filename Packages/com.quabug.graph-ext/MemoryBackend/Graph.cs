@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace GraphExt.Memory
 {
     [Serializable]
-    public class Graph : GraphModule<Node>
+    public class Graph : Graph<Node>
     {
         public IReadOnlyCollection<Node> NodeList => NodeMap.Values;
 

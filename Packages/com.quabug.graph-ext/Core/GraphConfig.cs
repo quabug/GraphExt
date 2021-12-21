@@ -10,7 +10,7 @@ namespace GraphExt
     public class GraphConfig : ScriptableObject
     {
         public string WindowName = "Graph Window";
-        [SerializedType(typeof(IGraphModule))] public string Backend;
+        [SerializedType(typeof(IGraph))] public string Backend;
         [SerializeReference, SerializeReferenceDrawer] public IMenuEntry[] Menu;
         public GroupNodePropertyViewFactory NodePropertyViewFactory;
 

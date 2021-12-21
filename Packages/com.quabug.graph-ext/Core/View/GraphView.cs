@@ -16,9 +16,9 @@ namespace GraphExt
         private static readonly string _defaultNodeUi = Path.Combine(Utilities.GetCurrentDirectoryProjectRelativePath(), "NodeView.uxml");
 
         [NotNull] public GraphConfig Config { get; }
-        [NotNull] public IGraphModule Module { get; set; }
+        [NotNull] public IGraph Module { get; set; }
 
-        [NotNull] private readonly GraphElements<NodeId, INodeModule, Node> _nodes;
+        [NotNull] private readonly GraphElements<NodeId, INodeData, Node> _nodes;
         [NotNull] private readonly GraphElements<PortId, PortData, Port> _ports;
         [NotNull] private readonly GraphElements<EdgeId, EdgeId, Edge> _edges;
 
@@ -41,7 +41,7 @@ namespace GraphExt
 
             graphViewChanged += OnGraphChanged;
 
-            _nodes = new GraphElements<NodeId, INodeModule, Node>(CreateNodeView, RemoveNodeView);
+            _nodes = new GraphElements<NodeId, INodeData, Node>(CreateNodeView, RemoveNodeView);
             _ports = new GraphElements<PortId, PortData, Port>(CreatePortView, RemovePortView);
             _edges = new GraphElements<EdgeId, EdgeId, Edge>(CreateEdgeView, RemoveEdgeView);
         }
@@ -139,7 +139,7 @@ namespace GraphExt
             return _nodes.Elements.TryGetValue(portId.NodeId, out var node) ? node.Query<PortContainer>().Where(p => p.PortId == portId).First() : null;
         }
 
-        private Node CreateNodeView(INodeModule data)
+        private Node CreateNodeView(INodeData data)
         {
             var nodeView = new Node(data.UiFile ?? _defaultNodeUi);
             var container = nodeView.ContentContainer();

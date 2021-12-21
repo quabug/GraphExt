@@ -5,10 +5,10 @@ using UnityEngine;
 
 namespace GraphExt
 {
-    public interface IGraphModule
+    public interface IGraph
     {
         [NotNull] IEnumerable<PortData> Ports { get; }
-        [NotNull] IEnumerable<INodeModule> Nodes { get; }
+        [NotNull] IEnumerable<INodeData> Nodes { get; }
         [NotNull] IEnumerable<EdgeId> Edges { get; }
 
         void DeleteNode(NodeId nodeId);
@@ -19,24 +19,24 @@ namespace GraphExt
         void Disconnect(PortId input, PortId output);
     }
 
-    public abstract class GraphModule<TNode> : IGraphModule where TNode : INodeModule
+    public abstract class Graph<TNode> : IGraph where TNode : INodeData
     {
         protected readonly Dictionary<NodeId, TNode> NodeMap;
         protected readonly Dictionary<PortId, PortData> PortMap;
         protected readonly Dictionary<PortId, ISet<EdgeId>> Connections;
 
         public IEnumerable<PortData> Ports => PortMap.Values;
-        public IEnumerable<INodeModule> Nodes => NodeMap.Values.Cast<INodeModule>();
+        public IEnumerable<INodeData> Nodes => NodeMap.Values.Cast<INodeData>();
         public IEnumerable<EdgeId> Edges => Connections.Values.SelectMany(edges => edges);
 
-        public GraphModule()
+        public Graph()
         {
             NodeMap = new Dictionary<NodeId, TNode>();
             PortMap = new Dictionary<PortId, PortData>();
             Connections = new Dictionary<PortId, ISet<EdgeId>>();
         }
 
-        public GraphModule(IEnumerable<TNode> nodeList, IEnumerable<EdgeId> edges)
+        public Graph(IEnumerable<TNode> nodeList, IEnumerable<EdgeId> edges)
         {
             NodeMap = nodeList.ToDictionary(n => n.Id, n => n);
             PortMap = NodeMap.SelectMany(keyValue => keyValue.Value.Ports).ToDictionary(port => port.Id, port => port);

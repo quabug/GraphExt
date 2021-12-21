@@ -41,7 +41,7 @@ namespace GraphExt.Memory
         public string OutputPort = null;
     }
 
-    public class Node : INodeModule
+    public class Node : INodeData
     {
         public string UiFile => null; // use default node ui
         public NodeId Id => Inner.Id;

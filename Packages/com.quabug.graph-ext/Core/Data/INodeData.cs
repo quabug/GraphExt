@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GraphExt
 {
-    public interface INodeModule
+    public interface INodeData
     {
         string UiFile { get; }
         NodeId Id { get; }
