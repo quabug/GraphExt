@@ -1,4 +1,6 @@
-using GraphExt;
+#if UNITY_EDITOR
+
+using GraphExt.Editor;
 
 public class WindowLoadFile : IWindowExtension
 {
@@ -12,3 +14,5 @@ public class WindowLoadFile : IWindowExtension
         else FilePath = null;
     }
 }
+
+#endif

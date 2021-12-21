@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
-using UnityEditor.UIElements;
 using UnityEngine.UIElements;
+
+#if UNITY_EDITOR
+using UnityEditor.UIElements;
+#endif
 
 namespace GraphExt
 {
@@ -15,26 +18,6 @@ namespace GraphExt
         private readonly Func<TValue> _getter;
         public TValue Value => _getter();
         public ReadOnlyValueProperty(Func<TValue> getter) => _getter = getter;
-    }
-
-    public class ReadOnlyValuePropertyView<TValue, TField> : VisualElement, ITickableElement
-        where TField : TextValueField<TValue>, new()
-    {
-        private readonly IReadOnlyValueProperty<TValue> _property;
-        private readonly TField _field;
-
-        public ReadOnlyValuePropertyView(IReadOnlyValueProperty<TValue> property)
-        {
-            _property = property;
-            _field = new TField { value = property.Value, isReadOnly = true };
-            Add(_field);
-        }
-
-        public void Tick()
-        {
-            if (!EqualityComparer<TValue>.Default.Equals(_property.Value, _field.value))
-                _field.SetValueWithoutNotify(_property.Value);
-        }
     }
 
     public interface IValueProperty<TValue> : INodeProperty
@@ -60,7 +43,28 @@ namespace GraphExt
         }
     }
 
-    public class ValuePropertyView<TValue, TField> : VisualElement, IDisposable, ITickableElement
+#if UNITY_EDITOR
+    public class ReadOnlyValuePropertyView<TValue, TField> : VisualElement, Editor.ITickableElement
+        where TField : TextValueField<TValue>, new()
+    {
+        private readonly IReadOnlyValueProperty<TValue> _property;
+        private readonly TField _field;
+
+        public ReadOnlyValuePropertyView(IReadOnlyValueProperty<TValue> property)
+        {
+            _property = property;
+            _field = new TField { value = property.Value, isReadOnly = true };
+            Add(_field);
+        }
+
+        public void Tick()
+        {
+            if (!EqualityComparer<TValue>.Default.Equals(_property.Value, _field.value))
+                _field.SetValueWithoutNotify(_property.Value);
+        }
+    }
+
+    public class ValuePropertyView<TValue, TField> : VisualElement, IDisposable, Editor.ITickableElement
         where TField : TextValueField<TValue>, new()
     {
         private readonly IValueProperty<TValue> _property;
@@ -118,4 +122,6 @@ namespace GraphExt
     public class LongReadOnlyPropertyFactory : ValuePropertyFactory<long, LongField> {}
     public class FloatReadOnlyPropertyFactory : ValuePropertyFactory<float, FloatField> {}
     public class DoubleReadOnlyPropertyFactory : ValuePropertyFactory<double, DoubleField> {}
+
+#endif
 }

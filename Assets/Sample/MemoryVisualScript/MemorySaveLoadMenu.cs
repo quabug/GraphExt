@@ -1,4 +1,6 @@
-using GraphExt;
+#if UNITY_EDITOR
+
+using GraphExt.Editor;
 using GraphExt.Memory;
 using UnityEditor;
 using UnityEngine;
@@ -66,3 +68,5 @@ public class MemorySaveLoadMenu : IMenuEntry
         window?.Close();
     }
 }
+
+#endif

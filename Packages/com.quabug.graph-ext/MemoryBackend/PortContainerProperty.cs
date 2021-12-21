@@ -7,12 +7,14 @@ namespace GraphExt.Memory
         public PortId PortId { get; }
         public PortContainerProperty(PortId portId) => PortId = portId;
 
+#if UNITY_EDITOR
         public class Factory : NodePropertyViewFactory<PortContainerProperty>
         {
             protected override VisualElement Create(PortContainerProperty property, INodePropertyViewFactory _)
             {
-                return new PortContainer(property.PortId);
+                return new Editor.PortContainer(property.PortId);
             }
         }
+#endif
     }
 }

@@ -104,7 +104,7 @@ namespace GraphExt.Memory
                 Assert.AreNotEqual(orientation, PortOrientation.Invalid);
                 Assert.AreNotEqual(capacity, PortCapacity.Invalid);
                 Assert.IsNotNull(portType);
-                yield return new PortData(portId, orientation.Convert(), direction.Convert(), capacity.Convert(), portType);
+                yield return new PortData(portId, orientation, direction, capacity, portType);
             }
 
             void AssertPropertyPort(string portName)

@@ -2,7 +2,8 @@
     "name": "GraphExt.Properties",
     "rootNamespace": "GraphExt",
     "references": [
-        "GUID:756d163a75d2d4509b594fdc3b57f09d"
+        "GUID:756d163a75d2d4509b594fdc3b57f09d",
+        "GUID:f2ad78aaacbe17141a951a4897019a2e"
     ],
     "includePlatforms": [
         "Editor"

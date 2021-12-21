@@ -1,4 +1,3 @@
-using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 namespace GraphExt
@@ -7,12 +6,14 @@ namespace GraphExt
     {
         public UnityEditor.SerializedProperty Value;
 
+#if UNITY_EDITOR
         public class Factory : NodePropertyViewFactory<SerializedProperty>
         {
             protected override VisualElement Create(SerializedProperty property, INodePropertyViewFactory _)
             {
-                return new PropertyField(property.Value);
+                return new UnityEditor.UIElements.PropertyField(property.Value);
             }
         }
+#endif
     }
 }

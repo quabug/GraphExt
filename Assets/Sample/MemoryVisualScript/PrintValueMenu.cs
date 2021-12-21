@@ -1,5 +1,7 @@
-﻿using System.Linq;
-using GraphExt;
+﻿#if UNITY_EDITOR
+
+using System.Linq;
+using GraphExt.Editor;
 using GraphExt.Memory;
 using UnityEditor;
 using UnityEngine;
@@ -22,3 +24,5 @@ public class PrintValueMenu : IMenuEntry
         }
     }
 }
+
+#endif
