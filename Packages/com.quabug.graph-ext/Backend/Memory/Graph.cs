@@ -6,8 +6,6 @@ namespace GraphExt.Memory
     [Serializable]
     public class Graph : Graph<Node>
     {
-        public IReadOnlyCollection<Node> NodeList => NodeMap.Values;
-
         public Graph() {}
         public Graph(IEnumerable<Node> nodes, IEnumerable<EdgeId> edges) : base(nodes, edges) {}
 
@@ -20,7 +18,7 @@ namespace GraphExt.Memory
             ;
         }
 
-        private IMemoryNode GetInnerNode(PortData port) => NodeMap[port.NodeId].Inner;
+        private IMemoryNode GetInnerNode(PortData port) => _NodeMap[port.NodeId].Inner;
 
         public override void OnConnected(PortData input, PortData output)
         {
@@ -37,8 +35,8 @@ namespace GraphExt.Memory
         public Node CreateNode(IMemoryNode innerNode)
         {
             var node = new Node(innerNode);
-            NodeMap.Add(node.Id, node);
-            foreach (var port in node.Ports) PortMap.Add(port.Id, port);
+            _NodeMap.Add(node.Id, node);
+            foreach (var port in node.Ports) _PortMap.Add(port.Id, port);
             return node;
         }
     }

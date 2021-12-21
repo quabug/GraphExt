@@ -1,13 +1,11 @@
 {
-    "name": "GraphExt.Backend.Prefab",
-    "rootNamespace": "GraphExt",
+    "name": "GraphExt.Prefab",
+    "rootNamespace": "GraphExt.Prefab",
     "references": [
         "GUID:756d163a75d2d4509b594fdc3b57f09d",
-        "GUID:b77709ecde8b3449591a4e6984b53a06"
+        "GUID:f2ad78aaacbe17141a951a4897019a2e"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

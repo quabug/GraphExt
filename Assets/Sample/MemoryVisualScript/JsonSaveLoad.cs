@@ -98,7 +98,7 @@ public static class JsonSaveLoad
 
         public SerializableGraph(Graph graph)
         {
-            Nodes = graph.NodeList.Select(node => new SerializableNode(node)).ToArray();
+            Nodes = graph.NodeMap.Select(pair => pair.Value).Select(node => new SerializableNode(node)).ToArray();
             Edges = graph.Edges.Distinct().Select(edge => new SerializableEdge(edge)).ToArray();
         }
 

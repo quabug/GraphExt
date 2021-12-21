@@ -1,0 +1,14 @@
+{
+    "name": "GraphExt.ScriptableObject",
+    "rootNamespace": "GraphExt.ScriptableObject",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
