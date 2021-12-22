@@ -14,8 +14,6 @@ namespace GraphExt.Editor
 {
     public class GraphView : UnityEditor.Experimental.GraphView.GraphView, ITickableElement
     {
-        private static readonly string _DEFAULT_NODE_UXML = Path.Combine(Utilities.GetCurrentDirectoryProjectRelativePath(), "NodeView.uxml");
-
         [NotNull] public GraphConfig Config { get; }
         [NotNull] public IGraph Module { get; set; }
 
@@ -139,17 +137,9 @@ namespace GraphExt.Editor
 
         private Node CreateNodeView(INodeData data)
         {
-            var nodeView = new Node(data.UXMLPath ?? _DEFAULT_NODE_UXML);
-            AddElement(nodeView);
-            var container = nodeView.ContentContainer();
-            foreach (var property in data.Properties)
-            {
-                var propertyView = Config.CreatePropertyView(property);
-                Assert.IsNotNull(propertyView);
-                container.Add(propertyView);
-                propertyView.SendEvent(NodePropertyAddedEvent.GetPooled(nodeView, propertyView));
-            }
-            return nodeView;
+            var node = Config.NodeViewFactory.Create(data);
+            AddElement(node);
+            return node;
         }
 
         private void RemoveNodeView(NodeId id)

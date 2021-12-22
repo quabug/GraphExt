@@ -1,3 +1,4 @@
+using GraphExt.Editor;
 using UnityEngine.UIElements;
 
 namespace GraphExt.Memory
@@ -8,9 +9,9 @@ namespace GraphExt.Memory
         public PortContainerProperty(PortId portId) => PortId = portId;
 
 #if UNITY_EDITOR
-        public class Factory : NodePropertyViewFactory<PortContainerProperty>
+        public class Factory : Editor.NodePropertyViewFactory<PortContainerProperty>
         {
-            protected override VisualElement Create(PortContainerProperty property, INodePropertyViewFactory _)
+            protected override VisualElement Create(UnityEditor.Experimental.GraphView.Node node, PortContainerProperty property, INodePropertyViewFactory _)
             {
                 return new Editor.PortContainer(property.PortId);
             }

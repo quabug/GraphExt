@@ -20,20 +20,19 @@ MonoBehaviour:
   - id: 2
   - id: 3
   - id: 4
-  NodePropertyViewFactory:
-    Factories:
-    - id: 5
+  NodeViewFactory:
+    id: 5
   references:
     version: 1
     00000000:
-      type: {class: SelectionEntry, ns: GraphExt.Editor, asm: GraphExt.Editor}
-    00000001:
-      type: {class: SeparatorEntry, ns: GraphExt.Editor, asm: GraphExt.Editor}
-    00000002:
-      type: {class: MemorySaveLoadMenu, ns: , asm: GraphExt.Sample}
-    00000003:
-      type: {class: PrintValueMenu, ns: , asm: GraphExt.Sample}
-    00000004:
       type: {class: MemoryNodeMenuEntry, ns: GraphExt.Memory, asm: GraphExt.Memory}
+    00000001:
+      type: {class: SelectionEntry, ns: GraphExt.Editor, asm: GraphExt.Editor}
+    00000002:
+      type: {class: SeparatorEntry, ns: GraphExt.Editor, asm: GraphExt.Editor}
+    00000003:
+      type: {class: MemorySaveLoadMenu, ns: , asm: GraphExt.Sample}
+    00000004:
+      type: {class: PrintValueMenu, ns: , asm: GraphExt.Sample}
     00000005:
-      type: {class: DefaultPropertyViewFactory, ns: GraphExt, asm: GraphExt.Runtime}
+      type: {class: , ns: , asm: }

@@ -1,18 +1,19 @@
-using System;
+﻿using System;
 using System.Linq;
 using JetBrains.Annotations;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace GraphExt
+namespace GraphExt.Editor
 {
     public interface INodePropertyViewFactory
     {
-        [CanBeNull] VisualElement Create(INodeProperty property, INodePropertyViewFactory factory);
+        [CanBeNull] VisualElement Create(Node node, INodeProperty property, INodePropertyViewFactory factory);
 
         public sealed class Null : INodePropertyViewFactory
         {
-            public VisualElement Create(INodeProperty property, INodePropertyViewFactory factory)
+            public VisualElement Create(Node node, INodeProperty property, INodePropertyViewFactory factory)
             {
                 return null;
             }
@@ -20,7 +21,7 @@ namespace GraphExt
 
         public sealed class Exception : INodePropertyViewFactory
         {
-            public VisualElement Create(INodeProperty property, INodePropertyViewFactory factory)
+            public VisualElement Create(Node node, INodeProperty property, INodePropertyViewFactory factory)
             {
                 throw new NotImplementedException();
             }
@@ -29,35 +30,31 @@ namespace GraphExt
 
     public abstract class NodePropertyViewFactory<T> : INodePropertyViewFactory where T : INodeProperty
     {
-        public VisualElement Create(INodeProperty property, INodePropertyViewFactory factory)
+        public VisualElement Create(Node node, INodeProperty property, INodePropertyViewFactory factory)
         {
-            return property is T p ? Create(p, factory) : null;
+            return property is T p ? Create(node, p, factory) : null;
         }
 
-        protected abstract VisualElement Create([NotNull] T property, INodePropertyViewFactory factory);
+        protected abstract VisualElement Create(Node node, [NotNull] T property, INodePropertyViewFactory factory);
     }
 
     public class DefaultPropertyViewFactory : INodePropertyViewFactory
     {
-        private static GroupNodePropertyViewFactory _groupFactory;
+        private static readonly GroupNodePropertyViewFactory _groupFactory;
 
         static DefaultPropertyViewFactory()
         {
-#if UNITY_EDITOR
             var factories = UnityEditor.TypeCache.GetTypesDerivedFrom(typeof(NodePropertyViewFactory<>))
                 .Where(type => !type.IsAbstract && !type.IsGenericType)
                 .Select(type => (INodePropertyViewFactory)Activator.CreateInstance(type))
                 .ToArray()
             ;
-#else
-            var factories = new INodePropertyViewFactory[] { new INodePropertyViewFactory.Exception() };
-#endif
             _groupFactory = new GroupNodePropertyViewFactory { Factories = factories };
         }
 
-        public VisualElement Create(INodeProperty property, INodePropertyViewFactory factory)
+        public VisualElement Create(Node node, INodeProperty property, INodePropertyViewFactory factory)
         {
-            return _groupFactory.Create(property, factory);
+            return _groupFactory.Create(node, property, factory);
         }
     }
 
@@ -67,9 +64,9 @@ namespace GraphExt
         [SerializeReference, SerializeReferenceDrawer(Nullable = false)]
         public INodePropertyViewFactory[] Factories;
 
-        public VisualElement Create(INodeProperty property, INodePropertyViewFactory factory)
+        public VisualElement Create(Node node, INodeProperty property, INodePropertyViewFactory factory)
         {
-            return property == null ? null : Factories.Select(f => f.Create(property, this)).FirstOrDefault(element => element != null);
+            return property == null ? null : Factories.Select(f => f.Create(node, property, this)).FirstOrDefault(element => element != null);
         }
     }
 }

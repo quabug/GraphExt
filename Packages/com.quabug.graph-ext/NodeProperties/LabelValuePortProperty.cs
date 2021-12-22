@@ -1,3 +1,5 @@
+using GraphExt.Editor;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -18,16 +20,17 @@ namespace GraphExt
             RightPort = rightPort;
         }
 
-        public class Factory : NodePropertyViewFactory<LabelValuePortProperty>
+#if UNITY_EDITOR
+        public class Factory : Editor.NodePropertyViewFactory<LabelValuePortProperty>
         {
-            protected override VisualElement Create(LabelValuePortProperty property, INodePropertyViewFactory factory)
+            protected override VisualElement Create(Node node, LabelValuePortProperty property, INodePropertyViewFactory factory)
             {
                 var container = new VisualElement();
 
-                var label = factory.Create(property.LabelProperty, factory) ?? new VisualElement();
-                var value = factory.Create(property.ValueProperty, factory) ?? new VisualElement();
-                var leftPort = factory.Create(property.LeftPort, factory) ?? new VisualElement();
-                var rightPort = factory.Create(property.RightPort, factory) ?? new VisualElement();
+                var label = factory.Create(node, property.LabelProperty, factory) ?? new VisualElement();
+                var value = factory.Create(node, property.ValueProperty, factory) ?? new VisualElement();
+                var leftPort = factory.Create(node, property.LeftPort, factory) ?? new VisualElement();
+                var rightPort = factory.Create(node, property.RightPort, factory) ?? new VisualElement();
 
                 container.name = "label-value-property";
                 container.style.flexDirection = new StyleEnum<FlexDirection>(FlexDirection.Row);
@@ -54,5 +57,6 @@ namespace GraphExt
                 return container;
             }
         }
+#endif
     }
 }

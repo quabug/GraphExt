@@ -1,9 +1,7 @@
 using System;
 using System.Linq;
-using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace GraphExt.Editor
 {
@@ -16,8 +14,7 @@ namespace GraphExt.Editor
         private bool IsValidBackendType(Type type) => !type.IsAbstract && !type.IsGenericType;
 
         [SerializeReference, SerializeReferenceDrawer] public IMenuEntry[] Menu;
-
-        public GroupNodePropertyViewFactory NodePropertyViewFactory;
+        [SerializeReference, SerializeReferenceDrawer] public INodeViewFactory NodeViewFactory = new DefaultNodeViewFactory();
 
         private void Reset()
         {
@@ -27,11 +24,7 @@ namespace GraphExt.Editor
                 .Select(type => (IMenuEntry)Activator.CreateInstance(type))
                 .ToArray()
             ;
-
-            NodePropertyViewFactory = new GroupNodePropertyViewFactory
-            {
-                Factories = new INodePropertyViewFactory[]{ new DefaultPropertyViewFactory() }
-            };
+            NodeViewFactory = new DefaultNodeViewFactory();
         }
 
         [ContextMenu("Open Window")]
@@ -41,11 +34,6 @@ namespace GraphExt.Editor
             window.titleContent.text = WindowName;
             window.Init(this);
             window.Focus();
-        }
-
-        [CanBeNull] public VisualElement CreatePropertyView([NotNull] INodeProperty property)
-        {
-            return NodePropertyViewFactory.Create(property, new INodePropertyViewFactory.Null());
         }
     }
 }

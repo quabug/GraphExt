@@ -19,15 +19,11 @@ namespace GraphExt
 #if UNITY_EDITOR
         public class EventView : Editor.NodeEventElement<Editor.NodePositionChangeEvent>
         {
-            private NodePositionProperty _property;
+            private readonly NodePositionProperty _property;
 
-            public EventView(NodePositionProperty property)
+            public EventView(UnityEditor.Experimental.GraphView.Node node, NodePositionProperty property) : base(node)
             {
                 _property = property;
-            }
-
-            protected override void OnInit()
-            {
                 Node.SetPosition(new Rect(_property._getter(), Vector2.zero));
             }
 
@@ -37,11 +33,11 @@ namespace GraphExt
             }
         }
 
-        public class Factory : NodePropertyViewFactory<NodePositionProperty>
+        public class Factory : Editor.NodePropertyViewFactory<NodePositionProperty>
         {
-            protected override VisualElement Create(NodePositionProperty property, INodePropertyViewFactory _)
+            protected override VisualElement Create(UnityEditor.Experimental.GraphView.Node node, NodePositionProperty property, Editor.INodePropertyViewFactory _)
             {
-                return new EventView(property);
+                return new EventView(node, property);
             }
         }
 #endif
