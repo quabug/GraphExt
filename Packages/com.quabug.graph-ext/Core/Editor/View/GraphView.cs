@@ -155,9 +155,7 @@ namespace GraphExt.Editor
             var container = FindPortContainer(data.Id);
             if (container != null)
             {
-                var port = Port.Create<Edge>(data.Orientation.ToEditor(), data.Direction.ToEditor(), data.Capacity.ToEditor(), data.PortType);
-                port.style.paddingLeft = 0;
-                port.style.paddingRight = 0;
+                var port = Config.PortViewFactory.CreatePort(data);
                 container.AddPort(port);
                 return port;
             }

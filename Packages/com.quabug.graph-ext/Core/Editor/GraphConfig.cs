@@ -15,6 +15,8 @@ namespace GraphExt.Editor
 
         [SerializeReference, SerializeReferenceDrawer] public IMenuEntry[] Menu;
         [SerializeReference, SerializeReferenceDrawer] public INodeViewFactory NodeViewFactory = new DefaultNodeViewFactory();
+        [SerializeReference, SerializeReferenceDrawer] public IPortViewFactory PortViewFactory = new DefaultPortViewFactory();
+        [SerializeReference, SerializeReferenceDrawer] public IEdgeViewFactory EdgeViewFactory = new DefaultEdgeViewFactory();
 
         private void Reset()
         {
@@ -25,6 +27,8 @@ namespace GraphExt.Editor
                 .ToArray()
             ;
             NodeViewFactory = new DefaultNodeViewFactory();
+            PortViewFactory = new DefaultPortViewFactory();
+            EdgeViewFactory = new DefaultEdgeViewFactory();
         }
 
         [ContextMenu("Open Window")]
