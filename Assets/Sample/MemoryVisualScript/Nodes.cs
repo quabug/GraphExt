@@ -41,6 +41,7 @@ public class ValueNode : VisualNode
     }
 }
 
+[NodeTitle(ConstTitle = "multi")]
 public class MultipleValueNode : VisualNode
 {
     [NodeProperty(OutputPort = nameof(_outPort1))] public float Value1;

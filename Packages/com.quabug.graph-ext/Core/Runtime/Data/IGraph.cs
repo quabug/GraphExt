@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
-using UnityEngine;
 
 namespace GraphExt
 {
@@ -12,7 +11,6 @@ namespace GraphExt
         [NotNull] IEnumerable<EdgeId> Edges { get; }
 
         void DeleteNode(NodeId nodeId);
-        void SetNodePosition(NodeId nodeId, Vector2 position);
 
         bool IsCompatible(PortId input, PortId output);
         void Connect(PortId input, PortId output);
@@ -58,11 +56,6 @@ namespace GraphExt
                 _NodeMap.Remove(nodeId);
                 // TODO: remove ports and edges
             }
-        }
-
-        public void SetNodePosition(NodeId nodeId, Vector2 position)
-        {
-            if (_NodeMap.TryGetValue(nodeId, out var node)) node.Position = position;
         }
 
         public bool IsCompatible(PortId inputPortId, PortId outputPortId)

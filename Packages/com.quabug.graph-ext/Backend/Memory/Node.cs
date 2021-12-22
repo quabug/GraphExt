@@ -43,7 +43,7 @@ namespace GraphExt.Memory
 
     public class Node : INodeData
     {
-        public string UiFile => null; // use default node ui
+        public string UXMLPath => null; // use default node ui
         public NodeId Id => Inner.Id;
         public Vector2 Position { get; set; }
 
@@ -125,6 +125,7 @@ namespace GraphExt.Memory
                 AddPropertyPort(nodePropertyAttribute?.OutputPort, mi);
             }
 
+            yield return new NodePositionProperty(() => Position, pos => Position = pos);
             var titleProperty = CreateTitleProperty();
             if (titleProperty != null) yield return titleProperty;
             foreach (var mi in members)

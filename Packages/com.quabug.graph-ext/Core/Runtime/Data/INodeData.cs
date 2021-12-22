@@ -1,14 +1,12 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using UnityEngine;
 
 namespace GraphExt
 {
     public interface INodeData
     {
-        string UiFile { get; }
+        string UXMLPath { get; }
         NodeId Id { get; }
-        Vector2 Position { get; set; }
         [NotNull] IReadOnlyList<INodeProperty> Properties { get; }
         [NotNull] IReadOnlyList<PortData> Ports { get; }
     }

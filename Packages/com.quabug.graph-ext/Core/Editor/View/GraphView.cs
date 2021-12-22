@@ -5,6 +5,7 @@ using BinaryEgo.Editor.UI;
 using JetBrains.Annotations;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
+using UnityEngine.Assertions;
 using UnityEngine.UIElements;
 using Edge = UnityEditor.Experimental.GraphView.Edge;
 using Node = UnityEditor.Experimental.GraphView.Node;
@@ -13,7 +14,7 @@ namespace GraphExt.Editor
 {
     public class GraphView : UnityEditor.Experimental.GraphView.GraphView, ITickableElement
     {
-        private static readonly string _defaultNodeUi = Path.Combine(Utilities.GetCurrentDirectoryProjectRelativePath(), "NodeView.uxml");
+        private static readonly string _DEFAULT_NODE_UXML = Path.Combine(Utilities.GetCurrentDirectoryProjectRelativePath(), "NodeView.uxml");
 
         [NotNull] public GraphConfig Config { get; }
         [NotNull] public IGraph Module { get; set; }
@@ -92,11 +93,8 @@ namespace GraphExt.Editor
 
             if (@event.movedElements != null)
             {
-                foreach (var (nodeView, nodeId) in
-                    from nodeView in @event.movedElements.OfType<Node>()
-                    where _nodes.Elements.ContainsValue(nodeView)
-                    select (nodeView, nodeId: _nodes.Elements.GetKey(nodeView))
-                ) Module.SetNodePosition(nodeId, nodeView.GetPosition().position);
+                foreach (var nodeView in @event.movedElements.OfType<Node>().Where(_nodes.Elements.ContainsValue))
+                    nodeView.SendEvent(NodePositionChangeEvent.GetPooled(nodeView));
             }
 
             return @event;
@@ -141,15 +139,16 @@ namespace GraphExt.Editor
 
         private Node CreateNodeView(INodeData data)
         {
-            var nodeView = new Node(data.UiFile ?? _defaultNodeUi);
+            var nodeView = new Node(data.UXMLPath ?? _DEFAULT_NODE_UXML);
+            AddElement(nodeView);
             var container = nodeView.ContentContainer();
             foreach (var property in data.Properties)
             {
                 var propertyView = Config.CreatePropertyView(property);
+                Assert.IsNotNull(propertyView);
                 container.Add(propertyView);
+                propertyView.SendEvent(NodePropertyAddedEvent.GetPooled(nodeView, propertyView));
             }
-            AddElement(nodeView);
-            nodeView.SetPosition(data.Position);
             return nodeView;
         }
 

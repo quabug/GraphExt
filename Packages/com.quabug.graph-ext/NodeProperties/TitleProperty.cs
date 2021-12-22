@@ -8,7 +8,7 @@ namespace GraphExt
         public string Value;
         public TitleProperty(string value) => Value = value;
 
-        public class Factory : NodePropertyViewFactory<TitleProperty>
+        private class Factory : NodePropertyViewFactory<TitleProperty>
         {
             protected override VisualElement Create(TitleProperty property, INodePropertyViewFactory _)
             {

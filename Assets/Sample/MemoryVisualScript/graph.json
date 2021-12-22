@@ -1,8 +1,8 @@
 {
   "Nodes": [
     {
-      "PositionX": 597.0,
-      "PositionY": 305.0,
+      "PositionX": 698.0,
+      "PositionY": 248.0,
       "Node": {
         "$type": "AddNode, GraphExt.Sample",
         "Id": {
