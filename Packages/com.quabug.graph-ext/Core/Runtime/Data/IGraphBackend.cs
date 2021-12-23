@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 namespace GraphExt
 {
-    public interface IGraph
+    public interface IGraphBackend
     {
         [NotNull] IReadOnlyDictionary<PortId, PortData> PortMap { get; }
         [NotNull] IReadOnlyDictionary<NodeId, NodeData> NodeMap { get; }
@@ -17,7 +17,7 @@ namespace GraphExt
         void Disconnect(in PortId input, in PortId output);
     }
 
-    public abstract class BaseGraph : IGraph
+    public abstract class BaseGraphBackend : IGraphBackend
     {
         protected readonly Dictionary<NodeId, NodeData> _NodeMap;
         protected readonly Dictionary<PortId, PortData> _PortMap;
@@ -29,14 +29,14 @@ namespace GraphExt
 
         public IEnumerable<EdgeId> Edges => _Connections;
 
-        public BaseGraph()
+        public BaseGraphBackend()
         {
             _NodeMap = new Dictionary<NodeId, NodeData>();
             _PortMap = new Dictionary<PortId, PortData>();
             _Connections = new HashSet<EdgeId>();
         }
 
-        public BaseGraph(IEnumerable<(NodeId id, NodeData data)> nodes, IEnumerable<(PortId id, PortData data)> ports, IEnumerable<EdgeId> edges)
+        public BaseGraphBackend(IEnumerable<(NodeId id, NodeData data)> nodes, IEnumerable<(PortId id, PortData data)> ports, IEnumerable<EdgeId> edges)
         {
             _NodeMap = nodes.ToDictionary(node => node.id, n => n.data);
             _PortMap = ports.ToDictionary(port => port.id, port => port.data);

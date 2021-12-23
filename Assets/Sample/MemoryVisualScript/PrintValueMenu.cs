@@ -12,7 +12,7 @@ public class PrintValueMenu : IMenuEntry
 {
     public void MakeEntry(GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
     {
-        if (graph.selection?.FirstOrDefault() is Node node && graph.Module is Graph memoryGraph)
+        if (graph.selection?.FirstOrDefault() is Node node && graph.Module is MemoryGraphBackend memoryGraph)
         {
             var nodeId = graph.GetNodeId(node);
             menu.AddItem(new GUIContent("Print Node Value"), true, () =>

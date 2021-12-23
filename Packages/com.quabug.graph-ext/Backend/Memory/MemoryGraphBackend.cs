@@ -7,28 +7,35 @@ using UnityEngine;
 namespace GraphExt.Memory
 {
     [Serializable]
-    public class Graph : BaseGraph
+    public class MemoryGraphBackend : BaseGraphBackend
     {
         public class Node
         {
             [NotNull] public IMemoryNode Inner { get; }
             public float PositionX = 0;
             public float PositionY = 0;
-            public Node([NotNull] IMemoryNode inner) => Inner = inner;
+            public Guid Id { get; private set; }
+            public Node([NotNull] IMemoryNode inner, Guid nodeId) => (Inner, Id) = (inner, nodeId);
 
             public Type GetNodeType() => Inner.GetType();
-            public NodeId GetNodeId() => Inner.Id;
+            public NodeId GetNodeId() => Id;
             public void SetPosition(Vector2 pos) => (PositionX, PositionY) = (pos.x, pos.y);
             public Vector2 GetPosition() => new Vector2(PositionX, PositionY);
         }
 
-        public IDictionary<NodeId, Node> MemoryNodeMap = new Dictionary<NodeId, Node>();
+        protected Dictionary<NodeId, Node> _MemoryNodeMap = new Dictionary<NodeId, Node>();
+        public IReadOnlyDictionary<NodeId, Node> MemoryNodeMap => _MemoryNodeMap;
 
-        public Graph() {}
+        protected Dictionary<IMemoryNode, NodeId> _MemoryNodeIdMap = new Dictionary<IMemoryNode, NodeId>();
+        public NodeId this[IMemoryNode node] => _MemoryNodeIdMap[node];
 
-        public Graph([NotNull] IEnumerable<Node> nodes, [NotNull] IEnumerable<EdgeId> edges) : base(nodes.Select(ToNodeData), nodes.SelectMany(FindPorts), edges)
+        public MemoryGraphBackend() {}
+
+        public MemoryGraphBackend([NotNull] IReadOnlyList<Node> nodes, [NotNull] IReadOnlyList<EdgeId> edges)
+            : base(nodes.Select(ToNodeData), nodes.SelectMany(FindPorts), edges)
         {
-            MemoryNodeMap = nodes.ToDictionary(node => node.GetNodeId(), node => node);
+            _MemoryNodeMap = nodes.ToDictionary(node => node.GetNodeId(), node => node);
+            _MemoryNodeIdMap = nodes.ToDictionary(node => node.Inner, node => node.GetNodeId());
         }
 
         private static IEnumerable<(PortId, PortData)> FindPorts(Node node)
@@ -62,7 +69,7 @@ namespace GraphExt.Memory
         }
 
         public IMemoryNode GetMemoryNodeByPort(in PortId port) => GetMemoryNode(port.NodeId);
-        public IMemoryNode GetMemoryNode(in NodeId node) => MemoryNodeMap[node].Inner;
+        public IMemoryNode GetMemoryNode(in NodeId node) => _MemoryNodeMap[node].Inner;
 
         protected override void OnConnected(in PortId input, in PortId output)
         {
@@ -76,18 +83,26 @@ namespace GraphExt.Memory
             GetMemoryNodeByPort(output).OnDisconnected(this, output, input);
         }
 
-        protected override void OnNodeDeleted(in NodeId node)
+        protected override void OnNodeDeleted(in NodeId nodeId)
         {
-            MemoryNodeMap.Remove(node);
+            var node = _MemoryNodeMap[nodeId];
+            _MemoryNodeMap.Remove(nodeId);
+            _MemoryNodeIdMap.Remove(node.Inner);
         }
 
         public Node CreateNode(IMemoryNode innerNode)
         {
-            var node = new Node(innerNode);
-            MemoryNodeMap[node.GetNodeId()] = node;
+            var node = new Node(innerNode, Guid.NewGuid());
+            _MemoryNodeMap[node.GetNodeId()] = node;
+            _MemoryNodeIdMap[innerNode] = node.GetNodeId();
             _NodeMap.Add(node.GetNodeId(), ToNodeData(node).data);
             foreach (var (portId, portData) in FindPorts(node)) _PortMap.Add(portId, portData);
             return node;
+        }
+
+        [NotNull] public ISet<PortId> FindConnectedPorts(IMemoryNode node, string port)
+        {
+            return FindConnectedPorts(new PortId(this[node], port));
         }
     }
 }

@@ -18,23 +18,23 @@ public static class JsonSaveLoad
         };
     }
 
-    public static bool Save(Graph graph, string path)
+    public static bool Save(MemoryGraphBackend memoryGraphBackend, string path)
     {
         if (string.IsNullOrEmpty(path)) return false;
         try
         {
-            var json = JsonConvert.SerializeObject(new SerializableGraph(graph), Formatting.Indented, _jsonSerializerSettings);
+            var json = JsonConvert.SerializeObject(new SerializableGraph(memoryGraphBackend), Formatting.Indented, _jsonSerializerSettings);
             File.WriteAllText(path, json);
             return true;
         }
         catch (Exception ex)
         {
-            Debug.LogError($"failed to save graph to {path}: {ex}");
+            Debug.LogError($"failed to save memoryGraphBackend to {path}: {ex}");
             return false;
         }
     }
 
-    public static Graph Load(string path)
+    public static MemoryGraphBackend Load(string path)
     {
         if (string.IsNullOrEmpty(path)) return null;
         try
@@ -45,7 +45,7 @@ public static class JsonSaveLoad
         }
         catch (Exception ex)
         {
-            Debug.LogError($"failed to load graph from {path}: {ex}");
+            Debug.LogError($"failed to load MemoryGraphBackend from {path}: {ex}");
             return null;
         }
     }
@@ -74,18 +74,18 @@ public static class JsonSaveLoad
     [Serializable]
     struct SerializableGraph
     {
-        public Graph.Node[] Nodes;
+        public MemoryGraphBackend.Node[] Nodes;
         public SerializableEdge[] Edges;
 
-        public SerializableGraph(Graph graph)
+        public SerializableGraph(MemoryGraphBackend memoryGraphBackend)
         {
-            Nodes = graph.MemoryNodeMap.Select(pair => pair.Value).ToArray();
-            Edges = graph.Edges.Distinct().Select(edge => new SerializableEdge(edge)).ToArray();
+            Nodes = memoryGraphBackend.MemoryNodeMap.Select(pair => pair.Value).ToArray();
+            Edges = memoryGraphBackend.Edges.Distinct().Select(edge => new SerializableEdge(edge)).ToArray();
         }
 
-        public Graph ToMemory()
+        public MemoryGraphBackend ToMemory()
         {
-            return new Graph(Nodes, Edges.Select(edge => edge.ToMemory()));
+            return new MemoryGraphBackend(Nodes, Edges.Select(edge => edge.ToMemory()).ToArray());
         }
     }
 }

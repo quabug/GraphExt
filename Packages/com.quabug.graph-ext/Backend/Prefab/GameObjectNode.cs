@@ -7,7 +7,7 @@ namespace GraphExt.Prefab
     public class GameObjectNode : MonoBehaviour
     {
         [SerializeReference] public IMemoryNode Node;
-        public NodeId Id => Node.Id;
+        public NodeId Id;
         public IEnumerable<INodeProperty> Properties { get; }
     }
 }

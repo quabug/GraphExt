@@ -5,11 +5,11 @@
 //
 // namespace GraphExt.Prefab
 // {
-//     public class Graph : Graph<GameObjectNode>
+//     public class MemoryGraphBackend : MemoryGraphBackend<GameObjectNode>
 //     {
 //         private GameObject _root { get; }
 //
-//         public Graph([NotNull] GameObject root)
+//         public MemoryGraphBackend([NotNull] GameObject root)
 //             :base()
 //         {
 //             _root = root;

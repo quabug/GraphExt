@@ -13,7 +13,7 @@ namespace GraphExt.Memory
     {
         public void MakeEntry(GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
         {
-            if (!(graph.Module is Graph module)) return;
+            if (!(graph.Module is MemoryGraphBackend module)) return;
 
             var menuPosition = graph.viewTransform.matrix.inverse.MultiplyPoint(evt.localMousePosition);
             var memoryNodes = TypeCache.GetTypesDerivedFrom<IMemoryNode>();
