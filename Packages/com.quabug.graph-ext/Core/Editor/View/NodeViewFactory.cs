@@ -8,7 +8,7 @@ namespace GraphExt.Editor
 {
     public interface INodeViewFactory
     {
-        [CanBeNull] Node Create(INodeData nodeData);
+        [CanBeNull] Node Create(NodeData nodeData);
     }
 
     public class DefaultNodeViewFactory : INodeViewFactory
@@ -18,7 +18,7 @@ namespace GraphExt.Editor
             Factories = new INodePropertyViewFactory[]{ new DefaultPropertyViewFactory() }
         };
 
-        public Node Create(INodeData data)
+        public Node Create(NodeData data)
         {
             var defaultUxml = Path.Combine(Utilities.GetCurrentDirectoryProjectRelativePath(), "NodeView.uxml");
             var nodeView = new Node(defaultUxml);

@@ -1,42 +1,92 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using JetBrains.Annotations;
+using UnityEngine;
 
 namespace GraphExt.Memory
 {
     [Serializable]
-    public class Graph : Graph<Node>
+    public class Graph : BaseGraph
     {
-        public Graph() {}
-        public Graph(IEnumerable<Node> nodes, IEnumerable<EdgeId> edges) : base(nodes, edges) {}
-
-        public override bool IsCompatible(PortData input, PortData output)
+        public class Node
         {
-            return input.Direction != output.Direction &&
-                   input.PortType == output.PortType &&
-                   GetInnerNode(input).IsPortCompatible(this, output.Id, input.Id) &&
-                   GetInnerNode(output).IsPortCompatible(this, output.Id, input.Id)
+            [NotNull] public IMemoryNode Inner { get; }
+            public float PositionX = 0;
+            public float PositionY = 0;
+            public Node([NotNull] IMemoryNode inner) => Inner = inner;
+
+            public Type GetNodeType() => Inner.GetType();
+            public NodeId GetNodeId() => Inner.Id;
+            public void SetPosition(Vector2 pos) => (PositionX, PositionY) = (pos.x, pos.y);
+            public Vector2 GetPosition() => new Vector2(PositionX, PositionY);
+        }
+
+        public IDictionary<NodeId, Node> MemoryNodeMap = new Dictionary<NodeId, Node>();
+
+        public Graph() {}
+
+        public Graph([NotNull] IEnumerable<Node> nodes, [NotNull] IEnumerable<EdgeId> edges) : base(nodes.Select(ToNodeData), nodes.SelectMany(FindPorts), edges)
+        {
+            MemoryNodeMap = nodes.ToDictionary(node => node.GetNodeId(), node => node);
+        }
+
+        private static IEnumerable<(PortId, PortData)> FindPorts(Node node)
+        {
+            return NodePortUtility.FindPorts(node.GetNodeType()).Select(port => (new PortId(node.GetNodeId(), port.Name), port));
+        }
+
+        private static (NodeId id, NodeData data) ToNodeData([NotNull] Node node)
+        {
+            return (node.GetNodeId(), new NodeData(CreatePositionProperty(node).Yield()
+                    .Concat(NodeTitleAttribute.CreateTitleProperty(node.Inner))
+                    .Concat(NodePropertyAttribute.CreateProperties(node.Inner, node.GetNodeId()))
+                    .ToArray()
+            ));
+
+            INodeProperty CreatePositionProperty(Node node)
+            {
+                return new NodePositionProperty(node.GetPosition, node.SetPosition);
+            }
+        }
+
+        public override bool IsCompatible(in PortId input, in PortId output)
+        {
+            var inputData = _PortMap[input];
+            var outputData = _PortMap[output];
+            return inputData.Direction != outputData.Direction &&
+                   inputData.PortType == outputData.PortType &&
+                   GetMemoryNodeByPort(input).IsPortCompatible(this, output, input) &&
+                   GetMemoryNodeByPort(output).IsPortCompatible(this, output, input)
             ;
         }
 
-        private IMemoryNode GetInnerNode(PortData port) => _NodeMap[port.NodeId].Inner;
+        public IMemoryNode GetMemoryNodeByPort(in PortId port) => GetMemoryNode(port.NodeId);
+        public IMemoryNode GetMemoryNode(in NodeId node) => MemoryNodeMap[node].Inner;
 
-        public override void OnConnected(PortData input, PortData output)
+        protected override void OnConnected(in PortId input, in PortId output)
         {
-            GetInnerNode(input).OnConnected(this, output.Id, input.Id);
-            GetInnerNode(output).OnConnected(this, output.Id, input.Id);
+            GetMemoryNodeByPort(input).OnConnected(this, output, input);
+            GetMemoryNodeByPort(output).OnConnected(this, output, input);
         }
 
-        public override void OnDisconnected(PortData input, PortData output)
+        protected override void OnDisconnected(in PortId input, in PortId output)
         {
-            GetInnerNode(input).OnDisconnected(this, output.Id, input.Id);
-            GetInnerNode(output).OnDisconnected(this, output.Id, input.Id);
+            GetMemoryNodeByPort(input).OnDisconnected(this, output, input);
+            GetMemoryNodeByPort(output).OnDisconnected(this, output, input);
+        }
+
+        protected override void OnNodeDeleted(in NodeId node)
+        {
+            MemoryNodeMap.Remove(node);
         }
 
         public Node CreateNode(IMemoryNode innerNode)
         {
             var node = new Node(innerNode);
-            _NodeMap.Add(node.Id, node);
-            foreach (var port in node.Ports) _PortMap.Add(port.Id, port);
+            MemoryNodeMap[node.GetNodeId()] = node;
+            _NodeMap.Add(node.GetNodeId(), ToNodeData(node).data);
+            foreach (var (portId, portData) in FindPorts(node)) _PortMap.Add(portId, portData);
             return node;
         }
     }

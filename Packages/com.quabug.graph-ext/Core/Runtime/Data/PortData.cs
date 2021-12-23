@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using UnityEngine.Assertions;
 
 namespace GraphExt
 {
@@ -19,16 +23,15 @@ namespace GraphExt
 
     public readonly struct PortData
     {
-        public PortId Id { get; }
-        public NodeId NodeId => Id.NodeId;
-        public PortOrientation Orientation { get; }
-        public PortDirection Direction { get; }
-        public PortCapacity Capacity { get; }
-        public Type PortType { get; }
+        public readonly string Name;
+        public readonly PortOrientation Orientation;
+        public readonly PortDirection Direction;
+        public readonly PortCapacity Capacity;
+        public readonly Type PortType;
 
-        public PortData(in PortId id, PortOrientation orientation, PortDirection direction, PortCapacity capacity, Type portType)
+        public PortData(string name, PortOrientation orientation, PortDirection direction, PortCapacity capacity, Type portType)
         {
-            Id = id;
+            Name = name;
             Orientation = orientation;
             Direction = direction;
             Capacity = capacity;
