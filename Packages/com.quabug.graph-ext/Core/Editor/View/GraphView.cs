@@ -13,7 +13,7 @@ namespace GraphExt.Editor
     public class GraphView : UnityEditor.Experimental.GraphView.GraphView, ITickableElement
     {
         [NotNull] public GraphConfig Config { get; }
-        [NotNull] public IGraph Module { get; set; }
+        [NotNull] public IGraphBackend Module { get; set; }
 
         [NotNull] private readonly GraphElements<NodeId, NodeData, Node> _nodes;
         [NotNull] private readonly GraphElements<PortId, PortData, Port> _ports;

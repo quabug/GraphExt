@@ -8,25 +8,25 @@ using UnityEngine.Assertions;
 
 public interface IVisualNode : IMemoryNode
 {
-    float GetValue([NotNull] Graph graph);
-    float GetValue([NotNull] Graph graph, [NotNull] string port);
+    float GetValue([NotNull] MemoryGraphBackend graph);
+    float GetValue([NotNull] MemoryGraphBackend graph, [NotNull] string port);
 }
 
 public abstract class VisualNode : MemoryNode, IVisualNode
 {
-    public abstract float GetValue(Graph graph);
-    public abstract float GetValue(Graph graph, string port);
+    public abstract float GetValue(MemoryGraphBackend graph);
+    public abstract float GetValue(MemoryGraphBackend graph, string port);
 
-    public override bool IsPortCompatible(Graph graph, in PortId start, in PortId end)
+    public override bool IsPortCompatible(MemoryGraphBackend memoryGraphBackend, in PortId start, in PortId end)
     {
-        var startNode = graph.GetMemoryNodeByPort(start);
-        var endNode = graph.GetMemoryNodeByPort(end);
+        var startNode = memoryGraphBackend.GetMemoryNodeByPort(start);
+        var endNode = memoryGraphBackend.GetMemoryNodeByPort(end);
         return start.NodeId != end.NodeId && startNode is VisualNode && endNode is VisualNode;
     }
 
-    protected IEnumerable<float> GetConnectedValues(Graph graph, string port)
+    protected IEnumerable<float> GetConnectedValues(MemoryGraphBackend graph, string port)
     {
-        return graph.FindConnectedPorts(new PortId(Id, port))
+        return graph.FindConnectedPorts(this, port)
             .Select(connectedPort => ((IVisualNode)graph.GetMemoryNodeByPort(connectedPort)).GetValue(graph, connectedPort.Name))
         ;
     }
@@ -37,13 +37,13 @@ public class ValueNode : VisualNode
     [NodeProperty(OutputPort = nameof(_outPort))] public float Value;
     [NodePort] private static float _outPort;
 
-    public override float GetValue(Graph graph, string port)
+    public override float GetValue(MemoryGraphBackend graph, string port)
     {
         Assert.IsTrue(port == nameof(_outPort));
         return GetValue(graph);
     }
 
-    public override float GetValue(Graph graph)
+    public override float GetValue(MemoryGraphBackend graph)
     {
         return Value;
     }
@@ -58,12 +58,12 @@ public class MultipleValueNode : VisualNode
     [NodeProperty(OutputPort = nameof(_outPort2))] public float Value2;
     [NodePort] private static float _outPort2;
 
-    public override float GetValue(Graph graph)
+    public override float GetValue(MemoryGraphBackend graph)
     {
         return Value1;
     }
 
-    public override float GetValue(Graph graph, string port)
+    public override float GetValue(MemoryGraphBackend graph, string port)
     {
         return port switch
         {
@@ -81,12 +81,12 @@ public class AddNode : VisualNode
     [NodePort] private static float _outputPort;
     [NodePort(Capacity = PortCapacity.Multi)] public static float _inputPort;
 
-    public override float GetValue(Graph graph)
+    public override float GetValue(MemoryGraphBackend graph)
     {
         return GetConnectedValues(graph, nameof(_inputPort)).Sum();
     }
 
-    public override float GetValue(Graph graph, string port)
+    public override float GetValue(MemoryGraphBackend graph, string port)
     {
         Assert.IsTrue(port == nameof(_outputPort));
         return GetValue(graph);

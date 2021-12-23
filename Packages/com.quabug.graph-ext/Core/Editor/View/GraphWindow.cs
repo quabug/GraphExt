@@ -38,7 +38,7 @@ namespace GraphExt.Editor
             var miniMap = rootVisualElement.Q<MiniMap>();
             if (miniMap != null) miniMap.graphView = graph;
 
-            graph.Module = (IGraph) Activator.CreateInstance(Type.GetType(config.Backend));
+            graph.Module = (IGraphBackend) Activator.CreateInstance(Type.GetType(config.Backend));
 
             WindowExtension?.OnInitialized(this, Config, graph);
         }

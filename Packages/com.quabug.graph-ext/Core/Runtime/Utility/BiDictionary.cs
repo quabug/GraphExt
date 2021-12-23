@@ -5,8 +5,23 @@ namespace GraphExt
 {
     public class BiDictionary<T1, T2> : IDictionary<T1, T2>
     {
-        private readonly IDictionary<T1, T2> _forward = new Dictionary<T1, T2>();
-        private readonly IDictionary<T2, T1> _reverse = new Dictionary<T2, T1>();
+        private readonly Dictionary<T1, T2> _forward = new Dictionary<T1, T2>();
+        private readonly Dictionary<T2, T1> _reverse = new Dictionary<T2, T1>();
+
+        public IReadOnlyDictionary<T1, T2> Forward => _forward;
+        public IReadOnlyDictionary<T2, T1> Reverse => _reverse;
+
+        public BiDictionary()  {}
+
+        public BiDictionary(IEnumerable<(T1, T2)> items)
+        {
+            foreach (var (key, value) in items) Add(key, value);
+        }
+
+        public BiDictionary(IEnumerable<KeyValuePair<T1, T2>> items)
+        {
+            foreach (var item in items) Add(item.Key, item.Value);
+        }
 
         public void Add(T1 t1, T2 t2)
         {
@@ -90,21 +105,21 @@ namespace GraphExt
 
         public bool Contains(KeyValuePair<T1, T2> item)
         {
-            return _forward.Contains(item);
+            return ((IDictionary<T1, T2>)_forward).Contains(item);
         }
 
         public void CopyTo(KeyValuePair<T1, T2>[] array, int arrayIndex)
         {
-            _forward.CopyTo(array, arrayIndex);
+            ((IDictionary<T1, T2>)_forward).CopyTo(array, arrayIndex);
         }
 
         public bool Remove(KeyValuePair<T1, T2> item)
         {
-            _reverse.Remove(new KeyValuePair<T2, T1>(item.Value, item.Key));
-            return _forward.Remove(item);
+            _reverse.Remove(item.Value);
+            return _forward.Remove(item.Key);
         }
 
         public int Count => _forward.Count;
-        public bool IsReadOnly => _forward.IsReadOnly;
+        public bool IsReadOnly => ((IDictionary<T1, T2>)_forward).IsReadOnly;
     }
 }

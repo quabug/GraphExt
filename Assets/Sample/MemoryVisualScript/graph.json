@@ -1,78 +1,70 @@
 {
   "Nodes": [
     {
-      "PositionX": 594.0,
-      "PositionY": 142.0,
+      "PositionX": 696.0,
+      "PositionY": 194.0,
       "Inner": {
-        "$type": "AddNode, GraphExt.Sample",
-        "Id": {
-          "Id": "b796c0b2-75fc-4b5e-bc07-04b276112e81"
-        }
-      }
+        "$type": "AddNode, GraphExt.Sample"
+      },
+      "Id": "96356595-f358-492e-a2da-a730e4de3fbd"
     },
     {
-      "PositionX": 447.0,
-      "PositionY": 76.0,
+      "PositionX": 530.0,
+      "PositionY": 130.0,
       "Inner": {
-        "$type": "AddNode, GraphExt.Sample",
-        "Id": {
-          "Id": "997d3700-dde4-49e7-ba14-3dd40b15bb71"
-        }
-      }
+        "$type": "AddNode, GraphExt.Sample"
+      },
+      "Id": "642f009a-d5dc-4f30-9f1f-505dd8fd4e3c"
     },
     {
-      "PositionX": 216.0,
-      "PositionY": 68.0,
+      "PositionX": 304.0,
+      "PositionY": 152.0,
       "Inner": {
         "$type": "MultipleValueNode, GraphExt.Sample",
         "Value1": 1.0,
-        "Value2": 2.0,
-        "Id": {
-          "Id": "c2901a81-e367-4c73-83f0-11ee114dd224"
-        }
-      }
+        "Value2": 2.0
+      },
+      "Id": "0bd4b844-06bd-420f-8200-2db2e48409e6"
     },
     {
-      "PositionX": 223.0,
-      "PositionY": 216.5,
+      "PositionX": 299.0,
+      "PositionY": 280.0,
       "Inner": {
         "$type": "ValueNode, GraphExt.Sample",
-        "Value": 3.0,
-        "Id": {
-          "Id": "131561b6-8888-421d-8b8f-f1f5364ecfb8"
-        }
-      }
+        "Value": 3.0
+      },
+      "Id": "54d4fd36-9420-4c10-abac-b1c4df8ecddf"
     }
   ],
   "Edges": [
     {
-      "Node1": "b796c0b2-75fc-4b5e-bc07-04b276112e81",
+      "Node1": "642f009a-d5dc-4f30-9f1f-505dd8fd4e3c",
       "Port1": "_inputPort",
-      "Node2": "997d3700-dde4-49e7-ba14-3dd40b15bb71",
-      "Port2": "_outputPort"
-    },
-    {
-      "Node1": "997d3700-dde4-49e7-ba14-3dd40b15bb71",
-      "Port1": "_inputPort",
-      "Node2": "c2901a81-e367-4c73-83f0-11ee114dd224",
+      "Node2": "0bd4b844-06bd-420f-8200-2db2e48409e6",
       "Port2": "_outPort1"
     },
     {
-      "Node1": "b796c0b2-75fc-4b5e-bc07-04b276112e81",
+      "Node1": "96356595-f358-492e-a2da-a730e4de3fbd",
       "Port1": "_inputPort",
-      "Node2": "c2901a81-e367-4c73-83f0-11ee114dd224",
+      "Node2": "0bd4b844-06bd-420f-8200-2db2e48409e6",
       "Port2": "_outPort2"
     },
     {
-      "Node1": "997d3700-dde4-49e7-ba14-3dd40b15bb71",
+      "Node1": "96356595-f358-492e-a2da-a730e4de3fbd",
       "Port1": "_inputPort",
-      "Node2": "131561b6-8888-421d-8b8f-f1f5364ecfb8",
+      "Node2": "642f009a-d5dc-4f30-9f1f-505dd8fd4e3c",
+      "Port2": "_outputPort"
+    },
+    {
+      "Node1": "642f009a-d5dc-4f30-9f1f-505dd8fd4e3c",
+      "Port1": "_inputPort",
+      "Node2": "54d4fd36-9420-4c10-abac-b1c4df8ecddf",
       "Port2": "_outPort"
     },
     {
-      "Node1": "b796c0b2-75fc-4b5e-bc07-04b276112e81",
+      "Node1": "96356595-f358-492e-a2da-a730e4de3fbd",
       "Port1": "_inputPort",
-      "Node2": "131561b6-8888-421d-8b8f-f1f5364ecfb8",
+      "Node2": "54d4fd36-9420-4c10-abac-b1c4df8ecddf",
       "Port2": "_outPort"
     }
   ]

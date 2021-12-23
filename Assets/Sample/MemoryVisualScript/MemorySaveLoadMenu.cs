@@ -11,7 +11,7 @@ public class MemorySaveLoadMenu : IMenuEntry
 {
     public void MakeEntry(GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
     {
-        if (graph.Module is Graph memoryGraph)
+        if (graph.Module is MemoryGraphBackend memoryGraph)
         {
             menu.AddItem(new GUIContent("Save"), false, () =>
             {
@@ -45,7 +45,7 @@ public class MemorySaveLoadMenu : IMenuEntry
             menu.AddItem(new GUIContent("Clear"), false, () =>
             {
                 ClosePopupWindow();
-                graph.Module = new Graph();
+                graph.Module = new MemoryGraphBackend();
             });
         }
     }
