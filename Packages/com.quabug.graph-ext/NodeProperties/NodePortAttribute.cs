@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine.Assertions;
 
-namespace GraphExt.Memory
+namespace GraphExt
 {
     [AttributeUsage(AttributeTargets.Field)]
     public class NodePortAttribute : Attribute

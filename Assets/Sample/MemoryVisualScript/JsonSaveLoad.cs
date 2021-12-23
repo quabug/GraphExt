@@ -50,6 +50,27 @@ public static class JsonSaveLoad
         }
     }
 
+    struct SerializableNode
+    {
+        public float PositionX;
+        public float PositionY;
+        public Guid Id;
+        public IMemoryNode Inner;
+
+        public SerializableNode(MemoryGraphBackend.Node node)
+        {
+            PositionX = node.Position.x;
+            PositionY = node.Position.y;
+            Id = node.Id.Id;
+            Inner = node.Inner;
+        }
+
+        public MemoryGraphBackend.Node ToMemory()
+        {
+            return new MemoryGraphBackend.Node(Inner, Id, new Vector2(PositionX, PositionY));
+        }
+    }
+
     struct SerializableEdge
     {
         public Guid Node1;
@@ -74,18 +95,18 @@ public static class JsonSaveLoad
     [Serializable]
     struct SerializableGraph
     {
-        public MemoryGraphBackend.Node[] Nodes;
+        public SerializableNode[] Nodes;
         public SerializableEdge[] Edges;
 
         public SerializableGraph(MemoryGraphBackend memoryGraphBackend)
         {
-            Nodes = memoryGraphBackend.MemoryNodeMap.Select(pair => pair.Value).ToArray();
+            Nodes = memoryGraphBackend.MemoryNodeMap.Select(pair => pair.Value).Select(node => new SerializableNode(node)).ToArray();
             Edges = memoryGraphBackend.Edges.Distinct().Select(edge => new SerializableEdge(edge)).ToArray();
         }
 
         public MemoryGraphBackend ToMemory()
         {
-            return new MemoryGraphBackend(Nodes, Edges.Select(edge => edge.ToMemory()).ToArray());
+            return new MemoryGraphBackend(Nodes.Select(node => node.ToMemory()).ToArray(), Edges.Select(edge => edge.ToMemory()).ToArray());
         }
     }
 }

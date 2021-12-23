@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine.Assertions;
 
-namespace GraphExt.Memory
+namespace GraphExt
 {
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public class NodePropertyAttribute : Attribute

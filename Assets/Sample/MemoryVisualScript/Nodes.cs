@@ -17,10 +17,10 @@ public abstract class VisualNode : MemoryNode, IVisualNode
     public abstract float GetValue(MemoryGraphBackend graph);
     public abstract float GetValue(MemoryGraphBackend graph, string port);
 
-    public override bool IsPortCompatible(MemoryGraphBackend memoryGraphBackend, in PortId start, in PortId end)
+    public override bool IsPortCompatible(MemoryGraphBackend graph, in PortId start, in PortId end)
     {
-        var startNode = memoryGraphBackend.GetMemoryNodeByPort(start);
-        var endNode = memoryGraphBackend.GetMemoryNodeByPort(end);
+        var startNode = graph.GetMemoryNodeByPort(start);
+        var endNode = graph.GetMemoryNodeByPort(end);
         return start.NodeId != end.NodeId && startNode is VisualNode && endNode is VisualNode;
     }
 

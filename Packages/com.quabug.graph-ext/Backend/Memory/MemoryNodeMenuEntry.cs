@@ -27,7 +27,7 @@ namespace GraphExt.Memory
             void CreateNode(Type nodeType)
             {
                 var node = module.CreateNode((IMemoryNode) Activator.CreateInstance(nodeType));
-                node.SetPosition(menuPosition);
+                node.Position = menuPosition;
             }
         }
     }

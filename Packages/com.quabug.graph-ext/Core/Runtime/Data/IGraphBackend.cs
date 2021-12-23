@@ -68,6 +68,7 @@ namespace GraphExt
             {
                 _PortMap.Remove(port);
                 RemovePortEdges(port);
+                OnPortDeleted(port);
             }
         }
 
@@ -78,7 +79,12 @@ namespace GraphExt
             {
                 if (edge.Contains(portId)) removedEdges.Add(edge);
             }
-            _Connections.ExceptWith(removedEdges);
+
+            foreach (var edge in removedEdges)
+            {
+                Connections.Remove(edge);
+                OnEdgeDeleted(edge);
+            }
         }
 
         public void Connect(in PortId input, in PortId output)
@@ -101,7 +107,7 @@ namespace GraphExt
             );
         }
 
-        [NotNull] public IEnumerable<NodeId> FindConnectedNodes(PortId portId)
+        [NotNull] public IEnumerable<NodeId> FindConnectedNodes(in PortId portId)
         {
             return FindConnectedPorts(portId).Select(port => port.NodeId);
         }
@@ -110,5 +116,7 @@ namespace GraphExt
         protected virtual void OnConnected(in PortId input, in PortId output) {}
         protected virtual void OnDisconnected(in PortId input, in PortId outputId) {}
         protected virtual void OnNodeDeleted(in NodeId node) {}
+        protected virtual void OnPortDeleted(in PortId port) {}
+        protected virtual void OnEdgeDeleted(in EdgeId edge) {}
     }
 }
