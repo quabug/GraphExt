@@ -4,7 +4,7 @@
       "PositionX": 696.0,
       "PositionY": 194.0,
       "Inner": {
-        "$type": "AddNode, GraphExt.Sample"
+        "$type": "AddNode, GraphExt.Sample.MemoryVisualScript"
       },
       "Id": "96356595-f358-492e-a2da-a730e4de3fbd"
     },
@@ -12,7 +12,7 @@
       "PositionX": 530.0,
       "PositionY": 130.0,
       "Inner": {
-        "$type": "AddNode, GraphExt.Sample"
+        "$type": "AddNode, GraphExt.Sample.MemoryVisualScript"
       },
       "Id": "642f009a-d5dc-4f30-9f1f-505dd8fd4e3c"
     },
@@ -20,7 +20,7 @@
       "PositionX": 304.0,
       "PositionY": 152.0,
       "Inner": {
-        "$type": "MultipleValueNode, GraphExt.Sample",
+        "$type": "MultipleValueNode, GraphExt.Sample.MemoryVisualScript",
         "Value1": 1.0,
         "Value2": 2.0
       },
@@ -30,7 +30,7 @@
       "PositionX": 299.0,
       "PositionY": 280.0,
       "Inner": {
-        "$type": "ValueNode, GraphExt.Sample",
+        "$type": "ValueNode, GraphExt.Sample.MemoryVisualScript",
         "Value": 3.0
       },
       "Id": "54d4fd36-9420-4c10-abac-b1c4df8ecddf"

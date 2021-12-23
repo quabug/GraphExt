@@ -1,5 +1,5 @@
 {
-    "name": "GraphExt.Sample",
+    "name": "GraphExt.Sample.MemoryVisualScript",
     "rootNamespace": "",
     "references": [
         "GUID:756d163a75d2d4509b594fdc3b57f09d",

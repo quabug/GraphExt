@@ -13,38 +13,32 @@ MonoBehaviour:
   m_Name: GraphConfig
   m_EditorClassIdentifier: 
   WindowName: Graph Window
-  Backend: GraphExt.Memory.MemoryGraphBackend, GraphExt.Memory, Version=0.0.0.0,
+  Backend: GraphExt.Prefab.PrefabGraphBackend, GraphExt.Prefab, Version=0.0.0.0,
     Culture=neutral, PublicKeyToken=null
   Menu:
   - id: 0
   - id: 1
-  - id: 2
-  - id: 3
   NodeViewFactory:
-    id: 4
+    id: 2
   PortViewFactory:
-    id: 5
+    id: 3
   EdgeViewFactory:
-    id: 6
+    id: 4
   references:
     version: 1
     00000000:
-      type: {class: PrintValueMenu, ns: , asm: GraphExt.Sample.MemoryVisualScript}
-    00000001:
       type: {class: SelectionEntry, ns: GraphExt.Editor, asm: GraphExt.Editor}
+    00000001:
+      type: {class: SeparatorEntry, ns: GraphExt.Editor, asm: GraphExt.Editor}
     00000002:
-      type: {class: MemoryNodeMenuEntry, ns: GraphExt.Memory, asm: GraphExt.Memory}
-    00000003:
-      type: {class: MemorySaveLoadMenu, ns: , asm: GraphExt.Sample.MemoryVisualScript}
-    00000004:
       type: {class: DefaultNodeViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
       data:
         NodePropertyViewFactory:
           Factories:
-          - id: 7
-    00000005:
+          - id: 5
+    00000003:
       type: {class: DefaultPortViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
-    00000006:
+    00000004:
       type: {class: DefaultEdgeViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
-    00000007:
+    00000005:
       type: {class: DefaultPropertyViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}

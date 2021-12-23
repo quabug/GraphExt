@@ -1,20 +1,23 @@
-﻿using JetBrains.Annotations;
+﻿using System.Collections.Generic;
+using System.Linq;
+using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
 
 namespace GraphExt.Prefab
 {
-    public class PrefabBackend : BaseGraphBackend
+    public class PrefabGraphBackend : BaseGraphBackend
     {
         private GameObject _root { get; }
 
-        public PrefabBackend() {}
+        public PrefabGraphBackend() {}
 
-        public PrefabBackend([NotNull] GameObject root) :base()
+        public PrefabGraphBackend([NotNull] GameObject root) :base()
         {
             _root = root;
             Selection.selectionChanged += OnSelectionChanged;
         }
+
 
         void OnSelectionChanged()
         {
@@ -44,12 +47,10 @@ namespace GraphExt.Prefab
             // GetMemoryNodeByPort(output).OnDisconnected(this, output.Id, input.Id);
         }
 
-        public GameObjectNode CreateNode(IGameObjectNode node)
+        public void AddNode(INodeComponent node)
         {
-            var obj = new GameObject();
-            var objNode = obj.AddComponent<GameObjectNode>();
-            objNode.Node = node;
-            return objNode;
+            _NodeMap.Add(node.Id, new NodeData(node.Properties.ToArray()));
+            foreach (var (portId, portData) in node.Ports) _PortMap.Add(portId, portData);
         }
     }
 }

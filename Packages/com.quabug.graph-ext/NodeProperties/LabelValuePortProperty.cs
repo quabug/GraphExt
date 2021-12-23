@@ -1,4 +1,3 @@
-using GraphExt.Editor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -23,7 +22,7 @@ namespace GraphExt
 #if UNITY_EDITOR
         public class Factory : Editor.NodePropertyViewFactory<LabelValuePortProperty>
         {
-            protected override VisualElement Create(Node node, LabelValuePortProperty property, INodePropertyViewFactory factory)
+            protected override VisualElement Create(Node node, LabelValuePortProperty property, Editor.INodePropertyViewFactory factory)
             {
                 var container = new VisualElement();
 

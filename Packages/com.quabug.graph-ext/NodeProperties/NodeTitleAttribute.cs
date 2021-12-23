@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -11,7 +10,13 @@ namespace GraphExt
         public string ConstTitle;
         public string TitlePropertyName;
 
-        public static IEnumerable<INodeProperty> CreateTitleProperty(object nodeObject)
+        public static INodeProperty CreateTitleProperty(object nodeObject)
+        {
+            var title = GetTitle(nodeObject);
+            return title == null ? null : new TitleProperty(title);
+        }
+
+        public static string GetTitle(object nodeObject)
         {
             var nodeType = nodeObject.GetType();
             var titleAttribute = nodeType.GetCustomAttribute<NodeTitleAttribute>();
@@ -32,8 +37,7 @@ namespace GraphExt
             {
                 title = nodeType.Name;
             }
-            return title == null ? Enumerable.Empty<TitleProperty>() : new TitleProperty(title).Yield();
+            return title;
         }
-
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
@@ -44,7 +43,7 @@ namespace GraphExt.Memory
         private static (NodeId id, NodeData data) ToNodeData([NotNull] Node node)
         {
             return (node.Id, new NodeData(CreatePositionProperty(node).Yield()
-                    .Concat(NodeTitleAttribute.CreateTitleProperty(node.Inner))
+                    .Append(NodeTitleAttribute.CreateTitleProperty(node.Inner))
                     .Concat(NodePropertyAttribute.CreateProperties(node.Inner, node.Id))
                     .ToArray()
             ));
@@ -88,14 +87,12 @@ namespace GraphExt.Memory
             _MemoryNodeIdMap.Remove(node.Inner);
         }
 
-        public Node CreateNode(IMemoryNode innerNode)
+        public void AddNode(Node node)
         {
-            var node = new Node(innerNode, Guid.NewGuid(), Vector2.zero);
             _MemoryNodeMap[node.Id] = node;
-            _MemoryNodeIdMap[innerNode] = node.Id;
+            _MemoryNodeIdMap[node.Inner] = node.Id;
             _NodeMap.Add(node.Id, ToNodeData(node).data);
             foreach (var (portId, portData) in FindPorts(node)) _PortMap.Add(portId, portData);
-            return node;
         }
 
         [NotNull] public ISet<PortId> FindConnectedPorts(IMemoryNode node, string port)
