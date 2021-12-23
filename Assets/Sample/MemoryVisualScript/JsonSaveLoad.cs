@@ -50,25 +50,6 @@ public static class JsonSaveLoad
         }
     }
 
-    struct SerializableNode
-    {
-        public float PositionX;
-        public float PositionY;
-        public IMemoryNode Node;
-
-        public SerializableNode(Node node)
-        {
-            PositionX = node.Position.x;
-            PositionY = node.Position.y;
-            Node = node.Inner;
-        }
-
-        public Node ToMemory()
-        {
-            return new Node(Node) { Position = new Vector2(PositionX, PositionY) };
-        }
-    }
-
     struct SerializableEdge
     {
         public Guid Node1;
@@ -93,18 +74,18 @@ public static class JsonSaveLoad
     [Serializable]
     struct SerializableGraph
     {
-        public SerializableNode[] Nodes;
+        public Graph.Node[] Nodes;
         public SerializableEdge[] Edges;
 
         public SerializableGraph(Graph graph)
         {
-            Nodes = graph.NodeMap.Select(pair => pair.Value).Select(node => new SerializableNode(node)).ToArray();
+            Nodes = graph.MemoryNodeMap.Select(pair => pair.Value).ToArray();
             Edges = graph.Edges.Distinct().Select(edge => new SerializableEdge(edge)).ToArray();
         }
 
         public Graph ToMemory()
         {
-            return new Graph(Nodes.Select(node => node.ToMemory()), Edges.Select(edge => edge.ToMemory()));
+            return new Graph(Nodes, Edges.Select(edge => edge.ToMemory()));
         }
     }
 }

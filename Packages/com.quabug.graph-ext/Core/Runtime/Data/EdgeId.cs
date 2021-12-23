@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace GraphExt
 {
@@ -12,6 +13,8 @@ namespace GraphExt
             First = first;
             Second = second;
         }
+
+        public bool Contains(in PortId portId) => First == portId || Second == portId;
 
         public bool Equals(EdgeId other)
         {

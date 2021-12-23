@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: GraphConfig
   m_EditorClassIdentifier: 
   WindowName: Graph Window
-  Backend: 
+  Backend: GraphExt.Memory.Graph, GraphExt.Memory, Version=0.0.0.0, Culture=neutral,
+    PublicKeyToken=null
   Menu:
   - id: 0
   - id: 1
@@ -22,6 +23,10 @@ MonoBehaviour:
   - id: 4
   NodeViewFactory:
     id: 5
+  PortViewFactory:
+    id: 6
+  EdgeViewFactory:
+    id: 7
   references:
     version: 1
     00000000:
@@ -35,4 +40,14 @@ MonoBehaviour:
     00000004:
       type: {class: PrintValueMenu, ns: , asm: GraphExt.Sample}
     00000005:
-      type: {class: , ns: , asm: }
+      type: {class: DefaultNodeViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
+      data:
+        NodePropertyViewFactory:
+          Factories:
+          - id: 8
+    00000006:
+      type: {class: DefaultPortViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
+    00000007:
+      type: {class: DefaultEdgeViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
+    00000008:
+      type: {class: DefaultPropertyViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}

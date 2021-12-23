@@ -1,11 +1,9 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using BinaryEgo.Editor.UI;
 using JetBrains.Annotations;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
-using UnityEngine.Assertions;
 using UnityEngine.UIElements;
 using Edge = UnityEditor.Experimental.GraphView.Edge;
 using Node = UnityEditor.Experimental.GraphView.Node;
@@ -17,7 +15,7 @@ namespace GraphExt.Editor
         [NotNull] public GraphConfig Config { get; }
         [NotNull] public IGraph Module { get; set; }
 
-        [NotNull] private readonly GraphElements<NodeId, INodeData, Node> _nodes;
+        [NotNull] private readonly GraphElements<NodeId, NodeData, Node> _nodes;
         [NotNull] private readonly GraphElements<PortId, PortData, Port> _ports;
         [NotNull] private readonly GraphElements<EdgeId, EdgeId, Edge> _edges;
 
@@ -40,7 +38,7 @@ namespace GraphExt.Editor
 
             graphViewChanged += OnGraphChanged;
 
-            _nodes = new GraphElements<NodeId, INodeData, Node>(CreateNodeView, RemoveNodeView);
+            _nodes = new GraphElements<NodeId, NodeData, Node>(CreateNodeView, RemoveNodeView);
             _ports = new GraphElements<PortId, PortData, Port>(CreatePortView, RemovePortView);
             _edges = new GraphElements<EdgeId, EdgeId, Edge>(CreateEdgeView, RemoveEdgeView);
         }
@@ -125,8 +123,8 @@ namespace GraphExt.Editor
 
         public void Tick()
         {
-            _nodes.UpdateElements(Module.Nodes.Select(node => (node.Id, n: node)));
-            _ports.UpdateElements(Module.Ports.Select(port => (port.Id, p: port)));
+            _nodes.UpdateElements(Module.NodeMap.Select(node => (node.Key, node.Value)));
+            _ports.UpdateElements(Module.PortMap.Select(port => (port.Key, port.Value)));
             _edges.UpdateElements(Module.Edges.Select(edge => (edge, edge)));
         }
 
@@ -135,7 +133,7 @@ namespace GraphExt.Editor
             return _nodes.Elements.TryGetValue(portId.NodeId, out var node) ? node.Query<PortContainer>().Where(p => p.PortId == portId).First() : null;
         }
 
-        private Node CreateNodeView(INodeData data)
+        private Node CreateNodeView(NodeId id, NodeData data)
         {
             var node = Config.NodeViewFactory.Create(data);
             AddElement(node);
@@ -150,9 +148,9 @@ namespace GraphExt.Editor
             }
         }
 
-        [CanBeNull] private Port CreatePortView(PortData data)
+        [CanBeNull] private Port CreatePortView(PortId id, PortData data)
         {
-            var container = FindPortContainer(data.Id);
+            var container = FindPortContainer(id);
             if (container != null)
             {
                 var port = Config.PortViewFactory.CreatePort(data);
@@ -168,12 +166,12 @@ namespace GraphExt.Editor
             container?.RemovePort().DisconnectAll();
         }
 
-        private Edge CreateEdgeView(EdgeId data)
+        private Edge CreateEdgeView(EdgeId id, EdgeId _)
         {
-            if (_edges.Elements.ContainsKey(data)) return null;
+            if (_edges.Elements.ContainsKey(id)) return null;
 
-            var port1 = _ports.Elements[data.First];
-            var port2 = _ports.Elements[data.Second];
+            var port1 = _ports.Elements[id.First];
+            var port2 = _ports.Elements[id.Second];
             var edge = port1.ConnectTo(port2);
             AddElement(edge);
             return edge;

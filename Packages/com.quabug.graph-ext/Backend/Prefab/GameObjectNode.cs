@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using GraphExt.Memory;
 using UnityEngine;
 
 namespace GraphExt.Prefab
 {
-    public class GameObjectNode : MonoBehaviour, INodeData
+    public class GameObjectNode : MonoBehaviour
     {
-        [SerializeField, HideInInspector] private string _id = Guid.NewGuid().ToString();
-        [field: SerializeField] public string UXMLPath { get; private set; }
-        public NodeId Id => Guid.Parse(_id);
-        public IReadOnlyList<INodeProperty> Properties { get; }
-        public IReadOnlyList<PortData> Ports { get; }
+        [SerializeReference] public IMemoryNode Node;
+        public NodeId Id => Node.Id;
+        public IEnumerable<INodeProperty> Properties { get; }
     }
 }

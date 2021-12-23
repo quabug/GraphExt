@@ -6,110 +6,99 @@ namespace GraphExt
 {
     public interface IGraph
     {
-        [NotNull] IEnumerable<PortData> Ports { get; }
-        [NotNull] IEnumerable<INodeData> Nodes { get; }
+        [NotNull] IReadOnlyDictionary<PortId, PortData> PortMap { get; }
+        [NotNull] IReadOnlyDictionary<NodeId, NodeData> NodeMap { get; }
+        // TODO: IReadOnlySet or ImmutableSet?
         [NotNull] IEnumerable<EdgeId> Edges { get; }
 
-        void DeleteNode(NodeId nodeId);
-
-        bool IsCompatible(PortId input, PortId output);
-        void Connect(PortId input, PortId output);
-        void Disconnect(PortId input, PortId output);
+        void DeleteNode(in NodeId nodeId);
+        bool IsCompatible(in PortId input, in PortId output);
+        void Connect(in PortId input, in PortId output);
+        void Disconnect(in PortId input, in PortId output);
     }
 
-    public abstract class Graph<TNode> : IGraph where TNode : INodeData
+    public abstract class BaseGraph : IGraph
     {
-        protected readonly Dictionary<NodeId, TNode> _NodeMap;
+        protected readonly Dictionary<NodeId, NodeData> _NodeMap;
         protected readonly Dictionary<PortId, PortData> _PortMap;
-        protected readonly Dictionary<PortId, ISet<EdgeId>> _Connections;
+        protected readonly ISet<EdgeId> _Connections;
 
-        public IReadOnlyDictionary<NodeId, TNode> NodeMap => _NodeMap;
+        public IReadOnlyDictionary<NodeId, NodeData> NodeMap => _NodeMap;
         public IReadOnlyDictionary<PortId, PortData> PortMap => _PortMap;
-        public IReadOnlyDictionary<PortId, ISet<EdgeId>> Connections => _Connections;
+        public ISet<EdgeId> Connections => _Connections;
 
-        public IEnumerable<PortData> Ports => _PortMap.Values;
-        public IEnumerable<INodeData> Nodes => _NodeMap.Values.Cast<INodeData>();
-        public IEnumerable<EdgeId> Edges => _Connections.Values.SelectMany(edges => edges);
+        public IEnumerable<EdgeId> Edges => _Connections;
 
-        public Graph()
+        public BaseGraph()
         {
-            _NodeMap = new Dictionary<NodeId, TNode>();
+            _NodeMap = new Dictionary<NodeId, NodeData>();
             _PortMap = new Dictionary<PortId, PortData>();
-            _Connections = new Dictionary<PortId, ISet<EdgeId>>();
+            _Connections = new HashSet<EdgeId>();
         }
 
-        public Graph(IEnumerable<TNode> nodeList, IEnumerable<EdgeId> edges)
+        public BaseGraph(IEnumerable<(NodeId id, NodeData data)> nodes, IEnumerable<(PortId id, PortData data)> ports, IEnumerable<EdgeId> edges)
         {
-            _NodeMap = nodeList.ToDictionary(n => n.Id, n => n);
-            _PortMap = _NodeMap.SelectMany(keyValue => keyValue.Value.Ports).ToDictionary(port => port.Id, port => port);
-            _Connections = new Dictionary<PortId, ISet<EdgeId>>();
-            foreach (var edge in edges) AddConnection(edge);
+            _NodeMap = nodes.ToDictionary(node => node.id, n => n.data);
+            _PortMap = ports.ToDictionary(port => port.id, port => port.data);
+            _Connections = new HashSet<EdgeId>(edges);
         }
 
-        public PortData this[PortId portId] => _PortMap[portId];
-        public TNode this[NodeId nodeId] => _NodeMap[nodeId];
+        public PortData this[in PortId portId] => _PortMap[portId];
+        public NodeData this[in NodeId nodeId] => _NodeMap[nodeId];
 
-        public void DeleteNode(NodeId nodeId)
+        public void DeleteNode(in NodeId nodeId)
         {
             if (_NodeMap.TryGetValue(nodeId, out var node))
             {
                 _NodeMap.Remove(nodeId);
-                // TODO: remove ports and edges
+                RemoveNodePorts(nodeId);
+                OnNodeDeleted(nodeId);
             }
         }
 
-        public bool IsCompatible(PortId inputPortId, PortId outputPortId)
+        private void RemoveNodePorts(in NodeId nodeId)
         {
-            var input = _PortMap[inputPortId];
-            var output = _PortMap[outputPortId];
-            return IsCompatible(input, output);
-        }
-
-        public void Connect(PortId input, PortId output)
-        {
-            AddConnection(new EdgeId(input, output));
-            OnConnected(_PortMap[input], _PortMap[output]);
-        }
-
-        public void Disconnect(PortId input, PortId output)
-        {
-            RemoveConnection(new EdgeId(input, output));
-            OnDisconnected(_PortMap[input], _PortMap[output]);
-        }
-
-        private void AddConnection(in EdgeId edge)
-        {
-            GetOrCreateEdgeSet(edge.First).Add(edge);
-            GetOrCreateEdgeSet(edge.Second).Add(edge);
-        }
-
-        private void RemoveConnection(in EdgeId edge)
-        {
-            GetOrCreateEdgeSet(edge.First).Remove(edge);
-            GetOrCreateEdgeSet(edge.Second).Remove(edge);
-        }
-
-        ISet<EdgeId> GetOrCreateEdgeSet(in PortId key)
-        {
-            if (!_Connections.TryGetValue(key, out var connectedSet))
+            var removedPorts = new HashSet<PortId>();
+            foreach (var port in PortMap.Keys)
             {
-                connectedSet = new HashSet<EdgeId>();
-                _Connections.Add(key, connectedSet);
+                if (port.NodeId == nodeId) removedPorts.Add(port);
             }
-            return connectedSet;
+
+            foreach (var port in removedPorts)
+            {
+                _PortMap.Remove(port);
+                RemovePortEdges(port);
+            }
         }
 
-        public TNode FindNodeByPort(in PortId portId)
+        private void RemovePortEdges(in PortId portId)
         {
-            return _NodeMap[portId.NodeId];
+            var removedEdges = new HashSet<EdgeId>();
+            foreach (var edge in Edges)
+            {
+                if (edge.Contains(portId)) removedEdges.Add(edge);
+            }
+            _Connections.ExceptWith(removedEdges);
         }
 
-        [NotNull] public IEnumerable<PortId> FindConnectedPorts(PortId portId)
+        public void Connect(in PortId input, in PortId output)
         {
-            return _Connections.TryGetValue(portId, out var connected) ?
-                connected.Select(edge => edge.First == portId ? edge.Second : edge.First) :
-                Enumerable.Empty<PortId>()
-            ;
+            Connections.Add(new EdgeId(input, output));
+            OnConnected(input, output);
+        }
+
+        public void Disconnect(in PortId input, in PortId output)
+        {
+            Connections.Remove(new EdgeId(input, output));
+            OnDisconnected(input, output);
+        }
+
+        [NotNull] public ISet<PortId> FindConnectedPorts(PortId portId)
+        {
+            return new HashSet<PortId>(_Connections
+                .Where(connection => connection.Contains(portId))
+                .Select(connection => portId == connection.First ? connection.Second : connection.First)
+            );
         }
 
         [NotNull] public IEnumerable<NodeId> FindConnectedNodes(PortId portId)
@@ -117,8 +106,9 @@ namespace GraphExt
             return FindConnectedPorts(portId).Select(port => port.NodeId);
         }
 
-        public virtual bool IsCompatible(PortData input, PortData output) => true;
-        public virtual void OnConnected(PortData input, PortData output) {}
-        public virtual void OnDisconnected(PortData input, PortData output) {}
+        public virtual bool IsCompatible(in PortId input, in PortId output) => true;
+        protected virtual void OnConnected(in PortId input, in PortId output) {}
+        protected virtual void OnDisconnected(in PortId input, in PortId outputId) {}
+        protected virtual void OnNodeDeleted(in NodeId node) {}
     }
 }
