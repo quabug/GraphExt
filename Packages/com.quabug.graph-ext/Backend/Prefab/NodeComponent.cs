@@ -14,7 +14,6 @@ namespace GraphExt.Prefab
 
     public interface INodeComponent
     {
-        GameObject GameObject { get; }
         NodeId Id { get;}
         IEnumerable<INodeProperty> Properties { get; }
         IEnumerable<(PortId id, PortData data)> Ports { get; }
@@ -24,9 +23,9 @@ namespace GraphExt.Prefab
     [DisallowMultipleComponent]
     public class NodeComponent : MonoBehaviour, INodeComponent, ISerializationCallbackReceiver
     {
-        [SerializeReference] private INode _node;
+        [SerializeReference] public INode Node;
+        [SerializeField] public Vector2 Position;
         [SerializeField] private string _nodeId = Guid.NewGuid().ToString();
-        [SerializeField] private Vector2 Position;
         [SerializeField] private List<Connection> _serializedConnections;
 
         private enum NodeNameType { Hidden, GameObjectName, NodeTitleAttribute, CustomName }
@@ -44,7 +43,7 @@ namespace GraphExt.Prefab
 
         public IEnumerable<INodeProperty> Properties => new NodePositionProperty(() => Position, position => Position = position).Yield()
             .Append<INodeProperty>(new DynamicTitleProperty(GetNodeName))
-            .Concat(NodePropertyAttribute.CreateProperties(_node, Id))
+            .Concat(NodePropertyAttribute.CreateProperties(Node, Id))
             .ToArray()
         ;
 
@@ -66,7 +65,7 @@ namespace GraphExt.Prefab
             foreach (var edge in _serializedConnections.Select(connection => connection.ToEdge())) _connections.Add(edge);
 
             _ports.Clear();
-            foreach (var port in NodePortUtility.FindPorts(_node.GetType()).Select(port => ToPortPair(port))) _ports.Add(port);
+            foreach (var port in NodePortUtility.FindPorts(Node.GetType()).Select(port => ToPortPair(port))) _ports.Add(port);
 
             KeyValuePair<PortId, PortData> ToPortPair(in PortData port) => new KeyValuePair<PortId, PortData>(new PortId(Id, port.Name), port);
         }
@@ -77,7 +76,7 @@ namespace GraphExt.Prefab
             {
                 NodeNameType.Hidden => null,
                 NodeNameType.GameObjectName => name,
-                NodeNameType.NodeTitleAttribute => NodeTitleAttribute.GetTitle(_node),
+                NodeNameType.NodeTitleAttribute => NodeTitleAttribute.GetTitle(Node),
                 NodeNameType.CustomName => _customName,
                 _ => throw new ArgumentOutOfRangeException()
             };
@@ -85,17 +84,17 @@ namespace GraphExt.Prefab
 
         public bool IsPortCompatible(PrefabGraphBackend graph, in PortId start, in PortId end)
         {
-            return _node.IsPortCompatible(graph, start, end);
+            return Node.IsPortCompatible(graph, start, end);
         }
 
         public void OnConnected(PrefabGraphBackend graph, in PortId start, in PortId end)
         {
-            _node.OnConnected(graph, start, end);
+            Node.OnConnected(graph, start, end);
         }
 
         public void OnDisconnected(PrefabGraphBackend graph, in PortId start, in PortId end)
         {
-            _node.OnDisconnected(graph, start, end);
+            Node.OnDisconnected(graph, start, end);
         }
     }
 }

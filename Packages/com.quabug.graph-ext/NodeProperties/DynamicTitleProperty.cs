@@ -32,8 +32,8 @@ namespace GraphExt
 
             void UpdateName()
             {
-                name = _getName();
-                style.display = new StyleEnum<DisplayStyle>(string.IsNullOrEmpty(name) ? DisplayStyle.None : DisplayStyle.Flex);
+                text = _getName();
+                style.display = new StyleEnum<DisplayStyle>(string.IsNullOrEmpty(text) ? DisplayStyle.None : DisplayStyle.Flex);
             }
         }
 

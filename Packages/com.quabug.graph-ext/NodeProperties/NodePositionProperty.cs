@@ -23,6 +23,7 @@ namespace GraphExt
 
             public EventView(UnityEditor.Experimental.GraphView.Node node, NodePositionProperty property) : base(node)
             {
+                name = "node-position-event";
                 _property = property;
                 Node.SetPosition(new Rect(_property._getter(), Vector2.zero));
             }

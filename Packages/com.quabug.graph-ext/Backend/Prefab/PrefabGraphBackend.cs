@@ -8,16 +8,21 @@ namespace GraphExt.Prefab
 {
     public class PrefabGraphBackend : BaseGraphBackend
     {
-        private GameObject _root { get; }
+        private GameObject _root { get; } = null;
+
+        private readonly BiDictionary<NodeId, INode> _prefabNodeMap = new BiDictionary<NodeId, INode>();
+        public IReadOnlyDictionary<NodeId, INode> PrefabNodeMap => _prefabNodeMap.Forward;
+        public IReadOnlyDictionary<INode, NodeId> PrefabNodeIdMap => _prefabNodeMap.Reverse;
+
+        private readonly Dictionary<NodeId, GameObject> _nodeObjectMap = new Dictionary<NodeId, GameObject>();
+        public IReadOnlyDictionary<NodeId, GameObject> NodeObjectMap;
 
         public PrefabGraphBackend() {}
-
         public PrefabGraphBackend([NotNull] GameObject root) :base()
         {
             _root = root;
             Selection.selectionChanged += OnSelectionChanged;
         }
-
 
         void OnSelectionChanged()
         {
@@ -47,8 +52,15 @@ namespace GraphExt.Prefab
             // GetMemoryNodeByPort(output).OnDisconnected(this, output.Id, input.Id);
         }
 
-        public void AddNode(INodeComponent node)
+        [NotNull] public ISet<PortId> FindConnectedPorts(INode node, string port)
         {
+            var nodeId = _prefabNodeMap.GetKey(node);
+            return FindConnectedPorts(new PortId(nodeId, port));
+        }
+
+        public void AddNode(GameObject nodeObject)
+        {
+            var node = nodeObject.GetComponent<INodeComponent>();
             _NodeMap.Add(node.Id, new NodeData(node.Properties.ToArray()));
             foreach (var (portId, portData) in node.Ports) _PortMap.Add(portId, portData);
         }
