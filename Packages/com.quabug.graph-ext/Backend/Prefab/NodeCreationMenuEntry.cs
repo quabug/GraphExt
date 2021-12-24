@@ -2,8 +2,11 @@
 
 using System;
 using System.Linq;
+using Codice.Client.BaseCommands;
 using GraphExt.Editor;
 using UnityEditor;
+using UnityEditor.Experimental.SceneManagement;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -13,7 +16,7 @@ namespace GraphExt.Prefab
     {
         public void MakeEntry(GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
         {
-            if (!(graph.Module is PrefabGraphBackend backend && backend.Root != null)) return;
+            if (!(graph.Module is PrefabGraphBackend backend && PrefabStageUtility.GetCurrentPrefabStage() != null)) return;
 
             var menuPosition = graph.viewTransform.matrix.inverse.MultiplyPoint(evt.localMousePosition);
             var nodes = TypeCache.GetTypesDerivedFrom<INode>();
@@ -26,12 +29,20 @@ namespace GraphExt.Prefab
 
             void CreateNode(Type nodeType)
             {
+                var stage = PrefabStageUtility.GetCurrentPrefabStage();
+                var root = stage.prefabContentsRoot.transform;
+                if (root == null)
+                {
+                    Debug.LogWarning("must open a prefab to create a node.");
+                    return;
+                }
                 var nodeObject = new GameObject(nodeType.Name);
-                nodeObject.transform.SetParent(backend.Root.transform);
+                nodeObject.transform.SetParent(root);
                 var nodeComponent = nodeObject.AddComponent<T>();
                 nodeComponent.Node = (INode)Activator.CreateInstance(nodeType);
                 nodeComponent.Position = menuPosition;
                 backend.AddNode(nodeObject);
+                EditorSceneManager.MarkSceneDirty(stage.scene);
             }
         }
     }

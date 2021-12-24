@@ -8,9 +8,9 @@ namespace GraphExt.Prefab
     public interface INode
     {
         NodeId Id { get; set; }
-        bool IsPortCompatible(PrefabGraphBackend graph, in EdgeId connection);
-        void OnConnected(PrefabGraphBackend graph, in EdgeId connection);
-        void OnDisconnected(PrefabGraphBackend graph, in EdgeId connection);
+        bool IsPortCompatible(PrefabGraphBackend graph, in PortId input, in PortId output);
+        void OnConnected(PrefabGraphBackend graph, in PortId input, in PortId output);
+        void OnDisconnected(PrefabGraphBackend graph, in PortId input, in PortId output);
     }
 
     public interface INodeComponent
@@ -21,9 +21,9 @@ namespace GraphExt.Prefab
         IEnumerable<(PortId id, PortData data)> Ports { get; }
         IEnumerable<EdgeId> Connections { get; }
 
-        bool IsPortCompatible(PrefabGraphBackend graph, in EdgeId connection);
-        void OnConnected(PrefabGraphBackend graph, in EdgeId connection);
-        void OnDisconnected(PrefabGraphBackend graph, in EdgeId connection);
+        bool IsPortCompatible(PrefabGraphBackend graph, in PortId input, in PortId output);
+        void OnConnected(PrefabGraphBackend graph, in PortId input, in PortId output);
+        void OnDisconnected(PrefabGraphBackend graph, in PortId input, in PortId output);
     }
 
     [DisallowMultipleComponent]
@@ -69,19 +69,26 @@ namespace GraphExt.Prefab
             };
         }
 
-        public virtual bool IsPortCompatible(PrefabGraphBackend graph, in EdgeId connection)
+        bool INodeComponent.IsPortCompatible(PrefabGraphBackend graph, in PortId input, in PortId output)
         {
-            return Node.IsPortCompatible(graph, connection);
+            return IsPortCompatible(graph, input, output) && Node.IsPortCompatible(graph, input, output);
         }
 
-        public virtual void OnConnected(PrefabGraphBackend graph, in EdgeId connection)
+        void INodeComponent.OnConnected(PrefabGraphBackend graph, in PortId input, in PortId output)
         {
-            Node.OnConnected(graph, connection);
+            OnConnected(graph, input, output);
+            Node.OnConnected(graph, input, output);
         }
 
-        public virtual void OnDisconnected(PrefabGraphBackend graph, in EdgeId connection)
+        void INodeComponent.OnDisconnected(PrefabGraphBackend graph, in PortId input, in PortId output)
         {
-            Node.OnDisconnected(graph, connection);
+            OnDisconnected(graph, input, output);
+            Node.OnDisconnected(graph, input, output);
         }
+
+        protected virtual bool IsPortCompatible(PrefabGraphBackend graph, in PortId input, in PortId output) => true;
+        protected virtual void OnConnected(PrefabGraphBackend graph, in PortId input, in PortId output) {}
+        protected virtual void OnDisconnected(PrefabGraphBackend graph, in PortId input, in PortId output) {}
+
     }
 }

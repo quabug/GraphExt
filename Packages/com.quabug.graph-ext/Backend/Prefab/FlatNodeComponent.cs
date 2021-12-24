@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace GraphExt.Prefab
 {
+    [AddComponentMenu("")]
     public class FlatNodeComponent : NodeComponent
     {
         [Serializable]

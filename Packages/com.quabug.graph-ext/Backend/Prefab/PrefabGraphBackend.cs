@@ -1,32 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
-using UnityEditor;
 using UnityEngine;
 
 namespace GraphExt.Prefab
 {
     public class PrefabGraphBackend : BaseGraphBackend
     {
-        public GameObject Root { get; } = null;
-
         private readonly BiDictionary<NodeId, GameObject> _nodeObjectMap = new BiDictionary<NodeId, GameObject>();
         public IReadOnlyDictionary<NodeId, GameObject> NodeObjectMap => _nodeObjectMap.Forward;
         public IReadOnlyDictionary<GameObject, NodeId> ObjectNodeMap => _nodeObjectMap.Reverse;
 
         public PrefabGraphBackend() {}
-        public PrefabGraphBackend([NotNull] GameObject root) : base()
+        public PrefabGraphBackend([NotNull] GameObject root)
         {
-            Root = root;
-            Selection.selectionChanged += OnSelectionChanged;
-        }
-
-        void OnSelectionChanged()
-        {
-            var selectedInstance = Selection.activeGameObject;
-            if (selectedInstance != null)
-            {
-            }
+            foreach (var node in root.GetComponentsInChildren<INodeComponent>())
+                AddNode(((Component)node).gameObject);
         }
 
         public override bool IsCompatible(in PortId input, in PortId output)
@@ -34,21 +24,22 @@ namespace GraphExt.Prefab
             var inputData = _PortMap[input];
             var outputData = _PortMap[output];
             return inputData.Direction != outputData.Direction &&
-                   inputData.PortType == outputData.PortType;
+                   inputData.PortType == outputData.PortType &&
+                   GetNodeComponent(input.NodeId).IsPortCompatible(this, input, output) &&
+                   GetNodeComponent(output.NodeId).IsPortCompatible(this, input, output)
+            ;
         }
 
         protected override void OnConnected(in PortId input, in PortId output)
         {
-            var connection = new EdgeId(input, output);
-            GetNodeComponent(input.NodeId).OnConnected(this, connection);
-            GetNodeComponent(output.NodeId).OnConnected(this, connection);
+            GetNodeComponent(input.NodeId).OnConnected(this, input, output);
+            GetNodeComponent(output.NodeId).OnConnected(this, input, output);
         }
 
         protected override void OnDisconnected(in PortId input, in PortId output)
         {
-            var connection = new EdgeId(input, output);
-            GetNodeComponent(input.NodeId).OnDisconnected(this, connection);
-            GetNodeComponent(output.NodeId).OnDisconnected(this, connection);
+            GetNodeComponent(input.NodeId).OnDisconnected(this, input, output);
+            GetNodeComponent(output.NodeId).OnDisconnected(this, input, output);
         }
 
         public INodeComponent GetNodeComponent(in NodeId nodeId) => NodeObjectMap[nodeId].GetComponent<INodeComponent>();
@@ -59,6 +50,7 @@ namespace GraphExt.Prefab
             _nodeObjectMap.Add(node.Id, nodeObject);
             _NodeMap.Add(node.Id, new NodeData(node.Properties.ToArray()));
             foreach (var (portId, portData) in node.Ports) _PortMap.Add(portId, portData);
+            foreach (var connection in node.Connections) _Connections.Add(connection);
         }
     }
 }

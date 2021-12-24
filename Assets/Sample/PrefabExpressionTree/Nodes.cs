@@ -8,16 +8,16 @@ public abstract class ExpressionTreeNode : INode
 {
     public NodeId Id { get; set; }
 
-    public bool IsPortCompatible(PrefabGraphBackend graph, in EdgeId connection)
+    public bool IsPortCompatible(PrefabGraphBackend graph, in PortId input, in PortId output)
     {
         return true;
     }
 
-    public void OnConnected(PrefabGraphBackend graph, in EdgeId connection)
+    public void OnConnected(PrefabGraphBackend graph, in PortId input, in PortId output)
     {
     }
 
-    public void OnDisconnected(PrefabGraphBackend graph, in EdgeId connection)
+    public void OnDisconnected(PrefabGraphBackend graph, in PortId input, in PortId output)
     {
     }
 
