@@ -13,6 +13,7 @@ namespace GraphExt
         public bool HideValue = false;
         public string InputPort = null;
         public string OutputPort = null;
+        public string Name = null;
 
         public static IEnumerable<INodeProperty> CreateProperties(object nodeObj, NodeId nodeId)
         {
@@ -62,7 +63,7 @@ namespace GraphExt
                 if (propertyType == null) return null;
 
                 return new LabelValuePortProperty(
-                    labelProperty: attribute.HideLabel ? null : new LabelProperty(mi.Name),
+                    labelProperty: attribute.HideLabel ? null : new LabelProperty(attribute.Name ?? mi.Name),
                     valueProperty: attribute.HideValue ? null : (INodeProperty) Activator.CreateInstance(propertyType, nodeObj, mi),
                     leftPort: attribute.InputPort == null ? null : new PortContainerProperty(new PortId(nodeId, attribute.InputPort)),
                     rightPort: attribute.OutputPort == null ? null : new PortContainerProperty(new PortId(nodeId, attribute.OutputPort))

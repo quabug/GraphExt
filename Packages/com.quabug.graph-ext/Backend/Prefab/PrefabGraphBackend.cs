@@ -8,19 +8,16 @@ namespace GraphExt.Prefab
 {
     public class PrefabGraphBackend : BaseGraphBackend
     {
-        private GameObject _root { get; } = null;
+        public GameObject Root { get; } = null;
 
-        private readonly BiDictionary<NodeId, INode> _prefabNodeMap = new BiDictionary<NodeId, INode>();
-        public IReadOnlyDictionary<NodeId, INode> PrefabNodeMap => _prefabNodeMap.Forward;
-        public IReadOnlyDictionary<INode, NodeId> PrefabNodeIdMap => _prefabNodeMap.Reverse;
-
-        private readonly Dictionary<NodeId, GameObject> _nodeObjectMap = new Dictionary<NodeId, GameObject>();
-        public IReadOnlyDictionary<NodeId, GameObject> NodeObjectMap;
+        private readonly BiDictionary<NodeId, GameObject> _nodeObjectMap = new BiDictionary<NodeId, GameObject>();
+        public IReadOnlyDictionary<NodeId, GameObject> NodeObjectMap => _nodeObjectMap.Forward;
+        public IReadOnlyDictionary<GameObject, NodeId> ObjectNodeMap => _nodeObjectMap.Reverse;
 
         public PrefabGraphBackend() {}
-        public PrefabGraphBackend([NotNull] GameObject root) :base()
+        public PrefabGraphBackend([NotNull] GameObject root) : base()
         {
-            _root = root;
+            Root = root;
             Selection.selectionChanged += OnSelectionChanged;
         }
 
@@ -42,25 +39,24 @@ namespace GraphExt.Prefab
 
         protected override void OnConnected(in PortId input, in PortId output)
         {
-            // GetMemoryNodeByPort(input).OnConnected(this, output.Id, input.Id);
-            // GetMemoryNodeByPort(output).OnConnected(this, output.Id, input.Id);
+            var connection = new EdgeId(input, output);
+            GetNodeComponent(input.NodeId).OnConnected(this, connection);
+            GetNodeComponent(output.NodeId).OnConnected(this, connection);
         }
 
         protected override void OnDisconnected(in PortId input, in PortId output)
         {
-            // GetMemoryNodeByPort(input).OnDisconnected(this, output.Id, input.Id);
-            // GetMemoryNodeByPort(output).OnDisconnected(this, output.Id, input.Id);
+            var connection = new EdgeId(input, output);
+            GetNodeComponent(input.NodeId).OnDisconnected(this, connection);
+            GetNodeComponent(output.NodeId).OnDisconnected(this, connection);
         }
 
-        [NotNull] public ISet<PortId> FindConnectedPorts(INode node, string port)
-        {
-            var nodeId = _prefabNodeMap.GetKey(node);
-            return FindConnectedPorts(new PortId(nodeId, port));
-        }
+        public INodeComponent GetNodeComponent(in NodeId nodeId) => NodeObjectMap[nodeId].GetComponent<INodeComponent>();
 
         public void AddNode(GameObject nodeObject)
         {
             var node = nodeObject.GetComponent<INodeComponent>();
+            _nodeObjectMap.Add(node.Id, nodeObject);
             _NodeMap.Add(node.Id, new NodeData(node.Properties.ToArray()));
             foreach (var (portId, portData) in node.Ports) _PortMap.Add(portId, portData);
         }

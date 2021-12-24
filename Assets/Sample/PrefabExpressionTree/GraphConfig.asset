@@ -12,20 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5ba7f039e774f7b9f34a9386ac259ed, type: 3}
   m_Name: GraphConfig
   m_EditorClassIdentifier: 
-  aaa: 111
-  WindowName: Graph Window
+  WindowName: Expression Tree
   Backend: GraphExt.Prefab.PrefabGraphBackend, GraphExt.Prefab, Version=0.0.0.0,
     Culture=neutral, PublicKeyToken=null
   Menu:
   - id: 0
   - id: 1
-  - id: 2
   NodeViewFactory:
-    id: 3
+    id: 2
   PortViewFactory:
-    id: 4
+    id: 3
   EdgeViewFactory:
-    id: 5
+    id: 4
   references:
     version: 1
     00000000:
@@ -33,16 +31,14 @@ MonoBehaviour:
     00000001:
       type: {class: SeparatorEntry, ns: GraphExt.Editor, asm: GraphExt.Editor}
     00000002:
-      type: {class: NodeCreationMenuEntry, ns: GraphExt.Prefab, asm: GraphExt.Prefab}
-    00000003:
       type: {class: DefaultNodeViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
       data:
         NodePropertyViewFactory:
           Factories:
-          - id: 6
-    00000004:
+          - id: 5
+    00000003:
       type: {class: DefaultPortViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
-    00000005:
+    00000004:
       type: {class: DefaultEdgeViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
-    00000006:
+    00000005:
       type: {class: DefaultPropertyViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}

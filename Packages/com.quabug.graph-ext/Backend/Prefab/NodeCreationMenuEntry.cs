@@ -9,11 +9,11 @@ using UnityEngine.UIElements;
 
 namespace GraphExt.Prefab
 {
-    public class NodeCreationMenuEntry : IMenuEntry
+    public class NodeCreationMenuEntry<T> : IMenuEntry where T : NodeComponent
     {
         public void MakeEntry(GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
         {
-            if (!(graph.Module is PrefabGraphBackend backend)) return;
+            if (!(graph.Module is PrefabGraphBackend backend && backend.Root != null)) return;
 
             var menuPosition = graph.viewTransform.matrix.inverse.MultiplyPoint(evt.localMousePosition);
             var nodes = TypeCache.GetTypesDerivedFrom<INode>();
@@ -27,13 +27,17 @@ namespace GraphExt.Prefab
             void CreateNode(Type nodeType)
             {
                 var nodeObject = new GameObject(nodeType.Name);
-                var nodeComponent = nodeObject.AddComponent<NodeComponent>();
+                nodeObject.transform.SetParent(backend.Root.transform);
+                var nodeComponent = nodeObject.AddComponent<T>();
                 nodeComponent.Node = (INode)Activator.CreateInstance(nodeType);
                 nodeComponent.Position = menuPosition;
                 backend.AddNode(nodeObject);
             }
         }
     }
+
+    public class FlatNodeCreationMenuEntry : NodeCreationMenuEntry<FlatNodeComponent> {}
+    public class TreeNodeCreationMenuEntry : NodeCreationMenuEntry<TreeNodeComponent> {}
 }
 
 #endif

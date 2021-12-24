@@ -7,39 +7,40 @@ namespace GraphExt.Prefab
 {
     public interface INode
     {
-        bool IsPortCompatible(PrefabGraphBackend graph, in PortId start, in PortId end);
-        void OnConnected(PrefabGraphBackend graph, in PortId start, in PortId end);
-        void OnDisconnected(PrefabGraphBackend graph, in PortId start, in PortId end);
+        NodeId Id { get; set; }
+        bool IsPortCompatible(PrefabGraphBackend graph, in EdgeId connection);
+        void OnConnected(PrefabGraphBackend graph, in EdgeId connection);
+        void OnDisconnected(PrefabGraphBackend graph, in EdgeId connection);
     }
 
     public interface INodeComponent
     {
         NodeId Id { get;}
+        INode Node { get; }
         IEnumerable<INodeProperty> Properties { get; }
         IEnumerable<(PortId id, PortData data)> Ports { get; }
         IEnumerable<EdgeId> Connections { get; }
+
+        bool IsPortCompatible(PrefabGraphBackend graph, in EdgeId connection);
+        void OnConnected(PrefabGraphBackend graph, in EdgeId connection);
+        void OnDisconnected(PrefabGraphBackend graph, in EdgeId connection);
     }
 
     [DisallowMultipleComponent]
-    public class NodeComponent : MonoBehaviour, INodeComponent, ISerializationCallbackReceiver
+    public abstract class NodeComponent : MonoBehaviour, INodeComponent
     {
-        [SerializeReference] public INode Node;
-        [SerializeField] public Vector2 Position;
-        [SerializeField] private string _nodeId = Guid.NewGuid().ToString();
-        [SerializeField] private List<Connection> _serializedConnections;
+        [field: SerializeReference] public INode Node { get; set; }
+        [SerializeField, HideInInspector] public Vector2 Position;
+        [SerializeField, HideInInspector] private string _nodeId = Guid.NewGuid().ToString();
 
         private enum NodeNameType { Hidden, GameObjectName, NodeTitleAttribute, CustomName }
-        [SerializeField] private NodeNameType _nameType = NodeNameType.GameObjectName;
+        [SerializeField] private NodeNameType _nameType = NodeNameType.NodeTitleAttribute;
         [SerializeField] private string _customName;
 
         public NodeId Id => Guid.Parse(_nodeId);
-        public GameObject GameObject => gameObject;
 
-        private readonly IDictionary<PortId, PortData> _ports = new Dictionary<PortId, PortData>();
-        public IEnumerable<(PortId id, PortData data)> Ports => _ports.Select(pair => (pair.Key, pair.Value));
-
-        private readonly ISet<EdgeId> _connections = new HashSet<EdgeId>();
-        public IEnumerable<EdgeId> Connections => _connections;
+        private readonly Lazy<IDictionary<PortId, PortData>> _ports;
+        public IEnumerable<(PortId id, PortData data)> Ports => _ports.Value.Select(pair => (pair.Key, pair.Value));
 
         public IEnumerable<INodeProperty> Properties => new NodePositionProperty(() => Position, position => Position = position).Yield()
             .Append<INodeProperty>(new DynamicTitleProperty(GetNodeName))
@@ -47,27 +48,13 @@ namespace GraphExt.Prefab
             .ToArray()
         ;
 
-        [Serializable]
-        private struct Connection
+        public abstract IEnumerable<EdgeId> Connections { get; }
+
+        public NodeComponent()
         {
-            public string NodeId1;
-            public string PortName1;
-            public string NodeId2;
-            public string PortName2;
-            public EdgeId ToEdge() => new EdgeId(new PortId(Guid.Parse(NodeId1), PortName1), new PortId(Guid.Parse(NodeId2), PortName2));
-        }
-
-        public void OnBeforeSerialize() {}
-
-        public void OnAfterDeserialize()
-        {
-            _connections.Clear();
-            foreach (var edge in _serializedConnections.Select(connection => connection.ToEdge())) _connections.Add(edge);
-
-            _ports.Clear();
-            foreach (var port in NodePortUtility.FindPorts(Node.GetType()).Select(port => ToPortPair(port))) _ports.Add(port);
-
-            KeyValuePair<PortId, PortData> ToPortPair(in PortData port) => new KeyValuePair<PortId, PortData>(new PortId(Id, port.Name), port);
+            _ports = new Lazy<IDictionary<PortId, PortData>>(() =>
+                NodePortUtility.FindPorts(Node.GetType()).ToDictionary(port => new PortId(Id, port.Name), port => port)
+            );
         }
 
         private string GetNodeName()
@@ -82,19 +69,46 @@ namespace GraphExt.Prefab
             };
         }
 
-        public bool IsPortCompatible(PrefabGraphBackend graph, in PortId start, in PortId end)
+        public virtual bool IsPortCompatible(PrefabGraphBackend graph, in EdgeId connection)
         {
-            return Node.IsPortCompatible(graph, start, end);
+            return Node.IsPortCompatible(graph, connection);
         }
 
-        public void OnConnected(PrefabGraphBackend graph, in PortId start, in PortId end)
+        public virtual void OnConnected(PrefabGraphBackend graph, in EdgeId connection)
         {
-            Node.OnConnected(graph, start, end);
+            Node.OnConnected(graph, connection);
         }
 
-        public void OnDisconnected(PrefabGraphBackend graph, in PortId start, in PortId end)
+        public virtual void OnDisconnected(PrefabGraphBackend graph, in EdgeId connection)
         {
-            Node.OnDisconnected(graph, start, end);
+            Node.OnDisconnected(graph, connection);
         }
+    }
+
+    public class FlatNodeComponent : NodeComponent
+    {
+        [Serializable]
+        private struct Connection
+        {
+            public string NodeId1;
+            public string PortName1;
+            public string NodeId2;
+            public string PortName2;
+            public EdgeId ToEdge() => new EdgeId(new PortId(Guid.Parse(NodeId1), PortName1), new PortId(Guid.Parse(NodeId2), PortName2));
+        }
+
+        [SerializeField] private Connection[] _serializedConnections;
+        private readonly Lazy<HashSet<EdgeId>> _connections;
+        public override IEnumerable<EdgeId> Connections => _connections.Value;
+
+        public FlatNodeComponent()
+        {
+            _connections = new Lazy<HashSet<EdgeId>>(() => new HashSet<EdgeId>(_serializedConnections.Select(conn => conn.ToEdge())));
+        }
+    }
+
+    public class TreeNodeComponent : NodeComponent
+    {
+        public override IEnumerable<EdgeId> Connections { get; }
     }
 }

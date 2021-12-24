@@ -10,6 +10,8 @@ namespace GraphExt.Editor
     {
         public string WindowName = "Graph Window";
 
+        [SerializeReference, SerializeReferenceDrawer] public IWindowExtension[] WindowExtensions;
+
         [SerializedType(typeof(IGraphBackend), Where = nameof(IsValidBackendType))] public string Backend;
         private bool IsValidBackendType(Type type) => !type.IsAbstract && !type.IsGenericType;
 

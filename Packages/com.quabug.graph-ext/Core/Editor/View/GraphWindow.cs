@@ -9,7 +9,7 @@ namespace GraphExt.Editor
     public class GraphWindow : EditorWindow
     {
         public GraphConfig Config;
-        public GroupWindowExtension WindowExtension = new GroupWindowExtension();
+        public GroupWindowExtension WindowExtension { get; } = new GroupWindowExtension();
 
         public void CreateGUI()
         {
@@ -40,7 +40,8 @@ namespace GraphExt.Editor
 
             graph.Module = (IGraphBackend) Activator.CreateInstance(Type.GetType(config.Backend));
 
-            WindowExtension?.OnInitialized(this, Config, graph);
+            WindowExtension.Extensions.AddRange(config.WindowExtensions);
+            WindowExtension.OnInitialized(this, Config, graph);
         }
 
         // TODO: optimize
@@ -53,6 +54,11 @@ namespace GraphExt.Editor
                 if (parent is ITickableElement tickable) tickable.Tick();
                 foreach (var child in parent.Children()) TickChildren(child);
             }
+        }
+
+        private void OnDestroy()
+        {
+            WindowExtension.OnClosed(this, Config, rootVisualElement.Q<GraphView>());
         }
     }
 }

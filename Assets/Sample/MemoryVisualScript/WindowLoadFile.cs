@@ -13,6 +13,8 @@ public class WindowLoadFile : IWindowExtension
         if (graph != null) view.Module = graph;
         else FilePath = null;
     }
+
+    public void OnClosed(GraphWindow window, GraphConfig config, GraphView view) {}
 }
 
 #endif

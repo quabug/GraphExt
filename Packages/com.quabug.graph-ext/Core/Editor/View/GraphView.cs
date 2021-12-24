@@ -172,7 +172,7 @@ namespace GraphExt.Editor
 
             var port1 = _ports.Elements[id.First];
             var port2 = _ports.Elements[id.Second];
-            var edge = port1.ConnectTo(port2);
+            var edge = Config.EdgeViewFactory.CreateEdge(port1, port2);
             AddElement(edge);
             return edge;
         }
