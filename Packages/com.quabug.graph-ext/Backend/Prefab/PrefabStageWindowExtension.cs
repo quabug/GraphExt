@@ -1,4 +1,6 @@
-﻿using GraphExt.Editor;
+﻿#if UNITY_EDITOR
+
+using GraphExt.Editor;
 using JetBrains.Annotations;
 using UnityEditor.Experimental.SceneManagement;
 
@@ -37,3 +39,5 @@ namespace GraphExt.Prefab
         }
     }
 }
+
+#endif

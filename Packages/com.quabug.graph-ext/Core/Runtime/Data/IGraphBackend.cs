@@ -19,29 +19,15 @@ namespace GraphExt
 
     public abstract class BaseGraphBackend : IGraphBackend
     {
-        protected readonly Dictionary<NodeId, NodeData> _NodeMap;
-        protected readonly Dictionary<PortId, PortData> _PortMap;
-        protected readonly ISet<EdgeId> _Connections;
+        protected readonly Dictionary<NodeId, NodeData> _NodeMap = new Dictionary<NodeId, NodeData>();
+        protected readonly Dictionary<PortId, PortData> _PortMap = new Dictionary<PortId, PortData>();
+        protected readonly HashSet<EdgeId> _Connections = new HashSet<EdgeId>();
 
         public IReadOnlyDictionary<NodeId, NodeData> NodeMap => _NodeMap;
         public IReadOnlyDictionary<PortId, PortData> PortMap => _PortMap;
         public ISet<EdgeId> Connections => _Connections;
 
         public IEnumerable<EdgeId> Edges => _Connections;
-
-        public BaseGraphBackend()
-        {
-            _NodeMap = new Dictionary<NodeId, NodeData>();
-            _PortMap = new Dictionary<PortId, PortData>();
-            _Connections = new HashSet<EdgeId>();
-        }
-
-        public BaseGraphBackend(IEnumerable<(NodeId id, NodeData data)> nodes, IEnumerable<(PortId id, PortData data)> ports, IEnumerable<EdgeId> edges)
-        {
-            _NodeMap = nodes.ToDictionary(node => node.id, n => n.data);
-            _PortMap = ports.ToDictionary(port => port.id, port => port.data);
-            _Connections = new HashSet<EdgeId>(edges);
-        }
 
         public PortData this[in PortId portId] => _PortMap[portId];
         public NodeData this[in NodeId nodeId] => _NodeMap[nodeId];

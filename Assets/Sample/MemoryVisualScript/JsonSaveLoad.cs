@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using GraphExt;
 using GraphExt.Memory;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -34,9 +35,9 @@ public static class JsonSaveLoad
         }
     }
 
-    public static MemoryGraphBackend Load(string path)
+    [NotNull] public static MemoryGraphBackend Load(string path)
     {
-        if (string.IsNullOrEmpty(path)) return null;
+        if (string.IsNullOrEmpty(path)) return new MemoryGraphBackend();
         try
         {
             var json = File.ReadAllText(path);
@@ -46,7 +47,7 @@ public static class JsonSaveLoad
         catch (Exception ex)
         {
             Debug.LogError($"failed to load MemoryGraphBackend from {path}: {ex}");
-            return null;
+            return new MemoryGraphBackend();
         }
     }
 

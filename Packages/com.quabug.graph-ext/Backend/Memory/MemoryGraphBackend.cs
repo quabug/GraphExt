@@ -29,8 +29,10 @@ namespace GraphExt.Memory
         public MemoryGraphBackend() {}
 
         public MemoryGraphBackend([NotNull] IReadOnlyList<Node> nodes, [NotNull] IReadOnlyList<EdgeId> edges)
-            : base(nodes.Select(ToNodeData), nodes.SelectMany(FindPorts), edges)
         {
+            foreach (var node in nodes) _NodeMap.Add(node.Id, ToNodeData(node));
+            foreach (var (portId, portData) in nodes.SelectMany(FindPorts)) _PortMap.Add(portId, portData);
+            foreach (var edge in edges) _Connections.Add(edge);
             _MemoryNodeMap = nodes.ToDictionary(node => node.Id, node => node);
             _MemoryNodeIdMap = nodes.ToDictionary(node => node.Inner, node => node.Id);
         }
@@ -40,13 +42,13 @@ namespace GraphExt.Memory
             return NodePortUtility.FindPorts(node.Inner.GetType()).Select(port => (new PortId(node.Id, port.Name), port));
         }
 
-        private static (NodeId id, NodeData data) ToNodeData([NotNull] Node node)
+        private static NodeData ToNodeData([NotNull] Node node)
         {
-            return (node.Id, new NodeData(CreatePositionProperty(node).Yield()
+            return new NodeData(CreatePositionProperty(node).Yield()
                     .Append(NodeTitleAttribute.CreateTitleProperty(node.Inner))
                     .Concat(NodePropertyAttribute.CreateProperties(node.Inner, node.Id))
                     .ToArray()
-            ));
+            );
 
             INodeProperty CreatePositionProperty(Node node)
             {
@@ -91,7 +93,7 @@ namespace GraphExt.Memory
         {
             _MemoryNodeMap[node.Id] = node;
             _MemoryNodeIdMap[node.Inner] = node.Id;
-            _NodeMap.Add(node.Id, ToNodeData(node).data);
+            _NodeMap.Add(node.Id, ToNodeData(node));
             foreach (var (portId, portData) in FindPorts(node)) _PortMap.Add(portId, portData);
         }
 

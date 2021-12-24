@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: GraphConfig
   m_EditorClassIdentifier: 
   WindowName: Visual Script
-  Backend: GraphExt.Memory.MemoryGraphBackend, GraphExt.Memory, Version=0.0.0.0,
+  WindowExtensions:
+  - JsonLoaderWindowExtension, GraphExt.Sample.MemoryVisualScript, Version=0.0.0.0,
     Culture=neutral, PublicKeyToken=null
   Menu:
   - id: 0

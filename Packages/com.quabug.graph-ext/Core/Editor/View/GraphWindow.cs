@@ -9,7 +9,7 @@ namespace GraphExt.Editor
     public class GraphWindow : EditorWindow
     {
         public GraphConfig Config;
-        public GroupWindowExtension WindowExtension { get; } = new GroupWindowExtension();
+        public GroupWindowExtension WindowExtension = new GroupWindowExtension();
 
         public void CreateGUI()
         {
@@ -38,9 +38,11 @@ namespace GraphExt.Editor
             var miniMap = rootVisualElement.Q<MiniMap>();
             if (miniMap != null) miniMap.graphView = graph;
 
-            graph.Module = (IGraphBackend) Activator.CreateInstance(Type.GetType(config.Backend));
-
-            WindowExtension.Extensions.AddRange(config.WindowExtensions);
+            foreach (var windowExtensionType in config.WindowExtensions)
+            {
+                var type = Type.GetType(windowExtensionType);
+                WindowExtension.GetOrCreate(type);
+            }
             WindowExtension.OnInitialized(this, Config, graph);
         }
 

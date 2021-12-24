@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace GraphExt.Editor
 {
@@ -15,14 +16,20 @@ namespace GraphExt.Editor
     [Serializable]
     public class GroupWindowExtension : IWindowExtension
     {
-        internal List<IWindowExtension> Extensions = new List<IWindowExtension>();
+        [SerializeReference] internal List<IWindowExtension> Extensions = new List<IWindowExtension>();
 
         public T GetOrCreate<T>() where T : IWindowExtension
         {
-            var ext = (T) Extensions.SingleOrDefault(ext => ext is T);
+            return (T) GetOrCreate(typeof(T));
+        }
+
+        internal IWindowExtension GetOrCreate(Type type)
+        {
+            Assert.IsTrue(typeof(IWindowExtension).IsAssignableFrom(type));
+            var ext = Extensions.SingleOrDefault(ext => ext.GetType() == type);
             if (ext == null)
             {
-                ext = Activator.CreateInstance<T>();
+                ext = (IWindowExtension) Activator.CreateInstance(type);
                 Extensions.Add(ext);
             }
             return ext;
