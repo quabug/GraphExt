@@ -14,10 +14,16 @@ namespace GraphExt
         public string InputPort = null;
         public string OutputPort = null;
         public string Name = null;
+        public bool SerializedField = true;
 
-        public static IEnumerable<INodeProperty> CreateProperties(object nodeObj, NodeId nodeId)
+        public static IEnumerable<INodeProperty> CreateProperties(object nodeObj, NodeId nodeId
+#if UNITY_EDITOR
+            , UnityEditor.SerializedProperty nodeSerializedProperty = null
+#endif
+        )
         {
             var nodeType = nodeObj.GetType();
+
             var members = nodeType.GetMembers(BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             var nodePropertyPorts = new HashSet<string>();
             foreach (var mi in members)
@@ -46,10 +52,18 @@ namespace GraphExt
             INodeProperty TryCreateNodeProperty(MemberInfo mi)
             {
                 var attribute = mi.GetCustomAttribute<NodePropertyAttribute>();
-                Type propertyType = null;
-                if (attribute != null)
+                if (attribute == null) return null;
+
+                INodeProperty valueProperty = null;
+#if UNITY_EDITOR
+                if (attribute.SerializedField && nodeSerializedProperty != null && mi is FieldInfo)
                 {
-                    propertyType = mi switch
+                    valueProperty = new SerializedFieldProperty(nodeSerializedProperty.FindPropertyRelative(mi.Name));
+                }
+                else
+#endif
+                {
+                    var propertyType = mi switch
                     {
                         FieldInfo fi when attribute.ReadOnly => typeof(ReadOnlyFieldInfoProperty<>).MakeGenericType(fi.FieldType),
                         FieldInfo { IsInitOnly: true } fi => typeof(ReadOnlyFieldInfoProperty<>).MakeGenericType(fi.FieldType),
@@ -58,13 +72,12 @@ namespace GraphExt
                         PropertyInfo pi => typeof(PropertyInfoProperty<>).MakeGenericType(pi.PropertyType),
                         _ => null
                     };
+                    valueProperty = propertyType == null ? null : (INodeProperty)Activator.CreateInstance(propertyType, nodeObj, mi);
                 }
 
-                if (propertyType == null) return null;
-
-                return new LabelValuePortProperty(
+                return valueProperty == null ? null : new LabelValuePortProperty(
                     labelProperty: attribute.HideLabel ? null : new LabelProperty(attribute.Name ?? mi.Name),
-                    valueProperty: attribute.HideValue ? null : (INodeProperty) Activator.CreateInstance(propertyType, nodeObj, mi),
+                    valueProperty: attribute.HideValue ? null : valueProperty,
                     leftPort: attribute.InputPort == null ? null : new PortContainerProperty(new PortId(nodeId, attribute.InputPort)),
                     rightPort: attribute.OutputPort == null ? null : new PortContainerProperty(new PortId(nodeId, attribute.OutputPort))
                 );

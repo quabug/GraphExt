@@ -30,7 +30,7 @@ namespace GraphExt.Prefab
             void CreateNode(Type nodeType)
             {
                 var stage = PrefabStageUtility.GetCurrentPrefabStage();
-                var root = stage.prefabContentsRoot.transform;
+                var root = stage == null ? null : stage.prefabContentsRoot.transform;
                 if (root == null)
                 {
                     Debug.LogWarning("must open a prefab to create a node.");
@@ -42,7 +42,7 @@ namespace GraphExt.Prefab
                 nodeComponent.Node = (INode)Activator.CreateInstance(nodeType);
                 nodeComponent.Position = menuPosition;
                 backend.AddNode(nodeObject);
-                EditorSceneManager.MarkSceneDirty(stage.scene);
+                stage.scene.SaveScene();
             }
         }
     }

@@ -29,7 +29,8 @@ namespace GraphExt.Prefab
     [DisallowMultipleComponent]
     public abstract class NodeComponent : MonoBehaviour, INodeComponent
     {
-        [field: SerializeReference] public INode Node { get; set; }
+        [SerializeReference] private INode _node;
+        public INode Node { get => _node; set => _node = value; }
         [SerializeField, HideInInspector] public Vector2 Position;
         [SerializeField, HideInInspector] private string _nodeId = Guid.NewGuid().ToString();
 
@@ -42,11 +43,31 @@ namespace GraphExt.Prefab
         private readonly Lazy<IDictionary<PortId, PortData>> _ports;
         public IEnumerable<(PortId id, PortData data)> Ports => _ports.Value.Select(pair => (pair.Key, pair.Value));
 
-        public IEnumerable<INodeProperty> Properties => new NodePositionProperty(() => Position, position => Position = position).Yield()
-            .Append<INodeProperty>(new DynamicTitleProperty(GetNodeName))
-            .Concat(NodePropertyAttribute.CreateProperties(Node, Id))
+        public IEnumerable<INodeProperty> Properties => CreatePositionProperty()
+            .Append(new DynamicTitleProperty(GetNodeName))
+            .Concat(CreateNodeProperties())
             .ToArray()
         ;
+
+        private IEnumerable<INodeProperty> CreateNodeProperties()
+        {
+#if UNITY_EDITOR
+            var serializedObject = new UnityEditor.SerializedObject(this);
+            var nodeSerializedProperty = serializedObject.FindProperty(nameof(_node));
+            return NodePropertyAttribute.CreateProperties(Node, Id, nodeSerializedProperty);
+#else
+            return NodePropertyAttribute.CreateProperties(Node, Id);
+#endif
+        }
+
+        private IEnumerable<INodeProperty> CreatePositionProperty()
+        {
+            yield return new NodePositionProperty(() => Position, position =>
+            {
+                Position = position;
+                gameObject.scene.SaveScene();
+            });
+        }
 
         public abstract IEnumerable<EdgeId> Connections { get; }
 

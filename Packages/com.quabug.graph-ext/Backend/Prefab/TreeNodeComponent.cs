@@ -20,12 +20,20 @@ namespace GraphExt.Prefab
 
         protected override void OnConnected(PrefabGraphBackend graph, in PortId input, in PortId output)
         {
-            if (input.NodeId == Id) transform.SetParent(graph.NodeObjectMap[output.NodeId].transform);
+            if (input.NodeId == Id)
+            {
+                transform.SetParent(graph.NodeObjectMap[output.NodeId].transform);
+                transform.gameObject.scene.SaveScene();
+            }
         }
 
         protected override void OnDisconnected(PrefabGraphBackend graph, in PortId input, in PortId output)
         {
-            if (input.NodeId == Id) transform.SetParent(FindStageRoot());
+            if (input.NodeId == Id)
+            {
+                transform.SetParent(FindStageRoot());
+                transform.gameObject.scene.SaveScene();
+            }
         }
 
         private Transform FindStageRoot()
