@@ -11,6 +11,8 @@ namespace GraphExt.Prefab
         public IReadOnlyDictionary<NodeId, GameObject> NodeObjectMap => _nodeObjectMap.Forward;
         public IReadOnlyDictionary<GameObject, NodeId> ObjectNodeMap => _nodeObjectMap.Reverse;
 
+        private readonly HashSet<NodeId> _selectedNodes = new HashSet<NodeId>();
+
         public PrefabGraphBackend() {}
         public PrefabGraphBackend([NotNull] GameObject root)
         {
@@ -47,9 +49,40 @@ namespace GraphExt.Prefab
         {
             var node = nodeObject.GetComponent<INodeComponent>();
             _nodeObjectMap.Add(node.Id, nodeObject);
-            _NodeMap.Add(node.Id, new NodeData(node.Properties.ToArray()));
+            _NodeMap.Add(node.Id, new NodeData(node.Properties.Append(CreateNodeSelector(node.Id)).ToArray()));
             foreach (var (portId, portData) in node.Ports) _PortMap.Add(portId, portData);
             foreach (var connection in node.Connections) _Connections.Add(connection);
+        }
+
+        NodeSelector CreateNodeSelector(NodeId node)
+        {
+            var selector = new NodeSelector();
+            selector.OnSelectChanged += isSelected => OnNodeSelected(node, isSelected);
+            return selector;
+        }
+
+        private void OnNodeSelected(in NodeId node, bool isSelected)
+        {
+#if UNITY_EDITOR
+            if (isSelected)
+            {
+                if (_selectedNodes.Contains(node)) return;
+                _selectedNodes.Add(node);
+                Select(NodeObjectMap[node]);
+            }
+            else
+            {
+                if (!_selectedNodes.Contains(node)) return;
+                _selectedNodes.Remove(node);
+                if (_selectedNodes.Any()) Select(NodeObjectMap[_selectedNodes.First()]);
+                else Select(null);
+            }
+
+            void Select(GameObject node)
+            {
+                if (UnityEditor.Selection.activeGameObject != node) UnityEditor.Selection.activeGameObject = node;
+            }
+#endif
         }
     }
 }
