@@ -4,10 +4,26 @@ using UnityEngine;
 
 namespace GraphExt.Prefab
 {
+    public interface ITreeNode : INode
+    {
+        string InputPortName { get; }
+        string OutputPortName { get; }
+    }
+
     [AddComponentMenu("")]
     public class TreeNodeComponent : NodeComponent
     {
-        public override IEnumerable<EdgeId> Connections => Enumerable.Empty<EdgeId>();
+        public override IEnumerable<EdgeId> Connections
+        {
+            get
+            {
+                var parentNode = transform.parent.GetComponent<TreeNodeComponent>();
+                return parentNode == null ? Enumerable.Empty<EdgeId>() : new EdgeId(InputPort, parentNode.OutputPort).Yield();
+            }
+        }
+
+        public PortId InputPort => new PortId(Id, ((ITreeNode)Node).InputPortName);
+        public PortId OutputPort => new PortId(Id, ((ITreeNode)Node).OutputPortName);
 
         protected override bool IsPortCompatible(PrefabGraphBackend graph, in PortId input, in PortId output)
         {

@@ -12,14 +12,16 @@ using UnityEngine.UIElements;
 
 namespace GraphExt.Prefab
 {
-    public class NodeCreationMenuEntry<T> : IMenuEntry where T : NodeComponent
+    public class NodeCreationMenuEntry<TComponent, TNode> : IMenuEntry
+        where TComponent : NodeComponent
+        where TNode : INode
     {
         public void MakeEntry(GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
         {
             if (!(graph.Module is PrefabGraphBackend backend && PrefabStageUtility.GetCurrentPrefabStage() != null)) return;
 
             var menuPosition = graph.viewTransform.matrix.inverse.MultiplyPoint(evt.localMousePosition);
-            var nodes = TypeCache.GetTypesDerivedFrom<INode>();
+            var nodes = TypeCache.GetTypesDerivedFrom<TNode>();
             foreach (var nodeType in nodes
                 .Where(type => !type.IsAbstract && !type.IsGenericType)
                 .OrderBy(type => type.Name))
@@ -38,7 +40,7 @@ namespace GraphExt.Prefab
                 }
                 var nodeObject = new GameObject(nodeType.Name);
                 nodeObject.transform.SetParent(root);
-                var nodeComponent = nodeObject.AddComponent<T>();
+                var nodeComponent = nodeObject.AddComponent<TComponent>();
                 nodeComponent.Node = (INode)Activator.CreateInstance(nodeType);
                 nodeComponent.Position = menuPosition;
                 backend.AddNode(nodeObject);
@@ -47,8 +49,8 @@ namespace GraphExt.Prefab
         }
     }
 
-    public class FlatNodeCreationMenuEntry : NodeCreationMenuEntry<FlatNodeComponent> {}
-    public class TreeNodeCreationMenuEntry : NodeCreationMenuEntry<TreeNodeComponent> {}
+    public class FlatNodeCreationMenuEntry : NodeCreationMenuEntry<FlatNodeComponent, INode> {}
+    public class TreeNodeCreationMenuEntry : NodeCreationMenuEntry<TreeNodeComponent, ITreeNode> {}
 }
 
 #endif

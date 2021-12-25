@@ -37,7 +37,7 @@ namespace GraphExt
             }
 
             foreach (var (fi, portAttribute) in
-                     from fi in nodeType.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+                     from fi in nodeType.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy)
                      from portAttribute in fi.GetCustomAttributes<NodePortAttribute>()
                      select (fi, portAttribute)
                     )

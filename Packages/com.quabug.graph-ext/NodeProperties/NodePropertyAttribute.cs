@@ -44,7 +44,7 @@ namespace GraphExt
                 if (portName == null) return;
                 if (nodePropertyPorts.Contains(portName))
                     throw new Exception($"port {portName} of {nodeType.Name}.{mi.Name} have already been used in another property");
-                if (nodeType.GetField(portName, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic) == null)
+                if (nodeType.GetField(portName, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy) == null)
                     throw new Exception($"invalid port {portName} of {nodeType.Name}.{mi.Name}");
                 nodePropertyPorts.Add(portName);
             }
