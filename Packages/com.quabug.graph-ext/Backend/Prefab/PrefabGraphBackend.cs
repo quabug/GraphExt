@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -11,7 +12,7 @@ namespace GraphExt.Prefab
         public IReadOnlyDictionary<NodeId, GameObject> NodeObjectMap => _nodeObjectMap.Forward;
         public IReadOnlyDictionary<GameObject, NodeId> ObjectNodeMap => _nodeObjectMap.Reverse;
 
-        private readonly HashSet<NodeId> _selectedNodes = new HashSet<NodeId>();
+        public event Action<NodeId, bool> OnNodeSelectedChanged;
 
         public PrefabGraphBackend() {}
         public PrefabGraphBackend([NotNull] GameObject root)
@@ -57,32 +58,8 @@ namespace GraphExt.Prefab
         NodeSelector CreateNodeSelector(NodeId node)
         {
             var selector = new NodeSelector();
-            selector.OnSelectChanged += isSelected => OnNodeSelected(node, isSelected);
+            selector.OnSelectChanged += isSelected => OnNodeSelectedChanged?.Invoke(node, isSelected);
             return selector;
-        }
-
-        private void OnNodeSelected(in NodeId node, bool isSelected)
-        {
-#if UNITY_EDITOR
-            if (isSelected)
-            {
-                if (_selectedNodes.Contains(node)) return;
-                _selectedNodes.Add(node);
-                Select(NodeObjectMap[node]);
-            }
-            else
-            {
-                if (!_selectedNodes.Contains(node)) return;
-                _selectedNodes.Remove(node);
-                if (_selectedNodes.Any()) Select(NodeObjectMap[_selectedNodes.First()]);
-                else Select(null);
-            }
-
-            void Select(GameObject node)
-            {
-                if (UnityEditor.Selection.activeGameObject != node) UnityEditor.Selection.activeGameObject = node;
-            }
-#endif
         }
     }
 }

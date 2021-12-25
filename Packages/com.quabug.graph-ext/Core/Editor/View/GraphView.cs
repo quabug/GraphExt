@@ -19,6 +19,10 @@ namespace GraphExt.Editor
         [NotNull] private readonly GraphElements<PortId, PortData, Port> _ports;
         [NotNull] private readonly GraphElements<EdgeId, EdgeId, Edge> _edges;
 
+        public Node this[in NodeId nodeId] => _nodes.Elements[nodeId];
+        public Port this[in PortId portId] => _ports.Elements[portId];
+        public Edge this[in EdgeId edgeId] => _edges.Elements[edgeId];
+
         public GraphView([NotNull] GraphConfig config)
         {
             Config = config;
