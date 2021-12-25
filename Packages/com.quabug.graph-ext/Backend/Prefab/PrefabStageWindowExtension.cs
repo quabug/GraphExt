@@ -37,7 +37,7 @@ namespace GraphExt.Prefab
 
         private void OnSelectionChanged()
         {
-            if (_backend.ObjectNodeMap.TryGetValue(Selection.activeGameObject, out var nodeId))
+            if (Selection.activeGameObject != null && _backend.ObjectNodeMap.TryGetValue(Selection.activeGameObject, out var nodeId))
             {
                 var node = _view[nodeId];
                 if (!_view.selection.Contains(node))
