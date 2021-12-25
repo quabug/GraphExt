@@ -9,11 +9,12 @@ public abstract class ExpressionTreeNode : ITreeNode
 {
     public NodeId Id { get; set; }
 
-    [NodePort(Direction = PortDirection.Input, Capacity = PortCapacity.Single, HideLabel = true)] protected static float _in;
-    [NodePort(Direction = PortDirection.Output, Capacity = PortCapacity.Multi, HideLabel = true)] protected static float _out;
+    [NodePort(Hide = true, Direction = PortDirection.Input, Capacity = PortCapacity.Single, HideLabel = true)] protected static float _in;
+    [NodePort(Hide = true, Direction = PortDirection.Output, Capacity = PortCapacity.Multi, HideLabel = true)] protected static float _multiOut;
+    [NodePort(Hide = true, Direction = PortDirection.Output, Capacity = PortCapacity.Single, HideLabel = true)] protected static float _singleOut;
 
     public virtual string InputPortName => nameof(_in);
-    public virtual string OutputPortName => nameof(_out);
+    public abstract string OutputPortName { get; }
 
     public bool IsPortCompatible(PrefabGraphBackend graph, in PortId input, in PortId output)
     {
@@ -42,13 +43,15 @@ public abstract class ExpressionTreeNode : ITreeNode
 public class ConstNode : ExpressionTreeNode
 {
     [NodeProperty(InputPort = nameof(_in), Name = "const"), SerializeField] private float _value;
+    public override string OutputPortName => null;
     public override float GetValue(PrefabGraphBackend graph) => _value;
 }
 
 [Serializable]
 public class AddNode : ExpressionTreeNode
 {
-    [NodeProperty(OutputPort = nameof(_out), InputPort = nameof(_in), HideValue = true, Name = "add")] private static int _;
+    [NodeProperty(OutputPort = nameof(_multiOut), InputPort = nameof(_in), HideValue = true, Name = "add")] private static int _;
+    public override string OutputPortName => nameof(_multiOut);
     public override float GetValue(PrefabGraphBackend graph) => GetConnectedValues(graph).Sum();
 }
 
@@ -56,7 +59,6 @@ public class AddNode : ExpressionTreeNode
 public class AbsNode : ExpressionTreeNode
 {
     [NodeProperty(OutputPort = nameof(_singleOut), InputPort = nameof(_in), HideValue = true, Name = "abs")] private static int _;
-    [NodePort(Direction = PortDirection.Output, Capacity = PortCapacity.Single, HideLabel = true)] protected static float _singleOut;
     public override string OutputPortName => nameof(_singleOut);
     public override float GetValue(PrefabGraphBackend graph) => GetConnectedValues(graph).Single();
 }
