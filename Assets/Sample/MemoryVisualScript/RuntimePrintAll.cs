@@ -1,4 +1,3 @@
-using System.Linq;
 using UnityEngine;
 
 public class RuntimePrintAll : MonoBehaviour
@@ -7,8 +6,8 @@ public class RuntimePrintAll : MonoBehaviour
 
     private void Awake()
     {
-        var graph = JsonUtility.Load(GraphJson.text);
-        foreach (var node in graph.Nodes.OfType<IVisualNode>())
+        var graph = JsonUtility.Load<IVisualNode>(GraphJson.text);
+        foreach (var node in graph.Nodes)
             Debug.Log($"{node.GetType().Name} = {node.GetValue(graph)}");
     }
 }

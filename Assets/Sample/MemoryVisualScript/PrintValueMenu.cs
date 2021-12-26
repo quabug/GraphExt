@@ -11,12 +11,12 @@ public class PrintValueMenu : IMenuEntry
 {
     public void MakeEntry(GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
     {
-        if (graph.selection?.FirstOrDefault() is Node node && graph.Module is MemoryGraphViewModule module)
+        if (graph.selection?.FirstOrDefault() is Node node && graph.Module is MemoryGraphViewModule<IVisualNode> module)
         {
             var nodeId = graph.GetNodeId(node);
             menu.AddItem(new GUIContent("Print Node Value"), true, () =>
             {
-                var visualNode = module.Runtime[nodeId] as IVisualNode;
+                var visualNode = module.Runtime[nodeId];
                 var value = visualNode?.GetValue(module.Runtime);
                 Debug.Log($"value = {value}");
             });

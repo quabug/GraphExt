@@ -51,30 +51,30 @@ public static class JsonSaveLoad
 
 public static class JsonUtility
 {
-    public static bool Save(this GraphRuntime<IMemoryNode> graph, string path)
+    public static bool Save<TNode>(this GraphRuntime<TNode> graph, string path) where TNode : INode<GraphRuntime<TNode>>
     {
         try
         {
-            JsonSaveLoad.Save(path, new GraphRuntimeData(graph));
+            JsonSaveLoad.Save(path, new GraphRuntimeData<TNode>(graph));
             return true;
         }
         catch (Exception ex)
         {
-            Debug.LogError($"failed to save {nameof(GraphRuntime<IMemoryNode>)} to {path}: {ex}");
+            Debug.LogError($"failed to save {nameof(GraphRuntime<TNode>)} to {path}: {ex}");
             return false;
         }
     }
 
-    public static GraphRuntime<IMemoryNode> Load(string json)
+    public static GraphRuntime<TNode> Load<TNode>(string json) where TNode : INode<GraphRuntime<TNode>>
     {
         try
         {
-            return ((GraphRuntimeData) JsonSaveLoad.LoadJson(json, typeof(GraphRuntimeData)).Single()).ToMemory();
+            return ((GraphRuntimeData<TNode>) JsonSaveLoad.LoadJson(json, typeof(GraphRuntimeData<TNode>)).Single()).ToMemory();
         }
         catch (Exception ex)
         {
-            Debug.LogError($"failed to load {nameof(GraphRuntime<IMemoryNode>)} from json string: {ex}");
-            return new GraphRuntime<IMemoryNode>();
+            Debug.LogError($"failed to load {nameof(GraphRuntime<TNode>)} from json string: {ex}");
+            return new GraphRuntime<TNode>();
         }
     }
 
@@ -99,22 +99,22 @@ public static class JsonUtility
         }
     }
 
-    internal struct GraphRuntimeData
+    internal struct GraphRuntimeData<TNode> where TNode : INode<GraphRuntime<TNode>>
     {
-        public Dictionary<Guid, IMemoryNode> Nodes;
+        public Dictionary<Guid, TNode> Nodes;
         public SerializableEdge[] Edges;
 
-        public GraphRuntimeData(GraphRuntime<IMemoryNode> graph)
+        public GraphRuntimeData(GraphRuntime<TNode> graph)
         {
             Nodes = graph.NodeMap.ToDictionary(pair => pair.Key.Id, pair => pair.Value);
             Edges = graph.Edges.Distinct().Select(edge => new SerializableEdge(edge)).ToArray();
         }
 
-        public GraphRuntime<IMemoryNode> ToMemory()
+        public GraphRuntime<TNode> ToMemory()
         {
-            var graph = new GraphRuntime<IMemoryNode>();
+            var graph = new GraphRuntime<TNode>();
             foreach (var pair in Nodes)
-                graph.AddNode(pair.Key, pair.Value, NodePortAttribute.FindPortNames(pair.Value.GetType()));
+                graph.AddNode(pair.Key, pair.Value);
             foreach (var edge in Edges.Select(e => e.ToMemory()))
                 graph.Connect(input: edge.Input, output: edge.Output);
             return graph;
@@ -125,49 +125,51 @@ public static class JsonUtility
 #if UNITY_EDITOR
 public static class JsonEditorUtility
 {
-    public static bool Save(this GraphExt.Editor.MemoryGraphViewModule graph, string path)
+    public static bool Save<TNode>(this GraphExt.Editor.MemoryGraphViewModule<TNode> graph, string path)
+        where TNode : INode<GraphRuntime<TNode>>
     {
         try
         {
-            JsonSaveLoad.Save(path, new JsonUtility.GraphRuntimeData(graph.Runtime), new GraphViewData(graph));
+            JsonSaveLoad.Save(path, new JsonUtility.GraphRuntimeData<TNode>(graph.Runtime), new GraphViewData<TNode>(graph));
             return true;
         }
         catch (Exception ex)
         {
-            Debug.LogError($"failed to save {nameof(GraphExt.Editor.MemoryGraphViewModule)} to {path}: {ex}");
+            Debug.LogError($"failed to save {nameof(GraphExt.Editor.MemoryGraphViewModule<TNode>)} to {path}: {ex}");
             return false;
         }
     }
 
-    public static GraphExt.Editor.MemoryGraphViewModule Load(string path)
+    public static GraphExt.Editor.MemoryGraphViewModule<TNode> Load<TNode>(string path)
+        where TNode : INode<GraphRuntime<TNode>>
     {
         try
         {
-            var dataList = JsonSaveLoad.LoadFile(path, typeof(JsonUtility.GraphRuntimeData), typeof(GraphViewData)).ToArray();
-            var runtimeGraph = ((JsonUtility.GraphRuntimeData)dataList[0]).ToMemory();
-            return ((GraphViewData)dataList[1]).CreateViewModule(runtimeGraph);
+            var dataList = JsonSaveLoad.LoadFile(path, typeof(JsonUtility.GraphRuntimeData<TNode>), typeof(GraphViewData<TNode>)).ToArray();
+            var runtimeGraph = ((JsonUtility.GraphRuntimeData<TNode>)dataList[0]).ToMemory();
+            return ((GraphViewData<TNode>)dataList[1]).CreateViewModule(runtimeGraph);
         }
         catch (Exception ex)
         {
-            Debug.LogError($"failed to load {nameof(GraphExt.Editor.MemoryGraphViewModule)} from {path}: {ex}");
-            return new GraphExt.Editor.MemoryGraphViewModule();
+            Debug.LogError($"failed to load {nameof(GraphExt.Editor.MemoryGraphViewModule<TNode>)} from {path}: {ex}");
+            return new GraphExt.Editor.MemoryGraphViewModule<TNode>();
         }
     }
 
-    struct GraphViewData
+    struct GraphViewData<TNode> where TNode : INode<GraphRuntime<TNode>>
     {
         public Dictionary<Guid, (float x, float y)> Positions;
 
-        public GraphViewData(GraphExt.Editor.MemoryGraphViewModule graph)
+        public GraphViewData(GraphExt.Editor.MemoryGraphViewModule<TNode> graph)
         {
             Positions = graph.NodePositions.ToDictionary(t => t.id.Id, t => (t.position.x, t.position.y));
         }
 
-        public GraphExt.Editor.MemoryGraphViewModule CreateViewModule(GraphRuntime<IMemoryNode> runtimeData)
+        public GraphExt.Editor.MemoryGraphViewModule<TNode> CreateViewModule(GraphRuntime<TNode> runtimeData)
         {
-            return new GraphExt.Editor.MemoryGraphViewModule(
+            return new GraphExt.Editor.MemoryGraphViewModule<TNode>(
                 runtimeData,
-                Positions.Select(pair => (new NodeId(pair.Key), new Vector2(pair.Value.x, pair.Value.y)))
+                Positions.ToDictionary(pair => new NodeId(pair.Key), pair => new Vector2(pair.Value.x, pair.Value.y))
             );
         }
     }

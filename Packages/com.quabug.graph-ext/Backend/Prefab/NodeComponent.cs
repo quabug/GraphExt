@@ -1,29 +1,28 @@
-﻿// using System;
-// using System.Collections.Generic;
-// using System.Linq;
-// using UnityEngine;
-//
-// namespace GraphExt.Prefab
-// {
-//     public interface INode
-//     {
-//         NodeId Id { get; set; }
-//         bool IsPortCompatible(PrefabGraphBackend graph, in PortId input, in PortId output);
-//         void OnConnected(PrefabGraphBackend graph, in PortId input, in PortId output);
-//         void OnDisconnected(PrefabGraphBackend graph, in PortId input, in PortId output);
-//     }
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
+namespace GraphExt
+{
+    public interface IGameObjectNode : INode<GraphRuntime<IGameObjectNode>>
+    {
+        bool IsPortCompatible(GraphRuntime<IGameObjectNode> graph, in PortId input, in PortId output);
+        void OnConnected(GraphRuntime<IGameObjectNode> graph, in PortId input, in PortId output);
+        void OnDisconnected(GraphRuntime<IGameObjectNode> graph, in PortId input, in PortId output);
+    }
 //
 //     public interface INodeComponent
 //     {
 //         NodeId Id { get;}
-//         INode Node { get; }
+//         IGameObjectNode Node { get; }
 //         IEnumerable<INodeProperty> Properties { get; }
 //         IEnumerable<(PortId id, PortData data)> Ports { get; }
 //         IEnumerable<EdgeId> Connections { get; }
 //
-//         bool IsPortCompatible(PrefabGraphBackend graph, in PortId input, in PortId output);
-//         void OnConnected(PrefabGraphBackend graph, in PortId input, in PortId output);
-//         void OnDisconnected(PrefabGraphBackend graph, in PortId input, in PortId output);
+//         bool IsPortCompatible(GraphRuntime<IGameObjectNode> graph, in PortId input, in PortId output);
+//         void OnConnected(GraphRuntime<IGameObjectNode> graph, in PortId input, in PortId output);
+//         void OnDisconnected(GraphRuntime<IGameObjectNode> graph, in PortId input, in PortId output);
 //     }
 //
 //     [DisallowMultipleComponent]
@@ -90,26 +89,25 @@
 //             };
 //         }
 //
-//         bool INodeComponent.IsPortCompatible(PrefabGraphBackend graph, in PortId input, in PortId output)
+//         bool INodeComponent.IsPortCompatible(GraphRuntime<IGameObjectNode> graph, in PortId input, in PortId output)
 //         {
 //             return IsPortCompatible(graph, input, output) && Node.IsPortCompatible(graph, input, output);
 //         }
 //
-//         void INodeComponent.OnConnected(PrefabGraphBackend graph, in PortId input, in PortId output)
+//         void INodeComponent.OnConnected(GraphRuntime<IGameObjectNode> graph, in PortId input, in PortId output)
 //         {
 //             OnConnected(graph, input, output);
 //             Node.OnConnected(graph, input, output);
 //         }
 //
-//         void INodeComponent.OnDisconnected(PrefabGraphBackend graph, in PortId input, in PortId output)
+//         void INodeComponent.OnDisconnected(GraphRuntime<IGameObjectNode> graph, in PortId input, in PortId output)
 //         {
 //             OnDisconnected(graph, input, output);
 //             Node.OnDisconnected(graph, input, output);
 //         }
 //
-//         protected virtual bool IsPortCompatible(PrefabGraphBackend graph, in PortId input, in PortId output) => true;
-//         protected virtual void OnConnected(PrefabGraphBackend graph, in PortId input, in PortId output) {}
-//         protected virtual void OnDisconnected(PrefabGraphBackend graph, in PortId input, in PortId output) {}
-//
+//         protected virtual bool IsPortCompatible(GraphRuntime<IGameObjectNode> graph, in PortId input, in PortId output) => true;
+//         protected virtual void OnConnected(GraphRuntime<IGameObjectNode> graph, in PortId input, in PortId output) {}
+//         protected virtual void OnDisconnected(GraphRuntime<IGameObjectNode> graph, in PortId input, in PortId output) {}
 //     }
-// }
+}

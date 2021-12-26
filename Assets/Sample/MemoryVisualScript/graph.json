@@ -14,6 +14,14 @@
     },
     "13749f95-95ab-4130-9d86-97bfa87470e7": {
       "$type": "AddNode, GraphExt.Sample.MemoryVisualScript"
+    },
+    "85d59ce8-555b-4237-b47a-a913f10ebf25": {
+      "$type": "AddNode, GraphExt.Sample.MemoryVisualScript"
+    },
+    "7d51e338-d9ba-4d4a-b5e4-225838f8092d": {
+      "$type": "MultipleValueNode, GraphExt.Sample.MemoryVisualScript",
+      "Value1": 0.0,
+      "Value2": 0.0
     }
   },
   "Edges": [
@@ -66,6 +74,14 @@
     "13749f95-95ab-4130-9d86-97bfa87470e7": {
       "Item1": 610.0,
       "Item2": 290.5
+    },
+    "85d59ce8-555b-4237-b47a-a913f10ebf25": {
+      "Item1": 713.0,
+      "Item2": 205.0
+    },
+    "7d51e338-d9ba-4d4a-b5e4-225838f8092d": {
+      "Item1": 626.0,
+      "Item2": 358.5
     }
   }
 }

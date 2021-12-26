@@ -8,24 +8,24 @@ using UnityEngine.UIElements;
 
 namespace GraphExt.Editor
 {
-    public class MemoryNodeMenuEntry : IMenuEntry
+    public class MemoryNodeMenuEntry<TNode> : IMenuEntry where TNode : INode<GraphRuntime<TNode>>
     {
         public void MakeEntry(GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
         {
-            if (!(graph.Module is MemoryGraphViewModule module)) return;
+            if (!(graph.Module is MemoryGraphViewModule<TNode> module)) return;
 
             var menuPosition = graph.viewTransform.matrix.inverse.MultiplyPoint(evt.localMousePosition);
-            var memoryNodes = TypeCache.GetTypesDerivedFrom<IMemoryNode>();
+            var memoryNodes = TypeCache.GetTypesDerivedFrom<TNode>();
             foreach (var nodeType in memoryNodes
                 .Where(type => !type.IsAbstract && !type.IsGenericType)
                 .OrderBy(type => type.Name))
             {
-                menu.AddItem(new GUIContent($"Node/{nodeType.Name}"), false, () => CreateNode(nodeType));
+                menu.AddItem(new GUIContent($"{typeof(TNode).Name}/{nodeType.Name}"), false, () => CreateNode(nodeType));
             }
 
             void CreateNode(Type nodeType)
             {
-                var node = (IMemoryNode)Activator.CreateInstance(nodeType);
+                var node = (TNode)Activator.CreateInstance(nodeType);
                 module.AddNode(Guid.NewGuid(), node, menuPosition);
             }
         }

@@ -37,7 +37,7 @@ MonoBehaviour:
     00000003:
       type: {class: PrintValueMenu, ns: , asm: GraphExt.Sample.MemoryVisualScript}
     00000004:
-      type: {class: MemoryNodeMenuEntry, ns: GraphExt.Memory.Editor, asm: GraphExt.Memory}
+      type: {class: VisualNodeMenuEntry, ns: , asm: GraphExt.Sample.MemoryVisualScript}
     00000005:
       type: {class: DefaultNodeViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
       data:

@@ -1,6 +1,6 @@
 namespace GraphExt
 {
-    public interface INode<TGraph>
+    public interface INode<in TGraph>
     {
         bool IsPortCompatible(TGraph graph, in PortId start, in PortId end);
         void OnConnected(TGraph graph, in PortId start, in PortId end);

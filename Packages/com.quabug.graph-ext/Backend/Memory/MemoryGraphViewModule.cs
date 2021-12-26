@@ -7,9 +7,9 @@ using UnityEngine;
 
 namespace GraphExt.Editor
 {
-    public class MemoryGraphViewModule : IGraphViewModule
+    public sealed class MemoryGraphViewModule<TNode> : IGraphViewModule where TNode : INode<GraphRuntime<TNode>>
     {
-        public GraphRuntime<IMemoryNode> Runtime { get; }
+        public GraphRuntime<TNode> Runtime { get; } = new GraphRuntime<TNode>();
 
         public IEnumerable<(PortId id, PortData data)> PortMap => _portDataCache.Select(pair => (pair.Key, pair.Value));
         public IEnumerable<(NodeId id, NodeData data)> NodeMap => _nodeDataCache.Select(pair => (pair.Key, pair.Value));
@@ -20,38 +20,29 @@ namespace GraphExt.Editor
         private readonly Dictionary<NodeId, NodeData> _nodeDataCache = new Dictionary<NodeId, NodeData>();
         private readonly Dictionary<PortId, PortData> _portDataCache = new Dictionary<PortId, PortData>();
 
-        public MemoryGraphViewModule()
+        public MemoryGraphViewModule() {}
+
+        public MemoryGraphViewModule([NotNull] GraphRuntime<TNode> runtime, [NotNull] IReadOnlyDictionary<NodeId, Vector2> positions)
         {
-            Runtime = new GraphRuntime<IMemoryNode>();
+            foreach (var pair in runtime.NodeMap) AddNode(pair.Key, pair.Value, positions[pair.Key]);
+            foreach (var edge in runtime.Edges) Runtime.Connect(edge.Input, edge.Output);
         }
 
-        public MemoryGraphViewModule([NotNull] GraphRuntime<IMemoryNode> runtime, [NotNull] IEnumerable<(NodeId node, Vector2 position)> positions)
-        {
-            Runtime = runtime;
-            _nodePositions = positions.ToDictionary(t => t.node, t => t.position);
-            foreach (var pair in runtime.NodeMap) AddNode(pair.Key, pair.Value);
-        }
-
-        public void AddNode(in NodeId nodeId, IMemoryNode node, Vector2 position)
+        public void AddNode(in NodeId nodeId, TNode node, Vector2 position)
         {
             _nodePositions[nodeId] = position;
-            var ports = AddNode(nodeId, node);
-            Runtime.AddNode(nodeId, node, ports.Select(port => port.Name));
-        }
-
-        private PortData[] AddNode(in NodeId nodeId, IMemoryNode node)
-        {
             _nodeDataCache[nodeId] = ToNodeData(nodeId, node);
             var ports = NodePortUtility.FindPorts(node.GetType()).ToArray();
             foreach (var port in ports) _portDataCache[new PortId(nodeId, port.Name)] = port;
-            return ports;
+            Runtime.AddNode(nodeId, node);
         }
 
         public void DeleteNode(in NodeId nodeId)
         {
             _nodePositions.Remove(nodeId);
             _nodeDataCache.Remove(nodeId);
-            foreach (var port in Runtime.FindNodePorts(nodeId)) _portDataCache.Remove(port);
+            var id = nodeId;
+            _portDataCache.RemoveWhere(port => port.Key.NodeId == id);
             Runtime.DeleteNode(nodeId);
         }
 
@@ -75,7 +66,7 @@ namespace GraphExt.Editor
             Runtime.Disconnect(input, output);
         }
 
-        private NodeData ToNodeData(NodeId id, [NotNull] IMemoryNode node)
+        private NodeData ToNodeData(NodeId id, [NotNull] TNode node)
         {
             return new NodeData(CreatePositionProperty().Yield()
                     .Append(NodeTitleAttribute.CreateTitleProperty(node))

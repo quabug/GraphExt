@@ -10,7 +10,7 @@ public class MemorySaveLoadMenu : IMenuEntry
 {
     public void MakeEntry(GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
     {
-        if (graph.Module is MemoryGraphViewModule module)
+        if (graph.Module is MemoryGraphViewModule<IVisualNode> module)
         {
             menu.AddItem(new GUIContent("Save"), false, () =>
             {
@@ -22,7 +22,7 @@ public class MemorySaveLoadMenu : IMenuEntry
             {
                 ClosePopupWindow();
                 var path = EditorUtility.OpenFilePanel("load path", Application.dataPath, "json");
-                var newGraph = JsonEditorUtility.Load(path);
+                var newGraph = JsonEditorUtility.Load<IVisualNode>(path);
                 if (newGraph != null)
                 {
                     graph.Module = newGraph;
@@ -36,7 +36,7 @@ public class MemorySaveLoadMenu : IMenuEntry
                 var path = CurrentFilePath();
                 if (!string.IsNullOrEmpty(path))
                 {
-                    var newGraph = JsonEditorUtility.Load(path);
+                    var newGraph = JsonEditorUtility.Load<IVisualNode>(path);
                     if (newGraph != null) graph.Module = newGraph;
                 }
             });
@@ -44,7 +44,7 @@ public class MemorySaveLoadMenu : IMenuEntry
             menu.AddItem(new GUIContent("Clear"), false, () =>
             {
                 ClosePopupWindow();
-                graph.Module = new MemoryGraphViewModule();
+                graph.Module = new MemoryGraphViewModule<IVisualNode>();
             });
         }
     }

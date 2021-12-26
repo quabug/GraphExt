@@ -8,7 +8,7 @@ public class JsonLoaderWindowExtension : IWindowExtension
 
     public void OnInitialized(GraphWindow window, GraphConfig config, GraphView view)
     {
-        view.Module = string.IsNullOrEmpty(FilePath) ? new MemoryGraphViewModule() : JsonEditorUtility.Load(FilePath);
+        view.Module = string.IsNullOrEmpty(FilePath) ? new MemoryGraphViewModule<IVisualNode>() : JsonEditorUtility.Load<IVisualNode>(FilePath);
     }
 
     public void OnClosed(GraphWindow window, GraphConfig config, GraphView view) {}
