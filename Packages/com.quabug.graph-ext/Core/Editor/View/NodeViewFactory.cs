@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using JetBrains.Annotations;
 using UnityEditor.Experimental.GraphView;
-using UnityEngine.Assertions;
 using UnityEngine.UIElements;
 
 namespace GraphExt.Editor
@@ -26,8 +25,7 @@ namespace GraphExt.Editor
             foreach (var property in data.Properties)
             {
                 var propertyView = CreatePropertyView(property);
-                Assert.IsNotNull(propertyView);
-                container.Add(propertyView);
+                if (propertyView != null) container.Add(propertyView);
             }
             return nodeView;
 

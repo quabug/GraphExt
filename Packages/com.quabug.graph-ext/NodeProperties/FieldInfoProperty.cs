@@ -1,7 +1,7 @@
 using System.Reflection;
 using JetBrains.Annotations;
 
-namespace GraphExt.Memory
+namespace GraphExt
 {
     public class FieldInfoProperty<T> : IValueProperty<T>
     {

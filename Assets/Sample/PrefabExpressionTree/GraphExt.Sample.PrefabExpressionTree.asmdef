@@ -1,0 +1,20 @@
+﻿{
+  "name": "GraphExt.Sample.PrefabExpressionTree",
+  "rootNamespace": "",
+  "references": [
+    "GUID:756d163a75d2d4509b594fdc3b57f09d",
+    "GUID:f6ce7a0c60f1840f88f04ea7bc21f73c",
+    "GUID:ea73f805f48068f409cafb2b12726b78",
+    "GUID:f2ad78aaacbe17141a951a4897019a2e",
+    "GUID:5f47a5f08ea7f45f98654b3647509a17"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

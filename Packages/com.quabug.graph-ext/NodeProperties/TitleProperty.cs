@@ -1,4 +1,3 @@
-using GraphExt.Editor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -10,9 +9,10 @@ namespace GraphExt
         public string Value;
         public TitleProperty(string value) => Value = value;
 
+#if UNITY_EDITOR
         private class Factory : Editor.NodePropertyViewFactory<TitleProperty>
         {
-            protected override VisualElement Create(Node node, TitleProperty property, INodePropertyViewFactory _)
+            protected override VisualElement Create(Node node, TitleProperty property, Editor.INodePropertyViewFactory _)
             {
                 var titleLabel = new Label(property.Value);
                 titleLabel.name = "title-property";
@@ -24,5 +24,6 @@ namespace GraphExt
                 return titleLabel;
             }
         }
+#endif
     }
 }

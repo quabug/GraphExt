@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GraphExt
 {
@@ -15,6 +16,13 @@ namespace GraphExt
         }
 
         public bool Contains(in PortId portId) => First == portId || Second == portId;
+
+        public IEnumerable<PortId> GetConnectedPort(in PortId portId)
+        {
+            if (First == portId) return Second.Yield();
+            if (Second == portId) return First.Yield();
+            return Enumerable.Empty<PortId>();
+        }
 
         public bool Equals(EdgeId other)
         {

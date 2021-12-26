@@ -12,15 +12,15 @@ public interface IVisualNode : IMemoryNode
     float GetValue([NotNull] MemoryGraphBackend graph, [NotNull] string port);
 }
 
-public abstract class VisualNode : MemoryNode, IVisualNode
+public abstract class VisualNode : IVisualNode
 {
     public abstract float GetValue(MemoryGraphBackend graph);
     public abstract float GetValue(MemoryGraphBackend graph, string port);
 
-    public override bool IsPortCompatible(MemoryGraphBackend memoryGraphBackend, in PortId start, in PortId end)
+    public virtual bool IsPortCompatible(MemoryGraphBackend graph, in PortId start, in PortId end)
     {
-        var startNode = memoryGraphBackend.GetMemoryNodeByPort(start);
-        var endNode = memoryGraphBackend.GetMemoryNodeByPort(end);
+        var startNode = graph.GetMemoryNodeByPort(start);
+        var endNode = graph.GetMemoryNodeByPort(end);
         return start.NodeId != end.NodeId && startNode is VisualNode && endNode is VisualNode;
     }
 
@@ -30,6 +30,9 @@ public abstract class VisualNode : MemoryNode, IVisualNode
             .Select(connectedPort => ((IVisualNode)graph.GetMemoryNodeByPort(connectedPort)).GetValue(graph, connectedPort.Name))
         ;
     }
+
+    public virtual void OnConnected(MemoryGraphBackend graph, in PortId start, in PortId end) {}
+    public virtual void OnDisconnected(MemoryGraphBackend graph, in PortId start, in PortId end) {}
 }
 
 public class ValueNode : VisualNode

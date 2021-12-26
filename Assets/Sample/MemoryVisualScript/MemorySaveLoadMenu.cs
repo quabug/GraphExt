@@ -53,13 +53,13 @@ public class MemorySaveLoadMenu : IMenuEntry
     void ChangeWindowFilePath(string path)
     {
         var window = EditorWindow.focusedWindow as GraphWindow;
-        if (window != null) window.WindowExtension.GetOrCreate<WindowLoadFile>().FilePath = path;
+        if (window != null) window.WindowExtension.GetOrCreate<JsonLoaderWindowExtension>().FilePath = path;
     }
 
     string CurrentFilePath()
     {
         var window = EditorWindow.focusedWindow as GraphWindow;
-        return window?.WindowExtension.GetOrCreate<WindowLoadFile>().FilePath;
+        return window?.WindowExtension.GetOrCreate<JsonLoaderWindowExtension>().FilePath;
     }
 
     void ClosePopupWindow()

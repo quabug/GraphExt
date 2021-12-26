@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine.Assertions;
 
-namespace GraphExt.Memory
+namespace GraphExt
 {
     [AttributeUsage(AttributeTargets.Field)]
     public class NodePortAttribute : Attribute
@@ -37,7 +37,7 @@ namespace GraphExt.Memory
             }
 
             foreach (var (fi, portAttribute) in
-                     from fi in nodeType.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+                     from fi in nodeType.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy)
                      from portAttribute in fi.GetCustomAttributes<NodePortAttribute>()
                      select (fi, portAttribute)
                     )

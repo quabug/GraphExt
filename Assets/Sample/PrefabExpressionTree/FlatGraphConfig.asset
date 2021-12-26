@@ -10,42 +10,49 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f5ba7f039e774f7b9f34a9386ac259ed, type: 3}
-  m_Name: GraphConfig
+  m_Name: FlatGraphConfig
   m_EditorClassIdentifier: 
-  WindowName: Visual Script
-  WindowExtensions:
-  - JsonLoaderWindowExtension, GraphExt.Sample.MemoryVisualScript, Version=0.0.0.0,
-    Culture=neutral, PublicKeyToken=null
+  WindowName: Graph Window
+  WindowExtensions: []
   Menu:
   - id: 0
   - id: 1
   - id: 2
   - id: 3
+  - id: 4
+  - id: 5
+  - id: 6
   NodeViewFactory:
-    id: 4
+    id: 7
   PortViewFactory:
-    id: 5
+    id: 8
   EdgeViewFactory:
-    id: 6
+    id: 9
   references:
     version: 1
     00000000:
-      type: {class: PrintValueMenu, ns: , asm: GraphExt.Sample.MemoryVisualScript}
-    00000001:
       type: {class: SelectionEntry, ns: GraphExt.Editor, asm: GraphExt.Editor}
+    00000001:
+      type: {class: SeparatorEntry, ns: GraphExt.Editor, asm: GraphExt.Editor}
     00000002:
-      type: {class: MemoryNodeMenuEntry, ns: GraphExt.Memory, asm: GraphExt.Memory}
-    00000003:
       type: {class: MemorySaveLoadMenu, ns: , asm: GraphExt.Sample.MemoryVisualScript}
+    00000003:
+      type: {class: PrintValueMenu, ns: , asm: GraphExt.Sample.MemoryVisualScript}
     00000004:
+      type: {class: MemoryNodeMenuEntry, ns: GraphExt.Memory, asm: GraphExt.Memory}
+    00000005:
+      type: {class: FlatNodeCreationMenuEntry, ns: GraphExt.Prefab, asm: GraphExt.Prefab}
+    00000006:
+      type: {class: TreeNodeCreationMenuEntry, ns: GraphExt.Prefab, asm: GraphExt.Prefab}
+    00000007:
       type: {class: DefaultNodeViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
       data:
         NodePropertyViewFactory:
           Factories:
-          - id: 7
-    00000005:
+          - id: 10
+    00000008:
       type: {class: DefaultPortViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
-    00000006:
+    00000009:
       type: {class: DefaultEdgeViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
-    00000007:
+    0000000A:
       type: {class: DefaultPropertyViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}

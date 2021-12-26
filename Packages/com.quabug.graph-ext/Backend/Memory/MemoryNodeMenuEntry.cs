@@ -26,8 +26,9 @@ namespace GraphExt.Memory
 
             void CreateNode(Type nodeType)
             {
-                var node = module.CreateNode((IMemoryNode) Activator.CreateInstance(nodeType));
-                node.SetPosition(menuPosition);
+                var innerNode = (IMemoryNode)Activator.CreateInstance(nodeType);
+                var node = new MemoryGraphBackend.Node(innerNode, Guid.NewGuid(), menuPosition);
+                module.AddNode(node);
             }
         }
     }

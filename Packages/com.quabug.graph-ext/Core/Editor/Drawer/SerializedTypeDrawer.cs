@@ -25,8 +25,6 @@ namespace GraphExt.Editor
                 return;
             }
 
-            property.serializedObject.Update();
-
             position.height = EditorGUIUtility.singleLineHeight;
             EditorGUI.LabelField(position, label);
 
@@ -51,11 +49,6 @@ namespace GraphExt.Editor
 
             void ShowButton()
             {
-                // var buttonPosition = position;
-                // buttonPosition.x += EditorGUIUtility.labelWidth + 1 * EditorGUIUtility.standardVerticalSpacing;
-                // buttonPosition.width = position.width - EditorGUIUtility.labelWidth - 1 * EditorGUIUtility.standardVerticalSpacing;
-                // buttonPosition.height = EditorGUIUtility.singleLineHeight;
-
                 var type = Type.GetType(property.stringValue);
 
                 var storedColor = GUI.backgroundColor;
@@ -65,15 +58,6 @@ namespace GraphExt.Editor
                 if (GUI.Button(position, content)) ShowContextMenuForManagedReference();
 
                 GUI.backgroundColor = storedColor;
-                // EditorGUI.indentLevel = storedIndent;
-
-                // EditorGUI.DropdownButton(position, label, FocusType.Passive);
-                // if (_options == null)
-                // {
-                //     var baseType = ((SerializedTypeAttribute) Decorator).BaseType;
-                //     _options = TypeCache.GetTypesDerivedFrom(baseType).Select(type => type.AssemblyQualifiedName).ToArray();
-                // }
-                // property.PopupFunc()(position, label.text, _options);
             }
 
             GUIContent MakeContent(Type type)
