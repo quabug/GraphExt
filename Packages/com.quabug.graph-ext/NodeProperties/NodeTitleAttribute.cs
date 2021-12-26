@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 
-namespace GraphExt
+namespace GraphExt.Editor
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
     public class NodeTitleAttribute : Attribute

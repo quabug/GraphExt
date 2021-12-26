@@ -2,37 +2,38 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GraphExt;
+using GraphExt.Editor;
 using GraphExt.Memory;
 using JetBrains.Annotations;
 using UnityEngine.Assertions;
 
 public interface IVisualNode : IMemoryNode
 {
-    float GetValue([NotNull] MemoryGraphBackend graph);
-    float GetValue([NotNull] MemoryGraphBackend graph, [NotNull] string port);
+    float GetValue([NotNull] GraphRuntime<IMemoryNode> graph);
+    float GetValue([NotNull] GraphRuntime<IMemoryNode> graph, [NotNull] string port);
 }
 
 public abstract class VisualNode : IVisualNode
 {
-    public abstract float GetValue(MemoryGraphBackend graph);
-    public abstract float GetValue(MemoryGraphBackend graph, string port);
+    public abstract float GetValue(GraphRuntime<IMemoryNode> graph);
+    public abstract float GetValue(GraphRuntime<IMemoryNode> graph, string port);
 
-    public virtual bool IsPortCompatible(MemoryGraphBackend graph, in PortId start, in PortId end)
+    public virtual bool IsPortCompatible(GraphRuntime<IMemoryNode> graph, in PortId start, in PortId end)
     {
-        var startNode = graph.GetMemoryNodeByPort(start);
-        var endNode = graph.GetMemoryNodeByPort(end);
+        var startNode = graph.GetNodeByPort(start);
+        var endNode = graph.GetNodeByPort(end);
         return start.NodeId != end.NodeId && startNode is VisualNode && endNode is VisualNode;
     }
 
-    protected IEnumerable<float> GetConnectedValues(MemoryGraphBackend graph, string port)
+    protected IEnumerable<float> GetConnectedValues(GraphRuntime<IMemoryNode> graph, string port)
     {
         return graph.FindConnectedPorts(this, port)
-            .Select(connectedPort => ((IVisualNode)graph.GetMemoryNodeByPort(connectedPort)).GetValue(graph, connectedPort.Name))
+            .Select(connectedPort => ((IVisualNode)graph.GetNodeByPort(connectedPort)).GetValue(graph, connectedPort.Name))
         ;
     }
 
-    public virtual void OnConnected(MemoryGraphBackend graph, in PortId start, in PortId end) {}
-    public virtual void OnDisconnected(MemoryGraphBackend graph, in PortId start, in PortId end) {}
+    public virtual void OnConnected(GraphRuntime<IMemoryNode> graph, in PortId start, in PortId end) {}
+    public virtual void OnDisconnected(GraphRuntime<IMemoryNode> graph, in PortId start, in PortId end) {}
 }
 
 public class ValueNode : VisualNode
@@ -40,13 +41,13 @@ public class ValueNode : VisualNode
     [NodeProperty(OutputPort = nameof(_outPort))] public float Value;
     [NodePort] private static float _outPort;
 
-    public override float GetValue(MemoryGraphBackend graph, string port)
+    public override float GetValue(GraphRuntime<IMemoryNode> graph, string port)
     {
         Assert.IsTrue(port == nameof(_outPort));
         return GetValue(graph);
     }
 
-    public override float GetValue(MemoryGraphBackend graph)
+    public override float GetValue(GraphRuntime<IMemoryNode> graph)
     {
         return Value;
     }
@@ -61,12 +62,12 @@ public class MultipleValueNode : VisualNode
     [NodeProperty(OutputPort = nameof(_outPort2))] public float Value2;
     [NodePort] private static float _outPort2;
 
-    public override float GetValue(MemoryGraphBackend graph)
+    public override float GetValue(GraphRuntime<IMemoryNode> graph)
     {
         return Value1;
     }
 
-    public override float GetValue(MemoryGraphBackend graph, string port)
+    public override float GetValue(GraphRuntime<IMemoryNode> graph, string port)
     {
         return port switch
         {
@@ -84,12 +85,12 @@ public class AddNode : VisualNode
     [NodePort] private static float _outputPort;
     [NodePort(Capacity = PortCapacity.Multi)] public static float _inputPort;
 
-    public override float GetValue(MemoryGraphBackend graph)
+    public override float GetValue(GraphRuntime<IMemoryNode> graph)
     {
         return GetConnectedValues(graph, nameof(_inputPort)).Sum();
     }
 
-    public override float GetValue(MemoryGraphBackend graph, string port)
+    public override float GetValue(GraphRuntime<IMemoryNode> graph, string port)
     {
         Assert.IsTrue(port == nameof(_outputPort));
         return GetValue(graph);

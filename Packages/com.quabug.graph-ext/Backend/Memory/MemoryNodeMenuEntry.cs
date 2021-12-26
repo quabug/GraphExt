@@ -7,13 +7,13 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace GraphExt.Memory
+namespace GraphExt.Memory.Editor
 {
     public class MemoryNodeMenuEntry : IMenuEntry
     {
         public void MakeEntry(GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
         {
-            if (!(graph.Module is MemoryGraphBackend module)) return;
+            if (!(graph.Module is MemoryGraphViewModule module)) return;
 
             var menuPosition = graph.viewTransform.matrix.inverse.MultiplyPoint(evt.localMousePosition);
             var memoryNodes = TypeCache.GetTypesDerivedFrom<IMemoryNode>();
@@ -26,9 +26,8 @@ namespace GraphExt.Memory
 
             void CreateNode(Type nodeType)
             {
-                var innerNode = (IMemoryNode)Activator.CreateInstance(nodeType);
-                var node = new MemoryGraphBackend.Node(innerNode, Guid.NewGuid(), menuPosition);
-                module.AddNode(node);
+                var node = (IMemoryNode)Activator.CreateInstance(nodeType);
+                module.AddNode(Guid.NewGuid(), node, menuPosition);
             }
         }
     }

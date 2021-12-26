@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using GraphExt;
@@ -9,105 +10,158 @@ using UnityEngine;
 
 public static class JsonSaveLoad
 {
-    private static readonly JsonSerializerSettings _jsonSerializerSettings;
+    private static readonly JsonSerializerSettings _JSON_SERIALIZER_SETTINGS;
 
     static JsonSaveLoad()
     {
-        _jsonSerializerSettings = new JsonSerializerSettings
+        _JSON_SERIALIZER_SETTINGS = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Auto,
+            Formatting = Formatting.Indented
         };
     }
 
-    public static bool Save(MemoryGraphBackend memoryGraphBackend, string path)
+    [NotNull] public static IEnumerable<object> Load([NotNull] string path, params Type[] types)
     {
-        if (string.IsNullOrEmpty(path)) return false;
+        using var file = File.OpenText(path);
+        using var reader = new JsonTextReader(file);
+        reader.SupportMultipleContent = true;
+        foreach (var type in types)
+            yield return reader.Read() ? JsonSerializer.Create(_JSON_SERIALIZER_SETTINGS).Deserialize(reader, type) : null;
+    }
+
+    public static void Save(string path, params object[] objects)
+    {
+        using var file = File.CreateText(path);
+        foreach (var obj in objects)
+        {
+            file.Write(JsonConvert.SerializeObject(obj, _JSON_SERIALIZER_SETTINGS));
+            file.WriteLine();
+        }
+    }
+}
+
+public static class JsonUtility
+{
+    public static bool Save(this GraphRuntime<IMemoryNode> graph, string path)
+    {
         try
         {
-            var json = JsonConvert.SerializeObject(new SerializableGraph(memoryGraphBackend), Formatting.Indented, _jsonSerializerSettings);
-            File.WriteAllText(path, json);
+            JsonSaveLoad.Save(path, new GraphRuntimeData(graph));
             return true;
         }
         catch (Exception ex)
         {
-            Debug.LogError($"failed to save memoryGraphBackend to {path}: {ex}");
+            Debug.LogError($"failed to save {nameof(GraphRuntime<IMemoryNode>)} to {path}: {ex}");
             return false;
         }
     }
 
-    [NotNull] public static MemoryGraphBackend Load(string path)
+    public static GraphRuntime<IMemoryNode> Load(string path)
     {
-        if (string.IsNullOrEmpty(path)) return new MemoryGraphBackend();
         try
         {
-            var json = File.ReadAllText(path);
-            var graph = JsonConvert.DeserializeObject<SerializableGraph>(json, _jsonSerializerSettings);
-            return graph.ToMemory();
+            return ((GraphRuntimeData) JsonSaveLoad.Load(path, typeof(GraphRuntimeData)).Single()).ToMemory();
         }
         catch (Exception ex)
         {
-            Debug.LogError($"failed to load MemoryGraphBackend from {path}: {ex}");
-            return new MemoryGraphBackend();
+            Debug.LogError($"failed to load {nameof(GraphRuntime<IMemoryNode>)} from {path}: {ex}");
+            return new GraphRuntime<IMemoryNode>();
         }
     }
 
-    struct SerializableNode
+    internal struct SerializableEdge
     {
-        public float PositionX;
-        public float PositionY;
-        public Guid Id;
-        public IMemoryNode Inner;
-
-        public SerializableNode(MemoryGraphBackend.Node node)
-        {
-            PositionX = node.Position.x;
-            PositionY = node.Position.y;
-            Id = node.Id.Id;
-            Inner = node.Inner;
-        }
-
-        public MemoryGraphBackend.Node ToMemory()
-        {
-            return new MemoryGraphBackend.Node(Inner, Id, new Vector2(PositionX, PositionY));
-        }
-    }
-
-    struct SerializableEdge
-    {
-        public Guid Node1;
-        public string Port1;
-        public Guid Node2;
-        public string Port2;
+        public Guid InputNode;
+        public string InputPort;
+        public Guid OutputNode;
+        public string OutputPort;
 
         public SerializableEdge(in EdgeId edge)
         {
-            Node1 = edge.First.NodeId.Id;
-            Port1 = edge.First.Name;
-            Node2 = edge.Second.NodeId.Id;
-            Port2 = edge.Second.Name;
+            InputNode = edge.Input.NodeId.Id;
+            InputPort = edge.Input.Name;
+            OutputNode = edge.Output.NodeId.Id;
+            OutputPort = edge.Output.Name;
         }
 
         public EdgeId ToMemory()
         {
-            return new EdgeId(new PortId(Node1, Port1), new PortId(Node2, Port2));
+            return new EdgeId(input: new PortId(InputNode, InputPort), output: new PortId(OutputNode, OutputPort));
         }
     }
 
-    [Serializable]
-    struct SerializableGraph
+    internal struct GraphRuntimeData
     {
-        public SerializableNode[] Nodes;
+        public Dictionary<Guid, IMemoryNode> Nodes;
         public SerializableEdge[] Edges;
 
-        public SerializableGraph(MemoryGraphBackend memoryGraphBackend)
+        public GraphRuntimeData(GraphRuntime<IMemoryNode> graph)
         {
-            Nodes = memoryGraphBackend.MemoryNodeMap.Select(pair => pair.Value).Select(node => new SerializableNode(node)).ToArray();
-            Edges = memoryGraphBackend.Edges.Distinct().Select(edge => new SerializableEdge(edge)).ToArray();
+            Nodes = graph.NodeMap.ToDictionary(pair => pair.Key.Id, pair => pair.Value);
+            Edges = graph.Edges.Distinct().Select(edge => new SerializableEdge(edge)).ToArray();
         }
 
-        public MemoryGraphBackend ToMemory()
+        public GraphRuntime<IMemoryNode> ToMemory()
         {
-            return new MemoryGraphBackend(Nodes.Select(node => node.ToMemory()).ToArray(), Edges.Select(edge => edge.ToMemory()).ToArray());
+            var graph = new GraphRuntime<IMemoryNode>();
+            foreach (var pair in Nodes)
+                graph.AddNode(pair.Key, pair.Value, NodePortAttribute.FindPortNames(pair.Value.GetType()));
+            foreach (var edge in Edges.Select(e => e.ToMemory()))
+                graph.Connect(input: edge.Input, output: edge.Output);
+            return graph;
         }
     }
 }
+
+#if UNITY_EDITOR
+public static class JsonEditorUtility
+{
+    public static bool Save(this GraphExt.Memory.Editor.MemoryGraphViewModule graph, string path)
+    {
+        try
+        {
+            JsonSaveLoad.Save(path, new JsonUtility.GraphRuntimeData(graph.Runtime), new GraphViewData(graph));
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"failed to save {nameof(GraphExt.Memory.Editor.MemoryGraphViewModule)} to {path}: {ex}");
+            return false;
+        }
+    }
+
+    public static GraphExt.Memory.Editor.MemoryGraphViewModule Load(string path)
+    {
+        try
+        {
+            var dataList = JsonSaveLoad.Load(path, typeof(JsonUtility.GraphRuntimeData), typeof(GraphViewData)).ToArray();
+            var runtimeGraph = ((JsonUtility.GraphRuntimeData)dataList[0]).ToMemory();
+            return ((GraphViewData)dataList[1]).CreateViewModule(runtimeGraph);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"failed to load {nameof(GraphExt.Memory.Editor.MemoryGraphViewModule)} from {path}: {ex}");
+            return new GraphExt.Memory.Editor.MemoryGraphViewModule();
+        }
+    }
+
+    struct GraphViewData
+    {
+        public Dictionary<Guid, (float x, float y)> Positions;
+
+        public GraphViewData(GraphExt.Memory.Editor.MemoryGraphViewModule graph)
+        {
+            Positions = graph.NodePositions.ToDictionary(t => t.id.Id, t => (t.position.x, t.position.y));
+        }
+
+        public GraphExt.Memory.Editor.MemoryGraphViewModule CreateViewModule(GraphRuntime<IMemoryNode> runtimeData)
+        {
+            return new GraphExt.Memory.Editor.MemoryGraphViewModule(
+                runtimeData,
+                Positions.Select(pair => (new NodeId(pair.Key), new Vector2(pair.Value.x, pair.Value.y)))
+            );
+        }
+    }
+}
+#endif

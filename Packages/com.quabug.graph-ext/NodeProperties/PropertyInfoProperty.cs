@@ -3,7 +3,7 @@ using System.Reflection;
 using JetBrains.Annotations;
 using UnityEngine.Assertions;
 
-namespace GraphExt
+namespace GraphExt.Editor
 {
     public class PropertyInfoProperty<T> : IValueProperty<T>
     {

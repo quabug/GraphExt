@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 
 using GraphExt.Editor;
+using GraphExt.Memory.Editor;
 
 public class JsonLoaderWindowExtension : IWindowExtension
 {
@@ -8,7 +9,7 @@ public class JsonLoaderWindowExtension : IWindowExtension
 
     public void OnInitialized(GraphWindow window, GraphConfig config, GraphView view)
     {
-        view.Module = JsonSaveLoad.Load(FilePath);
+        view.Module = string.IsNullOrEmpty(FilePath) ? new MemoryGraphViewModule() : JsonEditorUtility.Load(FilePath);
     }
 
     public void OnClosed(GraphWindow window, GraphConfig config, GraphView view) {}

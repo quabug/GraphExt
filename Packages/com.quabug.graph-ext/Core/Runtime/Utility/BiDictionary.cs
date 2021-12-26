@@ -11,7 +11,7 @@ namespace GraphExt
         public IReadOnlyDictionary<T1, T2> Forward => _forward;
         public IReadOnlyDictionary<T2, T1> Reverse => _reverse;
 
-        public BiDictionary()  {}
+        public BiDictionary() {}
 
         public BiDictionary(IEnumerable<(T1, T2)> items)
         {
@@ -73,7 +73,7 @@ namespace GraphExt
         public T2 this[T1 key]
         {
             get => _forward[key];
-            set => _forward[key] = value;
+            set => Add(key, value);
         }
 
         public T1 GetKey(T2 value) => _reverse[value];

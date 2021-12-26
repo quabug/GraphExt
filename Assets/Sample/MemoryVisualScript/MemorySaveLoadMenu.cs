@@ -1,7 +1,7 @@
 #if UNITY_EDITOR
 
 using GraphExt.Editor;
-using GraphExt.Memory;
+using GraphExt.Memory.Editor;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -11,19 +11,19 @@ public class MemorySaveLoadMenu : IMenuEntry
 {
     public void MakeEntry(GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
     {
-        if (graph.Module is MemoryGraphBackend memoryGraph)
+        if (graph.Module is MemoryGraphViewModule module)
         {
             menu.AddItem(new GUIContent("Save"), false, () =>
             {
                 ClosePopupWindow();
                 var path = EditorUtility.SaveFilePanel("save path", Application.dataPath, "graph", "json");
-                if (JsonSaveLoad.Save(memoryGraph, path)) ChangeWindowFilePath(path);
+                if (JsonEditorUtility.Save(module, path)) ChangeWindowFilePath(path);
             });
             menu.AddItem(new GUIContent("Load"), false, () =>
             {
                 ClosePopupWindow();
                 var path = EditorUtility.OpenFilePanel("load path", Application.dataPath, "json");
-                var newGraph = JsonSaveLoad.Load(path);
+                var newGraph = JsonEditorUtility.Load(path);
                 if (newGraph != null)
                 {
                     graph.Module = newGraph;
@@ -37,7 +37,7 @@ public class MemorySaveLoadMenu : IMenuEntry
                 var path = CurrentFilePath();
                 if (!string.IsNullOrEmpty(path))
                 {
-                    var newGraph = JsonSaveLoad.Load(path);
+                    var newGraph = JsonEditorUtility.Load(path);
                     if (newGraph != null) graph.Module = newGraph;
                 }
             });
@@ -45,7 +45,7 @@ public class MemorySaveLoadMenu : IMenuEntry
             menu.AddItem(new GUIContent("Clear"), false, () =>
             {
                 ClosePopupWindow();
-                graph.Module = new MemoryGraphBackend();
+                graph.Module = new MemoryGraphViewModule();
             });
         }
     }

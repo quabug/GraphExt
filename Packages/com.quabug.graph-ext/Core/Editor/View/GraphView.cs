@@ -13,7 +13,7 @@ namespace GraphExt.Editor
     public class GraphView : UnityEditor.Experimental.GraphView.GraphView, ITickableElement
     {
         [NotNull] public GraphConfig Config { get; }
-        [NotNull] public IGraphBackend Module { get; set; }
+        [NotNull] public IGraphViewModule Module { get; set; }
 
         [NotNull] private readonly GraphElements<NodeId, NodeData, Node> _nodes;
         [NotNull] private readonly GraphElements<PortId, PortData, Port> _ports;
@@ -127,8 +127,8 @@ namespace GraphExt.Editor
 
         public void Tick()
         {
-            _nodes.UpdateElements(Module.NodeMap.Select(node => (node.Key, node.Value)));
-            _ports.UpdateElements(Module.PortMap.Select(port => (port.Key, port.Value)));
+            _nodes.UpdateElements(Module.NodeMap.Select(t => (t.id, t.data)));
+            _ports.UpdateElements(Module.PortMap.Select(t => (t.id, t.data)));
             _edges.UpdateElements(Module.Edges.Select(edge => (edge, edge)));
         }
 
@@ -174,8 +174,8 @@ namespace GraphExt.Editor
         {
             if (_edges.Elements.ContainsKey(id)) return null;
 
-            var port1 = _ports.Elements[id.First];
-            var port2 = _ports.Elements[id.Second];
+            var port1 = _ports.Elements[id.Input];
+            var port2 = _ports.Elements[id.Output];
             var edge = Config.EdgeViewFactory.CreateEdge(port1, port2);
             AddElement(edge);
             return edge;

@@ -2,7 +2,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace GraphExt
+namespace GraphExt.Editor
 {
     public class LabelValuePortProperty : INodeProperty
     {
@@ -19,10 +19,9 @@ namespace GraphExt
             RightPort = rightPort;
         }
 
-#if UNITY_EDITOR
-        public class Factory : Editor.NodePropertyViewFactory<LabelValuePortProperty>
+        public class Factory : NodePropertyViewFactory<LabelValuePortProperty>
         {
-            protected override VisualElement Create(Node node, LabelValuePortProperty property, Editor.INodePropertyViewFactory factory)
+            protected override VisualElement Create(Node node, LabelValuePortProperty property, INodePropertyViewFactory factory)
             {
                 var container = new VisualElement();
 
@@ -68,6 +67,5 @@ namespace GraphExt
                 }
             }
         }
-#endif
     }
 }

@@ -2,15 +2,14 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace GraphExt
+namespace GraphExt.Editor
 {
     public class DynamicTitleProperty : INodeProperty
     {
         public Func<string> GetName;
         public DynamicTitleProperty(Func<string> getName) => GetName = getName;
 
-#if UNITY_EDITOR
-        private class View : Label, Editor.ITickableElement
+        private class View : Label, ITickableElement
         {
             private readonly Func<string> _getName;
 
@@ -37,13 +36,12 @@ namespace GraphExt
             }
         }
 
-        private class Factory : Editor.NodePropertyViewFactory<DynamicTitleProperty>
+        private class Factory : NodePropertyViewFactory<DynamicTitleProperty>
         {
             protected override VisualElement Create(UnityEditor.Experimental.GraphView.Node node, DynamicTitleProperty property, Editor.INodePropertyViewFactory _)
             {
                 return new View(property.GetName);
             }
         }
-#endif
     }
 }

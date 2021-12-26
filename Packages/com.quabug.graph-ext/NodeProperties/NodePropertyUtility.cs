@@ -3,23 +3,14 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine.Assertions;
 
-namespace GraphExt
+namespace GraphExt.Editor
 {
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    public class NodePropertyAttribute : Attribute
+    public static class NodePropertyUtility
     {
-        public bool ReadOnly = false;
-        public bool HideLabel = false;
-        public bool HideValue = false;
-        public string InputPort = null;
-        public string OutputPort = null;
-        public string Name = null;
-        public bool SerializedField = true;
-
-        public static IEnumerable<INodeProperty> CreateProperties(object nodeObj, NodeId nodeId
-#if UNITY_EDITOR
-            , UnityEditor.SerializedProperty nodeSerializedProperty = null
-#endif
+        public static IEnumerable<INodeProperty> CreateProperties(
+            object nodeObj,
+            NodeId nodeId,
+            UnityEditor.SerializedProperty nodeSerializedProperty = null
         )
         {
             var nodeType = nodeObj.GetType();
@@ -55,13 +46,11 @@ namespace GraphExt
                 if (attribute == null) return null;
 
                 INodeProperty valueProperty = null;
-#if UNITY_EDITOR
                 if (attribute.SerializedField && nodeSerializedProperty != null && mi is FieldInfo)
                 {
                     valueProperty = new SerializedFieldProperty(nodeSerializedProperty.FindPropertyRelative(mi.Name));
                 }
                 else
-#endif
                 {
                     var propertyType = mi switch
                     {

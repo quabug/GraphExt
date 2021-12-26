@@ -2,7 +2,7 @@
 
 using System.Linq;
 using GraphExt.Editor;
-using GraphExt.Memory;
+using GraphExt.Memory.Editor;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -12,13 +12,13 @@ public class PrintValueMenu : IMenuEntry
 {
     public void MakeEntry(GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
     {
-        if (graph.selection?.FirstOrDefault() is Node node && graph.Module is MemoryGraphBackend memoryGraph)
+        if (graph.selection?.FirstOrDefault() is Node node && graph.Module is MemoryGraphViewModule module)
         {
             var nodeId = graph.GetNodeId(node);
             menu.AddItem(new GUIContent("Print Node Value"), true, () =>
             {
-                var visualNode = memoryGraph.GetMemoryNode(nodeId) as IVisualNode;
-                var value = visualNode?.GetValue(memoryGraph);
+                var visualNode = module.Runtime[nodeId] as IVisualNode;
+                var value = visualNode?.GetValue(module.Runtime);
                 Debug.Log($"value = {value}");
             });
         }

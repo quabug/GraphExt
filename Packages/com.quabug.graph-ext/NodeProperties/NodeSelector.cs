@@ -1,13 +1,12 @@
 using System;
 using UnityEngine.UIElements;
 
-namespace GraphExt
+namespace GraphExt.Editor
 {
     public class NodeSelector : INodeProperty
     {
         public event Action<bool> OnSelectChanged;
 
-#if UNITY_EDITOR
         private class View : VisualElement, Editor.ITickableElement
         {
             private readonly UnityEditor.Experimental.GraphView.Node _node;
@@ -39,5 +38,4 @@ namespace GraphExt
             }
         }
     }
-#endif
 }

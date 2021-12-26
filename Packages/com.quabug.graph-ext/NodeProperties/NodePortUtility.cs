@@ -4,20 +4,8 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine.Assertions;
 
-namespace GraphExt
+namespace GraphExt.Editor
 {
-    [AttributeUsage(AttributeTargets.Field)]
-    public class NodePortAttribute : Attribute
-    {
-        public bool Hide = false;
-        public bool HideLabel = false;
-        public Type PortType = null;
-        public PortDirection Direction = PortDirection.Invalid;
-        public PortCapacity Capacity = PortCapacity.Invalid;
-        public PortOrientation Orientation = PortOrientation.Horizontal;
-        public string Name = null;
-    }
-
     public static class NodePortUtility
     {
         public static IEnumerable<PortData> FindPorts(Type nodeType)
@@ -64,7 +52,7 @@ namespace GraphExt
                 Assert.AreNotEqual(orientation, PortOrientation.Invalid);
                 Assert.AreNotEqual(capacity, PortCapacity.Invalid);
                 Assert.IsNotNull(portType);
-                yield return new PortData(portName, orientation, direction, capacity, portType);
+                yield return new PortData(portName, orientation.ToEditor(), direction.ToEditor(), capacity.ToEditor(), portType);
             }
 
             void AssertPropertyPort(string portName)
@@ -73,5 +61,25 @@ namespace GraphExt
             }
         }
 
+        public static UnityEditor.Experimental.GraphView.Direction ToEditor(this PortDirection direction) => direction switch
+        {
+            PortDirection.Input => UnityEditor.Experimental.GraphView.Direction.Input,
+            PortDirection.Output => UnityEditor.Experimental.GraphView.Direction.Output,
+            _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
+        };
+
+        public static UnityEditor.Experimental.GraphView.Orientation ToEditor(this PortOrientation orientation) => orientation switch
+        {
+            PortOrientation.Horizontal => UnityEditor.Experimental.GraphView.Orientation.Horizontal,
+            PortOrientation.Vertical => UnityEditor.Experimental.GraphView.Orientation.Vertical,
+            _ => throw new ArgumentOutOfRangeException(nameof(orientation), orientation, null)
+        };
+
+        public static UnityEditor.Experimental.GraphView.Port.Capacity ToEditor(this PortCapacity capacity) => capacity switch
+        {
+            PortCapacity.Single => UnityEditor.Experimental.GraphView.Port.Capacity.Single,
+            PortCapacity.Multi => UnityEditor.Experimental.GraphView.Port.Capacity.Multi,
+            _ => throw new ArgumentOutOfRangeException(nameof(capacity), capacity, null)
+        };
     }
 }
