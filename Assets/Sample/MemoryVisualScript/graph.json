@@ -10,7 +10,7 @@
     },
     "46e7dc85-425c-41ac-ba9e-7d917e134704": {
       "$type": "ValueNode, GraphExt.Sample.MemoryVisualScript",
-      "Value": 3.0
+      "Value": 4.0
     },
     "13749f95-95ab-4130-9d86-97bfa87470e7": {
       "$type": "AddNode, GraphExt.Sample.MemoryVisualScript"

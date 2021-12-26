@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using GraphExt;
-using GraphExt.Memory;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -21,10 +20,19 @@ public static class JsonSaveLoad
         };
     }
 
-    [NotNull] public static IEnumerable<object> Load([NotNull] string path, params Type[] types)
+    [NotNull] public static IEnumerable<object> LoadFile([NotNull] string path, params Type[] types)
     {
-        using var file = File.OpenText(path);
-        using var reader = new JsonTextReader(file);
+        using var textReader = File.OpenText(path);
+        using var reader = new JsonTextReader(textReader);
+        reader.SupportMultipleContent = true;
+        foreach (var type in types)
+            yield return reader.Read() ? JsonSerializer.Create(_JSON_SERIALIZER_SETTINGS).Deserialize(reader, type) : null;
+    }
+
+    [NotNull] public static IEnumerable<object> LoadJson([NotNull] string json, params Type[] types)
+    {
+        using var textReader = new StringReader(json);
+        using var reader = new JsonTextReader(textReader);
         reader.SupportMultipleContent = true;
         foreach (var type in types)
             yield return reader.Read() ? JsonSerializer.Create(_JSON_SERIALIZER_SETTINGS).Deserialize(reader, type) : null;
@@ -57,15 +65,15 @@ public static class JsonUtility
         }
     }
 
-    public static GraphRuntime<IMemoryNode> Load(string path)
+    public static GraphRuntime<IMemoryNode> Load(string json)
     {
         try
         {
-            return ((GraphRuntimeData) JsonSaveLoad.Load(path, typeof(GraphRuntimeData)).Single()).ToMemory();
+            return ((GraphRuntimeData) JsonSaveLoad.LoadJson(json, typeof(GraphRuntimeData)).Single()).ToMemory();
         }
         catch (Exception ex)
         {
-            Debug.LogError($"failed to load {nameof(GraphRuntime<IMemoryNode>)} from {path}: {ex}");
+            Debug.LogError($"failed to load {nameof(GraphRuntime<IMemoryNode>)} from json string: {ex}");
             return new GraphRuntime<IMemoryNode>();
         }
     }
@@ -117,7 +125,7 @@ public static class JsonUtility
 #if UNITY_EDITOR
 public static class JsonEditorUtility
 {
-    public static bool Save(this GraphExt.Memory.Editor.MemoryGraphViewModule graph, string path)
+    public static bool Save(this GraphExt.Editor.MemoryGraphViewModule graph, string path)
     {
         try
         {
@@ -126,23 +134,23 @@ public static class JsonEditorUtility
         }
         catch (Exception ex)
         {
-            Debug.LogError($"failed to save {nameof(GraphExt.Memory.Editor.MemoryGraphViewModule)} to {path}: {ex}");
+            Debug.LogError($"failed to save {nameof(GraphExt.Editor.MemoryGraphViewModule)} to {path}: {ex}");
             return false;
         }
     }
 
-    public static GraphExt.Memory.Editor.MemoryGraphViewModule Load(string path)
+    public static GraphExt.Editor.MemoryGraphViewModule Load(string path)
     {
         try
         {
-            var dataList = JsonSaveLoad.Load(path, typeof(JsonUtility.GraphRuntimeData), typeof(GraphViewData)).ToArray();
+            var dataList = JsonSaveLoad.LoadFile(path, typeof(JsonUtility.GraphRuntimeData), typeof(GraphViewData)).ToArray();
             var runtimeGraph = ((JsonUtility.GraphRuntimeData)dataList[0]).ToMemory();
             return ((GraphViewData)dataList[1]).CreateViewModule(runtimeGraph);
         }
         catch (Exception ex)
         {
-            Debug.LogError($"failed to load {nameof(GraphExt.Memory.Editor.MemoryGraphViewModule)} from {path}: {ex}");
-            return new GraphExt.Memory.Editor.MemoryGraphViewModule();
+            Debug.LogError($"failed to load {nameof(GraphExt.Editor.MemoryGraphViewModule)} from {path}: {ex}");
+            return new GraphExt.Editor.MemoryGraphViewModule();
         }
     }
 
@@ -150,14 +158,14 @@ public static class JsonEditorUtility
     {
         public Dictionary<Guid, (float x, float y)> Positions;
 
-        public GraphViewData(GraphExt.Memory.Editor.MemoryGraphViewModule graph)
+        public GraphViewData(GraphExt.Editor.MemoryGraphViewModule graph)
         {
             Positions = graph.NodePositions.ToDictionary(t => t.id.Id, t => (t.position.x, t.position.y));
         }
 
-        public GraphExt.Memory.Editor.MemoryGraphViewModule CreateViewModule(GraphRuntime<IMemoryNode> runtimeData)
+        public GraphExt.Editor.MemoryGraphViewModule CreateViewModule(GraphRuntime<IMemoryNode> runtimeData)
         {
-            return new GraphExt.Memory.Editor.MemoryGraphViewModule(
+            return new GraphExt.Editor.MemoryGraphViewModule(
                 runtimeData,
                 Positions.Select(pair => (new NodeId(pair.Key), new Vector2(pair.Value.x, pair.Value.y)))
             );

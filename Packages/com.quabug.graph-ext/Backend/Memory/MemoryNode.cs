@@ -1,4 +1,4 @@
-namespace GraphExt.Memory
+namespace GraphExt
 {
     public interface IMemoryNode : INode<GraphRuntime<IMemoryNode>> {}
 

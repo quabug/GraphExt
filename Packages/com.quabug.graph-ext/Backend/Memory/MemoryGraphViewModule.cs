@@ -2,11 +2,10 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using GraphExt.Editor;
 using JetBrains.Annotations;
 using UnityEngine;
 
-namespace GraphExt.Memory.Editor
+namespace GraphExt.Editor
 {
     public class MemoryGraphViewModule : IGraphViewModule
     {
@@ -30,15 +29,22 @@ namespace GraphExt.Memory.Editor
         {
             Runtime = runtime;
             _nodePositions = positions.ToDictionary(t => t.node, t => t.position);
+            foreach (var pair in runtime.NodeMap) AddNode(pair.Key, pair.Value);
         }
 
         public void AddNode(in NodeId nodeId, IMemoryNode node, Vector2 position)
         {
             _nodePositions[nodeId] = position;
+            var ports = AddNode(nodeId, node);
+            Runtime.AddNode(nodeId, node, ports.Select(port => port.Name));
+        }
+
+        private PortData[] AddNode(in NodeId nodeId, IMemoryNode node)
+        {
             _nodeDataCache[nodeId] = ToNodeData(nodeId, node);
             var ports = NodePortUtility.FindPorts(node.GetType()).ToArray();
             foreach (var port in ports) _portDataCache[new PortId(nodeId, port.Name)] = port;
-            Runtime.AddNode(nodeId, node, ports.Select(port => port.Name));
+            return ports;
         }
 
         public void DeleteNode(in NodeId nodeId)

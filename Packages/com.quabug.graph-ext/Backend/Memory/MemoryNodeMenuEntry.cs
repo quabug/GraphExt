@@ -2,12 +2,11 @@
 
 using System;
 using System.Linq;
-using GraphExt.Editor;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace GraphExt.Memory.Editor
+namespace GraphExt.Editor
 {
     public class MemoryNodeMenuEntry : IMenuEntry
     {

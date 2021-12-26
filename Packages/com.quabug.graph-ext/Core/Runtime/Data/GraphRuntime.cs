@@ -13,6 +13,7 @@ namespace GraphExt
         // TODO: IReadOnlySet / ImmutableSet
         public ISet<PortId> Ports => _ports;
         public ISet<EdgeId> Edges => _edges;
+        public IEnumerable<TNode> Nodes => _nodeMap.Forward.Values;
         public IReadOnlyDictionary<NodeId, TNode> NodeMap => _nodeMap.Forward;
 
         public TNode this[in NodeId id] => _nodeMap[id];
