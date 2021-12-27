@@ -86,15 +86,37 @@ namespace GraphExt.Editor
             var nodeObject = GameObjectNodes[id];
             var nodeComponent = nodeObject.GetComponent<TComponent>();
             var nodeSerializedProperty = new SerializedObject(nodeComponent).FindProperty(nodeComponent.NodeSerializedPropertyName);
-            var selector = new NodeSelector();
             var nodeId = id;
-            selector.OnSelectChanged += isSelected => OnNodeSelectedChanged?.Invoke(nodeId, isSelected);
-            return new NodeData(selector.Yield()
+            return new NodeData(CreateNodeSelector().Yield()
                 .Append<INodeProperty>(new NodePositionProperty(nodeComponent.Position.x, nodeComponent.Position.y))
-                .Append(new DynamicTitleProperty(() => nodeObject.name))
+                .Append(CreateTitleProperty())
                 .Concat(NodePropertyUtility.CreateProperties(node, id, nodeSerializedProperty))
                 .ToArray()
             );
+
+            NodeSelector CreateNodeSelector()
+            {
+                var selector = new NodeSelector();
+                selector.OnSelectChanged += isSelected => OnNodeSelectedChanged?.Invoke(nodeId, isSelected);
+                return selector;
+            }
+
+            DynamicTitleProperty CreateTitleProperty()
+            {
+                return new DynamicTitleProperty(() =>
+                {
+                    var titleComponent = nodeObject.GetComponent<NodeTitle>();
+                    if (titleComponent == null) return nodeObject.name;
+                    return titleComponent.Type switch
+                    {
+                        NodeTitle.TitleType.Hidden => null,
+                        NodeTitle.TitleType.GameObjectName => nodeObject.name,
+                        NodeTitle.TitleType.NodeTitleAttribute => NodeTitleAttribute.GetTitle(nodeComponent.Node),
+                        NodeTitle.TitleType.CustomTitle => titleComponent.CustomTitle,
+                        _ => throw new ArgumentOutOfRangeException()
+                    };
+                });
+            }
         }
     }
 }
