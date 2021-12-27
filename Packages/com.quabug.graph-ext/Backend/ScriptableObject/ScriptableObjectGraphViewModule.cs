@@ -39,31 +39,36 @@ namespace GraphExt.Editor
             Runtime.AddNode(nodeId, node);
             Graph.SetPosition(nodeId, position);
             _NodeData[nodeId] = ToNodeData(nodeId, node);
-            EditorUtility.SetDirty(Graph);
+            Save();
         }
 
         public override void DeleteNode(in NodeId nodeId)
         {
             base.DeleteNode(in nodeId);
-            EditorUtility.SetDirty(Graph);
+            Save();
         }
 
         public override void Connect(in PortId input, in PortId output)
         {
             base.Connect(in input, in output);
-            EditorUtility.SetDirty(Graph);
+            Save();
         }
 
         public override void Disconnect(in PortId input, in PortId output)
         {
             base.Disconnect(in input, in output);
-            EditorUtility.SetDirty(Graph);
+            Save();
         }
 
         public override void SetNodePosition(in NodeId nodeId, float x, float y)
         {
             Graph.SetPosition(nodeId, new Vector2(x, y));
+        }
+
+        private void Save()
+        {
             EditorUtility.SetDirty(Graph);
+            AssetDatabase.Refresh();
         }
 
         protected override IEnumerable<PortData> FindNodePorts(TNode node)
