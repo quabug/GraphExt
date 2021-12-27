@@ -18,14 +18,13 @@ namespace GraphExt.Editor
 
         public MemoryGraphViewModule([NotNull] GraphRuntime<TNode> runtime, [NotNull] IReadOnlyDictionary<NodeId, Vector2> positions)
         {
-            foreach (var pair in runtime.NodeMap) AddMemoryNode(pair.Key, pair.Value, positions[pair.Key]);
+            foreach (var pair in runtime.NodeMap)
+            {
+                var position = positions[pair.Key];
+                SetNodePosition(pair.Key, position.x, position.y);
+                AddNode(pair.Key, pair.Value);
+            }
             foreach (var edge in runtime.Edges) Runtime.Connect(edge.Input, edge.Output);
-        }
-
-        public void AddMemoryNode(in NodeId nodeId, [NotNull] TNode node, Vector2 position)
-        {
-            SetNodePosition(nodeId, position.x, position.y);
-            AddNode(nodeId, node);
         }
 
         public override void SetNodePosition(in NodeId nodeId, float x, float y)

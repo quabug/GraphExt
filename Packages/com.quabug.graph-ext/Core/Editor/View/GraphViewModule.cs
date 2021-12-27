@@ -23,26 +23,26 @@ namespace GraphExt.Editor
     {
         public abstract GraphRuntime<TNode> Runtime { get; }
 
-        public IEnumerable<(PortId id, PortData data)> PortMap => _portDataCache.Select(pair => (pair.Key, pair.Value));
-        public IEnumerable<(NodeId id, NodeData data)> NodeMap => _nodeDataCache.Select(pair => (pair.Key, pair.Value));
+        protected readonly Dictionary<NodeId, NodeData> _NodeMap = new Dictionary<NodeId, NodeData>();
+        protected readonly Dictionary<PortId, PortData> _PortMap = new Dictionary<PortId, PortData>();
+
+        public IEnumerable<(PortId id, PortData data)> PortMap => _PortMap.Select(pair => (pair.Key, pair.Value));
+        public IEnumerable<(NodeId id, NodeData data)> NodeMap => _NodeMap.Select(pair => (pair.Key, pair.Value));
         public IEnumerable<EdgeId> Edges => Runtime.Edges;
 
-        private readonly Dictionary<NodeId, NodeData> _nodeDataCache = new Dictionary<NodeId, NodeData>();
-        private readonly Dictionary<PortId, PortData> _portDataCache = new Dictionary<PortId, PortData>();
-
-        protected void AddNode(in NodeId nodeId, TNode node)
+        public virtual void AddNode(in NodeId nodeId, TNode node)
         {
-            _nodeDataCache[nodeId] = ToNodeData(nodeId, node);
+            _NodeMap[nodeId] = ToNodeData(nodeId, node);
             var ports = FindNodePorts(node).ToArray();
-            foreach (var port in ports) _portDataCache[new PortId(nodeId, port.Name)] = port;
+            foreach (var port in ports) _PortMap[new PortId(nodeId, port.Name)] = port;
             Runtime.AddNode(nodeId, node);
         }
 
         public virtual void DeleteNode(in NodeId nodeId)
         {
-            _nodeDataCache.Remove(nodeId);
+            _NodeMap.Remove(nodeId);
             var id = nodeId;
-            _portDataCache.RemoveWhere(port => port.Key.NodeId == id);
+            _PortMap.RemoveWhere(port => port.Key.NodeId == id);
             Runtime.DeleteNode(nodeId);
         }
 
@@ -50,8 +50,8 @@ namespace GraphExt.Editor
 
         public virtual bool IsCompatible(in PortId input, in PortId output)
         {
-            var inputPort = _portDataCache[input];
-            var outputPort = _portDataCache[output];
+            var inputPort = _PortMap[input];
+            var outputPort = _PortMap[output];
             return inputPort.Direction != outputPort.Direction &&
                    inputPort.Orientation == outputPort.Orientation &&
                    Runtime.IsCompatible(input, output)
