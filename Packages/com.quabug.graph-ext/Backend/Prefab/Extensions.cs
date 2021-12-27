@@ -2,7 +2,7 @@
 
 using UnityEngine.SceneManagement;
 
-namespace GraphExt.Prefab
+namespace GraphExt.Editor
 {
     internal static class EditorUtility
     {

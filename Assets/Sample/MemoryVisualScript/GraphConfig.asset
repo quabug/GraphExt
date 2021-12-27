@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: GraphConfig
   m_EditorClassIdentifier: 
   WindowName: Graph Window
-  WindowExtensions: []
+  WindowExtensions:
+  - JsonLoaderWindowExtension, GraphExt.Sample.MemoryVisualScript, Version=0.0.0.0,
+    Culture=neutral, PublicKeyToken=null
   Menu:
   - id: 0
   - id: 1
@@ -29,15 +31,15 @@ MonoBehaviour:
   references:
     version: 1
     00000000:
-      type: {class: SelectionEntry, ns: GraphExt.Editor, asm: GraphExt.Editor}
+      type: {class: PrintValueMenu, ns: , asm: GraphExt.Sample.MemoryVisualScript}
     00000001:
-      type: {class: SeparatorEntry, ns: GraphExt.Editor, asm: GraphExt.Editor}
+      type: {class: VisualNodeMenuEntry, ns: , asm: GraphExt.Sample.MemoryVisualScript}
     00000002:
       type: {class: MemorySaveLoadMenu, ns: , asm: GraphExt.Sample.MemoryVisualScript}
     00000003:
-      type: {class: PrintValueMenu, ns: , asm: GraphExt.Sample.MemoryVisualScript}
+      type: {class: SelectionEntry, ns: GraphExt.Editor, asm: GraphExt.Editor}
     00000004:
-      type: {class: VisualNodeMenuEntry, ns: , asm: GraphExt.Sample.MemoryVisualScript}
+      type: {class: SeparatorEntry, ns: GraphExt.Editor, asm: GraphExt.Editor}
     00000005:
       type: {class: DefaultNodeViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
       data:
