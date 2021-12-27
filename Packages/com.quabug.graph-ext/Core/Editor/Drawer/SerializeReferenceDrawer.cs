@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using BinaryEgo.Editor.UI;
 using JetBrains.Annotations;
+using Shtif;
 using UnityEditor;
 using UnityEngine;
 
@@ -81,7 +81,7 @@ namespace GraphExt.Editor
                     var popup = GenericMenuPopup.Get(context, "");
                     popup.showSearch = false;
                     popup.showTooltip = false;
-                    popup.resizeToContent = false;
+                    popup.resizeToContent = true;
                     popup.Show(new Vector2(buttonPosition.x, buttonPosition.y));
                 }
             }

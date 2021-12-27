@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using BinaryEgo.Editor.UI;
 using JetBrains.Annotations;
+using Shtif;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
