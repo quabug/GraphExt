@@ -26,7 +26,8 @@ namespace GraphExt.Editor
             void CreateNode(Type nodeType)
             {
                 var node = (TNode)Activator.CreateInstance(nodeType);
-                module.AddNode(Guid.NewGuid(), node, menuPosition);
+                module.AddMemoryNode(Guid.NewGuid(), node, menuPosition);
+
             }
         }
     }

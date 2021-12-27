@@ -129,10 +129,6 @@ namespace GraphExt
 
         [field: SerializeField, HideInInspector] public Vector2 Position { get; set; }
 
-        private enum NodeNameType { Hidden, GameObjectName, NodeTitleAttribute, CustomName }
-        [SerializeField] private NodeNameType _nameType = NodeNameType.NodeTitleAttribute;
-        [SerializeField] private string _customName;
-
         bool INodeComponent<TNode>.IsPortCompatible(GameObjectNodes<TNode> data, in PortId input, in PortId output)
         {
             return IsPortCompatible(data, input, output);

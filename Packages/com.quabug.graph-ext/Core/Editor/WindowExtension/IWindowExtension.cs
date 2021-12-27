@@ -53,7 +53,7 @@ namespace GraphExt.Editor
 
         public void OnClosed(GraphWindow window, GraphConfig config, GraphView view)
         {
-            foreach (var ext in Extensions) ext.OnInitialized(window, config, view);
+            foreach (var ext in Extensions) ext.OnClosed(window, config, view);
         }
     }
 }

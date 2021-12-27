@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using JetBrains.Annotations;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
@@ -10,8 +11,14 @@ namespace GraphExt.Editor
     {
         public GraphConfig Config;
         public GroupWindowExtension WindowExtension = new GroupWindowExtension();
+        private bool _isInitialized = false;
 
         public void CreateGUI()
+        {
+            if (!_isInitialized && Config != null) Init(Config);
+        }
+
+        private void LoadVisualTree()
         {
             var relativeDirectory = Utilities.GetCurrentDirectoryProjectRelativePath();
             var uxmlPath = Path.Combine(relativeDirectory, "GraphWindow.uxml");
@@ -22,13 +29,15 @@ namespace GraphExt.Editor
 
             var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(ussPath);
             rootVisualElement.styleSheets.Add(styleSheet);
-
-            if (Config != null) Init(Config);
         }
 
-        public void Init(GraphConfig config)
+        public void Init([NotNull] GraphConfig config)
         {
+            _isInitialized = true;
+
             Config = config;
+            LoadVisualTree();
+
             var graph = rootVisualElement.Q<GraphView>();
             if (graph == null)
             {
