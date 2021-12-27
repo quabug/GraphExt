@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace GraphExt.Editor
 {
-    [CreateAssetMenu(fileName = "GraphConfig", menuName = "Graph/New Config", order = 0)]
+    [CreateAssetMenu(fileName = "Graph Window Config", menuName = "Graph/New Window Config", order = 0)]
     public class GraphConfig : ScriptableObject
     {
         public string WindowName = "Graph Window";

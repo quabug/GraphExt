@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5ba7f039e774f7b9f34a9386ac259ed, type: 3}
   m_Name: GraphConfig
   m_EditorClassIdentifier: 
-  WindowName: Prefab Visual Tree
-  WindowExtensions:
-  - id: 0
+  WindowName: Graph Window
+  WindowExtensions: []
   Menu:
+  - id: 0
   - id: 1
   - id: 2
   - id: 3
@@ -29,9 +29,9 @@ MonoBehaviour:
   references:
     version: 1
     00000000:
-      type: {class: PrefabVisualTree/WindowExtension, ns: , asm: GraphExt.Sample.ExpressionTree}
+      type: {class: MemorySaveLoadMenu, ns: , asm: GraphExt.Sample.ExpressionTree}
     00000001:
-      type: {class: PrefabVisualTree/NodeCreation, ns: , asm: GraphExt.Sample.ExpressionTree}
+      type: {class: VisualNodeMenuEntry, ns: , asm: GraphExt.Sample.ExpressionTree}
     00000002:
       type: {class: PrintValueMenu, ns: , asm: GraphExt.Sample.ExpressionTree}
     00000003:

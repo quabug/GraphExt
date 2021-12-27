@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -28,19 +29,19 @@ namespace GraphExt
         {
             _root = root;
             Graph = new GraphRuntime<TNode>(IsPortCompatible);
-            foreach (var node in root.GetComponentsInChildren<TComponent>()) AddNode(node);
+            var nodes = root.GetComponentsInChildren<TComponent>();
+            foreach (var node in nodes)
+            {
+                Graph.AddNode(node.Id, node.Node);
+                _nodeObjectMap[node.Id] = node;
+            }
+            
+            foreach (var (input, output) in nodes.SelectMany(node => node.Edges)) Graph.Connect(input, output);
 
             Graph.OnNodeAdded += OnNodeAdded;
             Graph.OnNodeDeleted += OnNodeDeleted;
             Graph.OnEdgeConnected += OnConnected;
             Graph.OnEdgeDisconnected += OnDisconnected;
-
-            void AddNode(TComponent node)
-            {
-                Graph.AddNode(node.Id, node.Node);
-                foreach (var edge in node.Edges) Graph.Connect(edge.Input, edge.Output);
-                _nodeObjectMap[node.Id] = node;
-            }
         }
 
         public void Dispose()
@@ -107,18 +108,4 @@ namespace GraphExt
         }
     }
 
-    public interface INodeComponent<TNode, TComponent>
-        where TNode : INode<GraphRuntime<TNode>>
-        where TComponent : MonoBehaviour, INodeComponent<TNode, TComponent>
-    {
-        NodeId Id { get; set; }
-        TNode Node { get; set; }
-        string NodeSerializedPropertyName { get; }
-        Vector2 Position { get; set; }
-        IReadOnlySet<EdgeId> Edges { get; }
-
-        bool IsPortCompatible(GameObjectNodes<TNode, TComponent> data, in PortId input, in PortId output);
-        void OnConnected(GameObjectNodes<TNode, TComponent> data, in EdgeId edge);
-        void OnDisconnected(GameObjectNodes<TNode, TComponent> data, in EdgeId edge);
-    }
 }
