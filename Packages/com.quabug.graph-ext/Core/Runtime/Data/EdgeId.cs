@@ -17,6 +17,12 @@ namespace GraphExt
 
         public bool Contains(in PortId portId) => Input == portId || Output == portId;
 
+        public void Deconstruct(out PortId input, out PortId output)
+        {
+            input = Input;
+            output = Output;
+        }
+
         public IEnumerable<PortId> GetConnectedPort(in PortId portId)
         {
             if (Input == portId) return Output.Yield();

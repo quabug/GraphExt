@@ -1,39 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace GraphExt
 {
-    public class GameObjectNodes<TNode> : IDisposable where TNode : INode<GraphRuntime<TNode>>
+    public class GameObjectNodes<TNode, TComponent> : IDisposable
+        where TNode : INode<GraphRuntime<TNode>>
+        where TComponent : MonoBehaviour, INodeComponent<TNode, TComponent>
     {
         public GraphRuntime<TNode> Graph { get; }
 
         private readonly GameObject _root;
-        private readonly BiDictionary<NodeId, GameObject> _nodeObjectMap = new BiDictionary<NodeId, GameObject>();
-        private readonly Type _nodeComponentType;
+        private readonly BiDictionary<NodeId, TComponent> _nodeObjectMap = new BiDictionary<NodeId, TComponent>();
 
-        public GameObject this[in NodeId id] => _nodeObjectMap[id];
+        public IReadOnlyDictionary<NodeId, TComponent> NodeObjectMap => _nodeObjectMap.Forward;
+        public IReadOnlyDictionary<TComponent, NodeId> ObjectNodeMap => _nodeObjectMap.Reverse;
+        [NotNull] public TComponent this[in NodeId id] => _nodeObjectMap[id];
+        public NodeId this[[NotNull] TComponent obj] => _nodeObjectMap.GetKey(obj);
 
-        public GameObjectNodes(GameObject root, Type nodeComponentType)
+        public GameObjectNodes()
         {
-            Assert.IsTrue(typeof(INodeComponent<TNode>).IsAssignableFrom(nodeComponentType));
-            Assert.IsTrue(typeof(MonoBehaviour).IsAssignableFrom(nodeComponentType));
+            Graph = new GraphRuntime<TNode>();
+        }
 
+        public GameObjectNodes([NotNull] GameObject root)
+        {
             _root = root;
-            _nodeComponentType = nodeComponentType;
-
             Graph = new GraphRuntime<TNode>(IsPortCompatible);
-
-            foreach (var node in root.GetComponentsInChildren<INodeComponent<TNode>>())
-                AddNodeDataToGraphRuntime(node);
-
+            foreach (var node in root.GetComponentsInChildren<TComponent>()) AddNodeDataToGraphRuntime(node);
             Graph.OnNodeAdded += OnNodeAdded;
             Graph.OnNodeAdded += OnNodeDeleted;
             Graph.OnEdgeConnected += OnConnected;
             Graph.OnEdgeDisconnected += OnDisconnected;
 
-            void AddNodeDataToGraphRuntime(INodeComponent<TNode> node)
+            void AddNodeDataToGraphRuntime(TComponent node)
             {
                 Graph.AddNode(node.Id, node.Node);
                 foreach (var edge in node.Edges) Graph.Connect(edge.Input, edge.Output);
@@ -50,7 +51,7 @@ namespace GraphExt
 
         public void SetPosition(in NodeId id, Vector2 position)
         {
-            _nodeObjectMap[id].GetComponent<INodeComponent<TNode>>().Position = position;
+            _nodeObjectMap[id].GetComponent<TComponent>().Position = position;
         }
 
         private bool IsPortCompatible(in PortId input, in PortId output)
@@ -61,17 +62,17 @@ namespace GraphExt
 
         private bool IsNodeComponentPortCompatible(in NodeId nodeId, in PortId input, in PortId output)
         {
-            return _nodeObjectMap[nodeId].GetComponent<INodeComponent<TNode>>().IsPortCompatible(this, input, output);
+            return _nodeObjectMap[nodeId].GetComponent<TComponent>().IsPortCompatible(this, input, output);
         }
 
         private void OnNodeAdded(in NodeId id, TNode node)
         {
             var nodeObject = new GameObject(node.GetType().Name);
             nodeObject.transform.SetParent(_root.transform);
-            var nodeComponent = (INodeComponent<TNode>)nodeObject.AddComponent(_nodeComponentType);
+            var nodeComponent = nodeObject.AddComponent<TComponent>();
             nodeComponent.Id = id;
             nodeComponent.Node = node;
-            _nodeObjectMap[id] = nodeObject;
+            _nodeObjectMap[id] = nodeComponent;
         }
 
         private void OnNodeDeleted(in NodeId id, TNode node)
@@ -89,64 +90,33 @@ namespace GraphExt
 
         private void OnConnected(in EdgeId edge)
         {
-
+            var inputComponent = _nodeObjectMap[edge.Input.NodeId].GetComponent<TComponent>();
+            var outputComponent = _nodeObjectMap[edge.Output.NodeId].GetComponent<TComponent>();
+            inputComponent.OnConnected(this, edge);
+            outputComponent.OnConnected(this, edge);
         }
 
         private void OnDisconnected(in EdgeId edge)
         {
-
+            var inputComponent = _nodeObjectMap[edge.Input.NodeId].GetComponent<TComponent>();
+            var outputComponent = _nodeObjectMap[edge.Output.NodeId].GetComponent<TComponent>();
+            inputComponent.OnDisconnected(this, edge);
+            outputComponent.OnDisconnected(this, edge);
         }
     }
 
-    public interface INodeComponent<TNode> where TNode : INode<GraphRuntime<TNode>>
+    public interface INodeComponent<TNode, TComponent>
+        where TNode : INode<GraphRuntime<TNode>>
+        where TComponent : MonoBehaviour, INodeComponent<TNode, TComponent>
     {
         NodeId Id { get; set; }
         TNode Node { get; set; }
+        string NodeSerializedPropertyName { get; }
         Vector2 Position { get; set; }
         IReadOnlySet<EdgeId> Edges { get; }
 
-        bool IsPortCompatible(GameObjectNodes<TNode> data, in PortId input, in PortId output);
-        void OnConnected(GameObjectNodes<TNode> data, in PortId input, in PortId output);
-        void OnDisconnected(GameObjectNodes<TNode> data, in PortId input, in PortId output);
-    }
-
-    [DisallowMultipleComponent]
-    public abstract class NodeComponent<TNode> : MonoBehaviour, INodeComponent<TNode> where TNode : INode<GraphRuntime<TNode>>
-    {
-        [SerializeReference] private TNode _node;
-        public TNode Node
-        {
-            get => _node;
-            set => _node = value;
-        }
-
-        [SerializeField, HideInInspector] private string _nodeId = Guid.NewGuid().ToString();
-        public NodeId Id
-        {
-            get => Guid.Parse(_nodeId);
-            set => _nodeId = value.Id.ToString();
-        }
-
-        [field: SerializeField, HideInInspector] public Vector2 Position { get; set; }
-
-        bool INodeComponent<TNode>.IsPortCompatible(GameObjectNodes<TNode> data, in PortId input, in PortId output)
-        {
-            return IsPortCompatible(data, input, output);
-        }
-
-        void INodeComponent<TNode>.OnConnected(GameObjectNodes<TNode> data, in PortId input, in PortId output)
-        {
-            OnConnected(data, input, output);
-        }
-
-        void INodeComponent<TNode>.OnDisconnected(GameObjectNodes<TNode> data, in PortId input, in PortId output)
-        {
-            OnDisconnected(data, input, output);
-        }
-
-        public abstract IReadOnlySet<EdgeId> Edges { get; }
-        protected virtual bool IsPortCompatible(GameObjectNodes<TNode> graph, in PortId input, in PortId output) => true;
-        protected virtual void OnConnected(GameObjectNodes<TNode> graph, in PortId input, in PortId output) {}
-        protected virtual void OnDisconnected(GameObjectNodes<TNode> graph, in PortId input, in PortId output) {}
+        bool IsPortCompatible(GameObjectNodes<TNode, TComponent> data, in PortId input, in PortId output);
+        void OnConnected(GameObjectNodes<TNode, TComponent> data, in EdgeId edge);
+        void OnDisconnected(GameObjectNodes<TNode, TComponent> data, in EdgeId edge);
     }
 }

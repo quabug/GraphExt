@@ -7,7 +7,7 @@ namespace GraphExt.Editor
     {
         public event Action<bool> OnSelectChanged;
 
-        private class View : VisualElement, Editor.ITickableElement
+        private class View : VisualElement, ITickableElement
         {
             private readonly UnityEditor.Experimental.GraphView.Node _node;
             private readonly NodeSelector _selector;
@@ -30,9 +30,9 @@ namespace GraphExt.Editor
             }
         }
 
-        private class Factory : Editor.NodePropertyViewFactory<NodeSelector>
+        private class Factory : NodePropertyViewFactory<NodeSelector>
         {
-            protected override VisualElement Create(UnityEditor.Experimental.GraphView.Node node, NodeSelector property, Editor.INodePropertyViewFactory factory)
+            protected override VisualElement Create(UnityEditor.Experimental.GraphView.Node node, NodeSelector property, INodePropertyViewFactory factory)
             {
                 return new View(node, property);
             }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using JetBrains.Annotations;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace GraphExt.Editor
@@ -14,15 +15,13 @@ namespace GraphExt.Editor
             _y = y;
         }
 
-
-        public class Factory : NodePropertyViewFactory<NodePositionProperty>
+        [UsedImplicitly]
+        private class Factory : NodePropertyViewFactory<NodePositionProperty>
         {
-            protected override VisualElement Create(UnityEditor.Experimental.GraphView.Node node, NodePositionProperty property, Editor.INodePropertyViewFactory _)
+            protected override VisualElement Create(UnityEditor.Experimental.GraphView.Node node, NodePositionProperty property, INodePropertyViewFactory _)
             {
-                var view = new VisualElement();
-                view.name = "node-position";
                 node.SetPosition(new Rect(property._x, property._y, 0, 0));
-                return view;
+                return null;
             }
         }
     }

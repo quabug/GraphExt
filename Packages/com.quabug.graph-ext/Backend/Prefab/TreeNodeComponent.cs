@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -11,9 +12,18 @@ namespace GraphExt
     }
 
     [AddComponentMenu("")]
-    public class TreeNodeComponent<TNode> : NodeComponent<TNode> where TNode : ITreeNode<GraphRuntime<TNode>>
+    public class TreeNodeComponent<TNode> : MonoBehaviour, INodeComponent<TNode, TreeNodeComponent<TNode>> where TNode : ITreeNode<GraphRuntime<TNode>>
     {
-        public override IReadOnlySet<EdgeId> Edges
+        [SerializeReference] private TNode _node;
+        public TNode Node { get => _node; set => _node = value; }
+        public string NodeSerializedPropertyName => nameof(_node);
+
+        [SerializeField, HideInInspector] private string _nodeId;
+        public NodeId Id { get => Guid.Parse(_nodeId); set => _nodeId = value.ToString(); }
+
+        [field: SerializeField, HideInInspector] public Vector2 Position { get; set; }
+
+        public IReadOnlySet<EdgeId> Edges
         {
             get
             {
@@ -27,23 +37,24 @@ namespace GraphExt
         public PortId InputPort => new PortId(Id, Node.InputPortName);
         public PortId OutputPort => new PortId(Id, Node.OutputPortName);
 
-        protected override bool IsPortCompatible(GameObjectNodes<TNode> graph, in PortId input, in PortId output)
+        public bool IsPortCompatible(GameObjectNodes<TNode, TreeNodeComponent<TNode>> graph, in PortId input, in PortId output)
         {
             if (input.NodeId == Id && output.NodeId == Id) return false; // same node
             if (input.NodeId == Id) return true; // only check compatible on output/start node
             // cannot connect to input/end node which is parent of output/start node
             var inputNodeId = input.NodeId;
-            return GetComponentsInParent<INodeComponent<TNode>>().All(node => node.Id != inputNodeId);
+            return GetComponentsInParent<TreeNodeComponent<TNode>>().All(node => node.Id != inputNodeId);
         }
 
-        protected override void OnConnected(GameObjectNodes<TNode> graph, in PortId input, in PortId output)
+        public void OnConnected(GameObjectNodes<TNode, TreeNodeComponent<TNode>> graph, in EdgeId edge)
         {
+            var (input, output) = edge;
             if (input.NodeId == Id) transform.SetParent(graph[output.NodeId].transform);
         }
 
-        protected override void OnDisconnected(GameObjectNodes<TNode> graph, in PortId input, in PortId output)
+        public void OnDisconnected(GameObjectNodes<TNode, TreeNodeComponent<TNode>> graph, in EdgeId edge)
         {
-            if (input.NodeId == Id) transform.SetParent(FindStageRoot());
+            if (edge.Input.NodeId == Id) transform.SetParent(FindStageRoot());
         }
 
         private Transform FindStageRoot()

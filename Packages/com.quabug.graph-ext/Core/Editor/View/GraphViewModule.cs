@@ -19,6 +19,18 @@ namespace GraphExt.Editor
         void Disconnect(in PortId input, in PortId output);
     }
 
+    public class EmptyGraphViewModule : IGraphViewModule
+    {
+        public IEnumerable<(PortId id, PortData data)> PortMap => Enumerable.Empty <(PortId, PortData)> ();
+        public IEnumerable<(NodeId id, NodeData data)> NodeMap => Enumerable.Empty<(NodeId id, NodeData data)>();
+        public IEnumerable<EdgeId> Edges => Enumerable.Empty<EdgeId>();
+        public void DeleteNode(in NodeId nodeId) {}
+        public void SetNodePosition(in NodeId nodeId, float x, float y) {}
+        public bool IsCompatible(in PortId input, in PortId output) => true;
+        public void Connect(in PortId input, in PortId output) {}
+        public void Disconnect(in PortId input, in PortId output) {}
+    }
+
     public abstract class GraphViewModule<TNode> : IGraphViewModule where TNode : INode<GraphRuntime<TNode>>
     {
         public abstract GraphRuntime<TNode> Runtime { get; }
@@ -30,7 +42,7 @@ namespace GraphExt.Editor
         private readonly Dictionary<NodeId, NodeData> _nodeDataCache = new Dictionary<NodeId, NodeData>();
         private readonly Dictionary<PortId, PortData> _portDataCache = new Dictionary<PortId, PortData>();
 
-        protected void AddNode(in NodeId nodeId, TNode node)
+        public virtual void AddNode(in NodeId nodeId, TNode node)
         {
             _nodeDataCache[nodeId] = ToNodeData(nodeId, node);
             var ports = FindNodePorts(node).ToArray();

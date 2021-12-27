@@ -14,6 +14,12 @@ namespace GraphExt
             Name = portName;
         }
 
+        public void Deconstruct(out NodeId nodeId, out string portName)
+        {
+            nodeId = NodeId;
+            portName = Name;
+        }
+
         public static bool operator ==(in PortId lhs, in PortId rhs)
         {
             return lhs.NodeId == rhs.NodeId && lhs.Name == rhs.Name;
