@@ -1,5 +1,6 @@
 ﻿#if UNITY_EDITOR
 
+using System;
 using System.Linq;
 using GraphExt.Editor;
 using JetBrains.Annotations;
@@ -63,6 +64,7 @@ namespace GraphExt.Prefab
                 new GameObjectHierarchyGraphViewModule<TNode, TComponent>() :
                 new GameObjectHierarchyGraphViewModule<TNode, TComponent>(prefabStage.prefabContentsRoot)
             ;
+            if (_view.Module is IDisposable disposable) disposable.Dispose();
             _view.Module = _viewModule;
             _viewModule.OnNodeSelectedChanged += OnNodeViewSelected;
             _selectedNodes.Clear();

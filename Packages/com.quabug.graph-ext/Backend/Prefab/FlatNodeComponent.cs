@@ -6,7 +6,9 @@ using UnityEngine;
 namespace GraphExt
 {
     [DisallowMultipleComponent, AddComponentMenu("")]
-    public class FlatNodeComponent<TNode> : MonoBehaviour, INodeComponent<TNode, FlatNodeComponent<TNode>> where TNode : INode<GraphRuntime<TNode>>
+    public class FlatNodeComponent<TNode, TComponent> : MonoBehaviour, INodeComponent<TNode, TComponent>
+        where TNode : INode<GraphRuntime<TNode>>
+        where TComponent : FlatNodeComponent<TNode, TComponent>
     {
         [SerializeReference] private TNode _node;
         public TNode Node { get => _node; set => _node = value; }
@@ -28,12 +30,12 @@ namespace GraphExt
             );
         }
 
-        public bool IsPortCompatible(GameObjectNodes<TNode, FlatNodeComponent<TNode>> data, in PortId input, in PortId output)
+        public bool IsPortCompatible(GameObjectNodes<TNode, TComponent> data, in PortId input, in PortId output)
         {
             return true;
         }
 
-        public void OnConnected(GameObjectNodes<TNode, FlatNodeComponent<TNode>> graph, in EdgeId edge)
+        public void OnConnected(GameObjectNodes<TNode, TComponent> graph, in EdgeId edge)
         {
             if (!_edges.Value.Contains(edge))
             {
@@ -42,7 +44,7 @@ namespace GraphExt
             }
         }
 
-        public void OnDisconnected(GameObjectNodes<TNode, FlatNodeComponent<TNode>> graph, in EdgeId edge)
+        public void OnDisconnected(GameObjectNodes<TNode, TComponent> graph, in EdgeId edge)
         {
             if (_edges.Value.Contains(edge))
             {

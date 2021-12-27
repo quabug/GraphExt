@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 
 namespace GraphExt.Editor
 {
-    internal static class EditorUtility
+    internal static class Utility
     {
         public static void SavePrefabStage()
         {

@@ -36,7 +36,7 @@ namespace GraphExt.Prefab
                     Debug.LogWarning("must open a prefab to create a node.");
                     return;
                 }
-                viewModule.AddNode(Guid.NewGuid(), (TNode)Activator.CreateInstance(nodeType));
+                viewModule.AddGameObjectNode(Guid.NewGuid(), (TNode)Activator.CreateInstance(nodeType), menuPosition);
                 stage.scene.SaveScene();
             }
         }

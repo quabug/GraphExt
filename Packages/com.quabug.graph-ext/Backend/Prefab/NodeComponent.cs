@@ -28,23 +28,25 @@ namespace GraphExt
         {
             _root = root;
             Graph = new GraphRuntime<TNode>(IsPortCompatible);
-            foreach (var node in root.GetComponentsInChildren<TComponent>()) AddNodeDataToGraphRuntime(node);
+            foreach (var node in root.GetComponentsInChildren<TComponent>()) AddNode(node);
+
             Graph.OnNodeAdded += OnNodeAdded;
-            Graph.OnNodeAdded += OnNodeDeleted;
+            Graph.OnNodeDeleted += OnNodeDeleted;
             Graph.OnEdgeConnected += OnConnected;
             Graph.OnEdgeDisconnected += OnDisconnected;
 
-            void AddNodeDataToGraphRuntime(TComponent node)
+            void AddNode(TComponent node)
             {
                 Graph.AddNode(node.Id, node.Node);
                 foreach (var edge in node.Edges) Graph.Connect(edge.Input, edge.Output);
+                _nodeObjectMap[node.Id] = node;
             }
         }
 
         public void Dispose()
         {
             Graph.OnNodeAdded -= OnNodeAdded;
-            Graph.OnNodeAdded -= OnNodeDeleted;
+            Graph.OnNodeDeleted -= OnNodeDeleted;
             Graph.OnEdgeConnected -= OnConnected;
             Graph.OnEdgeDisconnected -= OnDisconnected;
         }
