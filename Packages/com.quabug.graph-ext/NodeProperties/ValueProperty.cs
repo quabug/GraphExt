@@ -1,14 +1,10 @@
 using System;
 using System.Collections.Generic;
-using GraphExt.Editor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
-
-#if UNITY_EDITOR
 using UnityEditor.UIElements;
-#endif
 
-namespace GraphExt
+namespace GraphExt.Editor
 {
     public interface IReadOnlyValueProperty<out TValue> : INodeProperty
     {
@@ -45,8 +41,7 @@ namespace GraphExt
         }
     }
 
-#if UNITY_EDITOR
-    public class ReadOnlyValuePropertyView<TValue, TField> : VisualElement, Editor.ITickableElement
+    public class ReadOnlyValuePropertyView<TValue, TField> : VisualElement, ITickableElement
         where TField : TextValueField<TValue>, new()
     {
         private readonly IReadOnlyValueProperty<TValue> _property;
@@ -66,7 +61,7 @@ namespace GraphExt
         }
     }
 
-    public class ValuePropertyView<TValue, TField> : VisualElement, IDisposable, Editor.ITickableElement
+    public class ValuePropertyView<TValue, TField> : VisualElement, IDisposable, ITickableElement
         where TField : TextValueField<TValue>, new()
     {
         private readonly IValueProperty<TValue> _property;
@@ -97,7 +92,7 @@ namespace GraphExt
         }
     }
 
-    public class ValuePropertyFactory<TValue, TField> : Editor.NodePropertyViewFactory<IValueProperty<TValue>>
+    public class ValuePropertyFactory<TValue, TField> : NodePropertyViewFactory<IValueProperty<TValue>>
         where TField : TextValueField<TValue>, new()
     {
         protected override VisualElement Create(Node node, IValueProperty<TValue> property, INodePropertyViewFactory _)
@@ -111,7 +106,7 @@ namespace GraphExt
     public class FloatPropertyFactory : ValuePropertyFactory<float, FloatField> {}
     public class DoublePropertyFactory : ValuePropertyFactory<double, DoubleField> {}
 
-    public class ReadOnlyValuePropertyFactory<TValue, TField> : Editor.NodePropertyViewFactory<IReadOnlyValueProperty<TValue>>
+    public class ReadOnlyValuePropertyFactory<TValue, TField> : NodePropertyViewFactory<IReadOnlyValueProperty<TValue>>
         where TField : TextValueField<TValue>, new()
     {
         protected override VisualElement Create(Node node, IReadOnlyValueProperty<TValue> property, INodePropertyViewFactory _)
@@ -124,6 +119,4 @@ namespace GraphExt
     public class LongReadOnlyPropertyFactory : ValuePropertyFactory<long, LongField> {}
     public class FloatReadOnlyPropertyFactory : ValuePropertyFactory<float, FloatField> {}
     public class DoubleReadOnlyPropertyFactory : ValuePropertyFactory<double, DoubleField> {}
-
-#endif
 }

@@ -6,28 +6,34 @@ namespace GraphExt
 {
     public readonly struct EdgeId : IEquatable<EdgeId>
     {
-        public readonly PortId First;
-        public readonly PortId Second;
+        public readonly PortId Input;
+        public readonly PortId Output;
 
-        public EdgeId(PortId first, PortId second)
+        public EdgeId(in PortId input, in PortId output)
         {
-            First = first;
-            Second = second;
+            Input = input;
+            Output = output;
         }
 
-        public bool Contains(in PortId portId) => First == portId || Second == portId;
+        public bool Contains(in PortId portId) => Input == portId || Output == portId;
+
+        public void Deconstruct(out PortId input, out PortId output)
+        {
+            input = Input;
+            output = Output;
+        }
 
         public IEnumerable<PortId> GetConnectedPort(in PortId portId)
         {
-            if (First == portId) return Second.Yield();
-            if (Second == portId) return First.Yield();
+            if (Input == portId) return Output.Yield();
+            if (Output == portId) return Input.Yield();
             return Enumerable.Empty<PortId>();
         }
 
         public bool Equals(EdgeId other)
         {
-            return (Second.Equals(other.Second) && First.Equals(other.First)) ||
-                   (Second.Equals(other.First) && First.Equals(other.Second))
+            return (Output.Equals(other.Output) && Input.Equals(other.Input)) ||
+                   (Output.Equals(other.Input) && Input.Equals(other.Output))
             ;
         }
 
@@ -40,16 +46,16 @@ namespace GraphExt
         {
             unchecked
             {
-                return (Second.GetHashCode() ^ First.GetHashCode()) * 397;
+                return (Output.GetHashCode() ^ Input.GetHashCode()) * 397;
             }
         }
 
-        public static bool operator ==(EdgeId lhs, EdgeId rhs)
+        public static bool operator ==(in EdgeId lhs, in EdgeId rhs)
         {
             return lhs.Equals(rhs);
         }
 
-        public static bool operator !=(EdgeId lhs, EdgeId rhs)
+        public static bool operator !=(in EdgeId lhs, in EdgeId rhs)
         {
             return !(lhs == rhs);
         }

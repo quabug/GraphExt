@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using JetBrains.Annotations;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
@@ -11,7 +12,19 @@ namespace GraphExt.Editor
         public GraphConfig Config;
         public GroupWindowExtension WindowExtension = new GroupWindowExtension();
 
-        public void CreateGUI()
+        private Lazy<VisualElement> _graphRoot;
+
+        public GraphWindow()
+        {
+            _graphRoot = new Lazy<VisualElement>(LoadVisualTree);
+        }
+
+        private void CreateGUI()
+        {
+            if (Config != null) Init(Config);
+        }
+
+        private VisualElement LoadVisualTree()
         {
             var relativeDirectory = Utilities.GetCurrentDirectoryProjectRelativePath();
             var uxmlPath = Path.Combine(relativeDirectory, "GraphWindow.uxml");
@@ -22,27 +35,24 @@ namespace GraphExt.Editor
 
             var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(ussPath);
             rootVisualElement.styleSheets.Add(styleSheet);
-
-            if (Config != null) Init(Config);
+            return rootVisualElement;
         }
 
-        public void Init(GraphConfig config)
+        public void Init([NotNull] GraphConfig config)
         {
             Config = config;
-            var graph = rootVisualElement.Q<GraphView>();
+
+            var graphRoot = _graphRoot.Value;
+            var graph = graphRoot.Q<GraphView>();
             if (graph == null)
             {
                 graph = new GraphView(config) { name = "graph" };
-                rootVisualElement.Q<VisualElement>("graph-content").Add(graph);
+                graphRoot.Q<VisualElement>("graph-content").Add(graph);
             }
-            var miniMap = rootVisualElement.Q<MiniMap>();
+            var miniMap = graphRoot.Q<MiniMap>();
             if (miniMap != null) miniMap.graphView = graph;
 
-            foreach (var windowExtensionType in config.WindowExtensions)
-            {
-                var type = Type.GetType(windowExtensionType);
-                WindowExtension.GetOrCreate(type);
-            }
+            foreach (var extension in config.WindowExtensions) WindowExtension.AddIfNotExist(extension);
             WindowExtension.OnInitialized(this, Config, graph);
         }
 

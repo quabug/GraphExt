@@ -2,33 +2,31 @@
 
 using System;
 using System.Linq;
-using GraphExt.Editor;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace GraphExt.Memory
+namespace GraphExt.Editor
 {
-    public class MemoryNodeMenuEntry : IMenuEntry
+    public class MemoryNodeMenuEntry<TNode> : IMenuEntry where TNode : INode<GraphRuntime<TNode>>
     {
         public void MakeEntry(GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
         {
-            if (!(graph.Module is MemoryGraphBackend module)) return;
+            if (!(graph.Module is MemoryGraphViewModule<TNode> module)) return;
 
             var menuPosition = graph.viewTransform.matrix.inverse.MultiplyPoint(evt.localMousePosition);
-            var memoryNodes = TypeCache.GetTypesDerivedFrom<IMemoryNode>();
+            var memoryNodes = TypeCache.GetTypesDerivedFrom<TNode>();
             foreach (var nodeType in memoryNodes
                 .Where(type => !type.IsAbstract && !type.IsGenericType)
                 .OrderBy(type => type.Name))
             {
-                menu.AddItem(new GUIContent($"Node/{nodeType.Name}"), false, () => CreateNode(nodeType));
+                menu.AddItem(new GUIContent($"{typeof(TNode).Name}/{nodeType.Name}"), false, () => CreateNode(nodeType));
             }
 
             void CreateNode(Type nodeType)
             {
-                var innerNode = (IMemoryNode)Activator.CreateInstance(nodeType);
-                var node = new MemoryGraphBackend.Node(innerNode, Guid.NewGuid(), menuPosition);
-                module.AddNode(node);
+                var node = (TNode)Activator.CreateInstance(nodeType);
+                module.AddMemoryNode(Guid.NewGuid(), node, menuPosition);
             }
         }
     }

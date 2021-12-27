@@ -1,46 +1,28 @@
-﻿using System;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace GraphExt
+namespace GraphExt.Editor
 {
     public class NodePositionProperty : INodeProperty
     {
-        private readonly Func<Vector2> _getter;
-        private readonly Action<Vector2> _setter;
+        private readonly float _x;
+        private readonly float _y;
 
-        public NodePositionProperty([NotNull] Func<Vector2> getter, [NotNull] Action<Vector2> setter)
+        public NodePositionProperty(float x, float y)
         {
-            _getter = getter;
-            _setter = setter;
+            _x = x;
+            _y = y;
         }
 
-#if UNITY_EDITOR
-        public class EventView : Editor.NodeEventElement<Editor.NodePositionChangeEvent>
+        [UsedImplicitly]
+        private class Factory : NodePropertyViewFactory<NodePositionProperty>
         {
-            private readonly NodePositionProperty _property;
-
-            public EventView(UnityEditor.Experimental.GraphView.Node node, NodePositionProperty property) : base(node)
+            protected override VisualElement Create(UnityEditor.Experimental.GraphView.Node node, NodePositionProperty property, INodePropertyViewFactory _)
             {
-                name = "node-position-event";
-                _property = property;
-                Node.SetPosition(new Rect(_property._getter(), Vector2.zero));
-            }
-
-            protected override void OnEvent(Editor.NodePositionChangeEvent @event)
-            {
-                _property._setter(Node.GetPosition().position);
+                node.SetPosition(new Rect(property._x, property._y, 0, 0));
+                return null;
             }
         }
-
-        public class Factory : Editor.NodePropertyViewFactory<NodePositionProperty>
-        {
-            protected override VisualElement Create(UnityEditor.Experimental.GraphView.Node node, NodePositionProperty property, Editor.INodePropertyViewFactory _)
-            {
-                return new EventView(node, property);
-            }
-        }
-#endif
     }
 }

@@ -8,10 +8,16 @@ namespace GraphExt
         public readonly NodeId NodeId;
         public readonly string Name;
 
-        public PortId(NodeId nodeId, [NotNull] string portName)
+        public PortId(in NodeId nodeId, [NotNull] string portName)
         {
             NodeId = nodeId;
             Name = portName;
+        }
+
+        public void Deconstruct(out NodeId nodeId, out string portName)
+        {
+            nodeId = NodeId;
+            portName = Name;
         }
 
         public static bool operator ==(in PortId lhs, in PortId rhs)
@@ -19,7 +25,7 @@ namespace GraphExt
             return lhs.NodeId == rhs.NodeId && lhs.Name == rhs.Name;
         }
 
-        public static bool operator !=(PortId lhs, PortId rhs)
+        public static bool operator !=(in PortId lhs, in PortId rhs)
         {
             return !(lhs == rhs);
         }

@@ -1,21 +1,19 @@
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 
-namespace GraphExt
+namespace GraphExt.Editor
 {
     public class LabelProperty : INodeProperty
     {
         public string Value;
         public LabelProperty(string value) => Value = value;
 
-#if UNITY_EDITOR
-        public class Factory : Editor.NodePropertyViewFactory<LabelProperty>
+        public class Factory : NodePropertyViewFactory<LabelProperty>
         {
-            protected override VisualElement Create(Node node, LabelProperty property, Editor.INodePropertyViewFactory _)
+            protected override VisualElement Create(Node node, LabelProperty property, INodePropertyViewFactory _)
             {
                 return new Label(property.Value);
             }
         }
-#endif
     }
 }

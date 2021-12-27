@@ -23,6 +23,13 @@ namespace GraphExt.Editor
             return (T) GetOrCreate(typeof(T));
         }
 
+        public IWindowExtension AddIfNotExist(IWindowExtension extension)
+        {
+            var ext = Extensions.SingleOrDefault(ext => ext.GetType() == extension.GetType());
+            if (ext == null) Extensions.Add(extension);
+            return ext ?? extension;
+        }
+
         internal IWindowExtension GetOrCreate(Type type)
         {
             Assert.IsTrue(typeof(IWindowExtension).IsAssignableFrom(type));
@@ -53,7 +60,7 @@ namespace GraphExt.Editor
 
         public void OnClosed(GraphWindow window, GraphConfig config, GraphView view)
         {
-            foreach (var ext in Extensions) ext.OnInitialized(window, config, view);
+            foreach (var ext in Extensions) ext.OnClosed(window, config, view);
         }
     }
 }

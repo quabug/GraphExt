@@ -1,6 +1,6 @@
 ﻿#if UNITY_EDITOR
 
-using System.Collections.Generic;
+using System;
 using System.Linq;
 using GraphExt.Editor;
 using JetBrains.Annotations;
@@ -10,10 +10,12 @@ using UnityEngine;
 
 namespace GraphExt.Prefab
 {
-    public class PrefabStageWindowExtension : IWindowExtension
+    public class PrefabStageWindowExtension<TNode, TComponent> : IWindowExtension
+        where TNode : INode<GraphRuntime<TNode>>
+        where TComponent : MonoBehaviour, INodeComponent<TNode, TComponent>
     {
         private GraphView _view;
-        private PrefabGraphBackend _backend;
+        private GameObjectHierarchyGraphViewModule<TNode, TComponent> _viewModule;
 
         private readonly HashSet<NodeId> _selectedNodes = new HashSet<NodeId>();
 
@@ -24,20 +26,21 @@ namespace GraphExt.Prefab
             ResetGraphBackend(stage);
             PrefabStage.prefabStageOpened += ResetGraphBackend;
             PrefabStage.prefabStageClosing += ClearEditorView;
-            Selection.selectionChanged += OnSelectionChanged;
+            Selection.selectionChanged += OnPrefabSelectionChanged;
         }
 
         public void OnClosed(GraphWindow window, GraphConfig config, GraphView view)
         {
             PrefabStage.prefabStageOpened -= ResetGraphBackend;
             PrefabStage.prefabStageClosing -= ClearEditorView;
-            Selection.selectionChanged -= OnSelectionChanged;
+            Selection.selectionChanged -= OnPrefabSelectionChanged;
             _view = null;
         }
 
-        private void OnSelectionChanged()
+        private void OnPrefabSelectionChanged()
         {
-            if (Selection.activeGameObject != null && _backend.ObjectNodeMap.TryGetValue(Selection.activeGameObject, out var nodeId))
+            var selected = Selection.activeGameObject == null ? null : Selection.activeGameObject.GetComponent<TComponent>();
+            if (selected != null && _viewModule.GameObjectNodes.ObjectNodeMap.TryGetValue(selected, out var nodeId))
             {
                 var node = _view[nodeId];
                 if (!_view.selection.Contains(node))
@@ -57,25 +60,29 @@ namespace GraphExt.Prefab
 
         private void ResetGraphBackend([CanBeNull] PrefabStage prefabStage)
         {
-            _backend = prefabStage == null ? new PrefabGraphBackend() : new PrefabGraphBackend(prefabStage.prefabContentsRoot);
-            _view.Module = _backend;
-            _backend.OnNodeSelectedChanged += OnNodeSelected;
+            _viewModule = prefabStage == null ?
+                new GameObjectHierarchyGraphViewModule<TNode, TComponent>() :
+                new GameObjectHierarchyGraphViewModule<TNode, TComponent>(prefabStage.prefabContentsRoot)
+            ;
+            if (_view.Module is IDisposable disposable) disposable.Dispose();
+            _view.Module = _viewModule;
+            _viewModule.OnNodeSelectedChanged += OnNodeViewSelected;
             _selectedNodes.Clear();
         }
 
-        private void OnNodeSelected(NodeId node, bool isSelected)
+        private void OnNodeViewSelected(in NodeId node, bool isSelected)
         {
             if (isSelected)
             {
                 if (_selectedNodes.Contains(node)) return;
                 _selectedNodes.Add(node);
-                Select(_backend.NodeObjectMap[node]);
+                Select(_viewModule.GameObjectNodes[node].gameObject);
             }
             else
             {
                 if (!_selectedNodes.Contains(node)) return;
                 _selectedNodes.Remove(node);
-                Select(_selectedNodes.Any() ? _backend.NodeObjectMap[_selectedNodes.First()] : null);
+                Select(_selectedNodes.Any() ? _viewModule.GameObjectNodes[_selectedNodes.First()].gameObject : null);
             }
         }
 

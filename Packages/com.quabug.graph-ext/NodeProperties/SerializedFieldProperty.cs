@@ -1,12 +1,9 @@
-#if UNITY_EDITOR
-
-using GraphExt.Editor;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
-namespace GraphExt
+namespace GraphExt.Editor
 {
     public class SerializedFieldProperty : INodeProperty
     {
@@ -33,7 +30,7 @@ namespace GraphExt
             }
         }
 
-        private class Factory : Editor.NodePropertyViewFactory<SerializedFieldProperty>
+        private class Factory : NodePropertyViewFactory<SerializedFieldProperty>
         {
             protected override VisualElement Create(Node node, SerializedFieldProperty fieldProperty, INodePropertyViewFactory _)
             {
@@ -42,5 +39,3 @@ namespace GraphExt
         }
     }
 }
-
-#endif

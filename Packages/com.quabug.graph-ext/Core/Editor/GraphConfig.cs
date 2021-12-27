@@ -10,7 +10,7 @@ namespace GraphExt.Editor
     {
         public string WindowName = "Graph Window";
 
-        [SerializedType(typeof(IWindowExtension))] public string[] WindowExtensions;
+        [SerializeReference, SerializeReferenceDrawer] public IWindowExtension[] WindowExtensions;
         [SerializeReference, SerializeReferenceDrawer] public IMenuEntry[] Menu;
         [SerializeReference, SerializeReferenceDrawer] public INodeViewFactory NodeViewFactory = new DefaultNodeViewFactory();
         [SerializeReference, SerializeReferenceDrawer] public IPortViewFactory PortViewFactory = new DefaultPortViewFactory();

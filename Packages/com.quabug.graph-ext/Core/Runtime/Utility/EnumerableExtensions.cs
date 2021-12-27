@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GraphExt
 {
@@ -18,6 +20,11 @@ namespace GraphExt
         public static IEnumerable<T> Yield<T>(this T element)
         {
             yield return element;
+        }
+
+        public static void RemoveWhere<T>(this ICollection<T> collection, Func<T, bool> match)
+        {
+            foreach (var item in collection.Where(match).ToArray()) collection.Remove(item);
         }
     }
 }

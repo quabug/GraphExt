@@ -3,39 +3,53 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace GraphExt.Prefab
+namespace GraphExt
 {
-    [AddComponentMenu("")]
-    public class FlatNodeComponent : NodeComponent
+    [DisallowMultipleComponent, AddComponentMenu("")]
+    public class FlatNodeComponent<TNode, TComponent> : MonoBehaviour, INodeComponent<TNode, TComponent>
+        where TNode : INode<GraphRuntime<TNode>>
+        where TComponent : FlatNodeComponent<TNode, TComponent>
     {
+        [SerializeReference] private TNode _node;
+        public TNode Node { get => _node; set => _node = value; }
+        public string NodeSerializedPropertyName => nameof(_node);
+
         [SerializeField, HideInInspector] private List<Connection> _serializedConnections = new List<Connection>();
-        private readonly Lazy<HashSet<EdgeId>> _connections;
-        public override IEnumerable<EdgeId> Connections => _connections.Value;
+        private readonly Lazy<HashSet<EdgeId>> _edges;
+        public IReadOnlySet<EdgeId> Edges => _edges.Value;
+
+        [SerializeField, HideInInspector] private string _nodeId;
+        public NodeId Id { get => Guid.Parse(_nodeId); set => _nodeId = value.ToString(); }
+
+        [field: SerializeField, HideInInspector] public Vector2 Position { get; set; }
 
         public FlatNodeComponent()
         {
-            _connections = new Lazy<HashSet<EdgeId>>(() => new HashSet<EdgeId>(_serializedConnections.Select(conn => conn.ToEdge())));
+            _edges = new Lazy<HashSet<EdgeId>>(
+                () => new HashSet<EdgeId>(_serializedConnections.Select(conn => conn.ToEdge()))
+            );
         }
 
-        protected override void OnConnected(PrefabGraphBackend graph, in PortId input, in PortId output)
+        public bool IsPortCompatible(GameObjectNodes<TNode, TComponent> data, in PortId input, in PortId output)
         {
-            var edge = new EdgeId(input, output);
-            if (!_connections.Value.Contains(edge))
+            return true;
+        }
+
+        public void OnConnected(GameObjectNodes<TNode, TComponent> graph, in EdgeId edge)
+        {
+            if (!_edges.Value.Contains(edge))
             {
-                _connections.Value.Add(edge);
-                _serializedConnections.Add(new Connection(input, output));
-                gameObject.scene.SaveScene();
+                _edges.Value.Add(edge);
+                _serializedConnections.Add(new Connection(edge));
             }
         }
 
-        protected override void OnDisconnected(PrefabGraphBackend graph, in PortId input, in PortId output)
+        public void OnDisconnected(GameObjectNodes<TNode, TComponent> graph, in EdgeId edge)
         {
-            var edge = new EdgeId(input, output);
-            if (_connections.Value.Contains(edge))
+            if (_edges.Value.Contains(edge))
             {
-                _connections.Value.Remove(edge);
-                _serializedConnections.Remove(new Connection(input, output));
-                gameObject.scene.SaveScene();
+                _edges.Value.Remove(edge);
+                _serializedConnections.Remove(new Connection(edge));
             }
         }
 
@@ -47,12 +61,12 @@ namespace GraphExt.Prefab
             public string OutputNode;
             public string OutputPort;
 
-            public Connection(in PortId input, in PortId output)
+            public Connection(in EdgeId edge)
             {
-                InputNode = input.NodeId.ToString();
-                InputPort = input.Name;
-                OutputNode = output.NodeId.ToString();
-                OutputPort = output.Name;
+                InputNode = edge.Input.NodeId.ToString();
+                InputPort = edge.Input.Name;
+                OutputNode = edge.Output.NodeId.ToString();
+                OutputPort = edge.Output.Name;
             }
 
             public EdgeId ToEdge() => new EdgeId(new PortId(Guid.Parse(InputNode), InputPort), new PortId(Guid.Parse(OutputNode), OutputPort));
