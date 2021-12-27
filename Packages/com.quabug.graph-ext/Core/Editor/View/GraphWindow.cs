@@ -11,14 +11,20 @@ namespace GraphExt.Editor
     {
         public GraphConfig Config;
         public GroupWindowExtension WindowExtension = new GroupWindowExtension();
-        private bool _isInitialized = false;
 
-        public void CreateGUI()
+        private Lazy<VisualElement> _graphRoot;
+
+        public GraphWindow()
         {
-            if (!_isInitialized && Config != null) Init(Config);
+            _graphRoot = new Lazy<VisualElement>(LoadVisualTree);
         }
 
-        private void LoadVisualTree()
+        private void CreateGUI()
+        {
+            if (Config != null) Init(Config);
+        }
+
+        private VisualElement LoadVisualTree()
         {
             var relativeDirectory = Utilities.GetCurrentDirectoryProjectRelativePath();
             var uxmlPath = Path.Combine(relativeDirectory, "GraphWindow.uxml");
@@ -29,22 +35,21 @@ namespace GraphExt.Editor
 
             var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(ussPath);
             rootVisualElement.styleSheets.Add(styleSheet);
+            return rootVisualElement;
         }
 
         public void Init([NotNull] GraphConfig config)
         {
-            _isInitialized = true;
-
             Config = config;
-            LoadVisualTree();
 
-            var graph = rootVisualElement.Q<GraphView>();
+            var graphRoot = _graphRoot.Value;
+            var graph = graphRoot.Q<GraphView>();
             if (graph == null)
             {
                 graph = new GraphView(config) { name = "graph" };
-                rootVisualElement.Q<VisualElement>("graph-content").Add(graph);
+                graphRoot.Q<VisualElement>("graph-content").Add(graph);
             }
-            var miniMap = rootVisualElement.Q<MiniMap>();
+            var miniMap = graphRoot.Q<MiniMap>();
             if (miniMap != null) miniMap.graphView = graph;
 
             foreach (var windowExtensionType in config.WindowExtensions)

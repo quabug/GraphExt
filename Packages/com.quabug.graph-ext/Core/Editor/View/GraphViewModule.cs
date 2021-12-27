@@ -13,6 +13,7 @@ namespace GraphExt.Editor
         [NotNull] IEnumerable<EdgeId> Edges { get; }
 
         void DeleteNode(in NodeId nodeId);
+        void SetNodePosition(in NodeId nodeId, float x, float y);
         bool IsCompatible(in PortId input, in PortId output);
         void Connect(in PortId input, in PortId output);
         void Disconnect(in PortId input, in PortId output);
@@ -44,6 +45,8 @@ namespace GraphExt.Editor
             _portDataCache.RemoveWhere(port => port.Key.NodeId == id);
             Runtime.DeleteNode(nodeId);
         }
+
+        public virtual void SetNodePosition(in NodeId nodeId, float x, float y) {}
 
         public virtual bool IsCompatible(in PortId input, in PortId output)
         {

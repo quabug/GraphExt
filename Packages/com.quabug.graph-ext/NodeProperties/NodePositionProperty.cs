@@ -1,43 +1,28 @@
-﻿using System;
-using JetBrains.Annotations;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace GraphExt.Editor
 {
     public class NodePositionProperty : INodeProperty
     {
-        private readonly Vector2 _initPosition;
-        private readonly Action<Vector2> _setter;
+        private readonly float _x;
+        private readonly float _y;
 
-        public NodePositionProperty(Vector2 initPosition, [NotNull] Action<Vector2> setter)
+        public NodePositionProperty(float x, float y)
         {
-            _initPosition = initPosition;
-            _setter = setter;
+            _x = x;
+            _y = y;
         }
 
-        public class EventView : NodeEventElement<NodePositionChangeEvent>
-        {
-            private readonly NodePositionProperty _property;
-
-            public EventView(UnityEditor.Experimental.GraphView.Node node, NodePositionProperty property) : base(node)
-            {
-                name = "node-position-event";
-                _property = property;
-                Node.SetPosition(new Rect(_property._initPosition, Vector2.zero));
-            }
-
-            protected override void OnEvent(NodePositionChangeEvent @event)
-            {
-                _property._setter(Node.GetPosition().position);
-            }
-        }
 
         public class Factory : NodePropertyViewFactory<NodePositionProperty>
         {
             protected override VisualElement Create(UnityEditor.Experimental.GraphView.Node node, NodePositionProperty property, Editor.INodePropertyViewFactory _)
             {
-                return new EventView(node, property);
+                var view = new VisualElement();
+                view.name = "node-position";
+                node.SetPosition(new Rect(property._x, property._y, 0, 0));
+                return view;
             }
         }
     }

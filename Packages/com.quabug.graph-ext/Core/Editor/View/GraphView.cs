@@ -93,8 +93,14 @@ namespace GraphExt.Editor
 
             if (@event.movedElements != null)
             {
-                foreach (var nodeView in @event.movedElements.OfType<Node>().Where(_nodes.Elements.ContainsValue))
-                    nodeView.SendEvent(NodePositionChangeEvent.GetPooled(nodeView));
+                foreach (var nodeView in @event.movedElements.OfType<Node>())
+                {
+                    if (_nodes.Elements.TryGetKey(nodeView, out var nodeId))
+                    {
+                        var position = nodeView.GetVector2Position();
+                        Module.SetNodePosition(nodeId, position.x, position.y);
+                    }
+                }
             }
 
             return @event;

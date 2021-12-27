@@ -24,13 +24,13 @@ namespace GraphExt.Editor
 
         public void AddMemoryNode(in NodeId nodeId, [NotNull] TNode node, Vector2 position)
         {
-            SetPosition(nodeId, position);
+            SetNodePosition(nodeId, position.x, position.y);
             AddNode(nodeId, node);
         }
 
-        public void SetPosition(in NodeId nodeId, Vector2 position)
+        public override void SetNodePosition(in NodeId nodeId, float x, float y)
         {
-            _nodePositions[nodeId] = position;
+            _nodePositions[nodeId] = new Vector2(x, y);
         }
 
         public override void DeleteNode(in NodeId nodeId)
@@ -44,20 +44,14 @@ namespace GraphExt.Editor
             return NodePortUtility.FindPorts(node.GetType());
         }
 
-        protected override NodeData ToNodeData(in NodeId id, [NotNull] TNode node)
+        protected override NodeData ToNodeData(in NodeId id, TNode node)
         {
-            var nodeId = id;
-
-            return new NodeData(CreatePositionProperty().Yield()
+            var position = _nodePositions[id];
+            return new NodeData(new NodePositionProperty(position.x, position.y).Yield()
                     .Append(NodeTitleAttribute.CreateTitleProperty(node))
                     .Concat(NodePropertyUtility.CreateProperties(node, id))
                     .ToArray()
             );
-
-            INodeProperty CreatePositionProperty()
-            {
-                return new NodePositionProperty(_nodePositions[nodeId], position => _nodePositions[nodeId] = position);
-            }
         }
     }
 }
