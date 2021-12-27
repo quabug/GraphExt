@@ -3,19 +3,18 @@
 using System;
 using System.Linq;
 using UnityEditor;
-using UnityEditor.Experimental.SceneManagement;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace GraphExt.Editor
 {
-    public class NodeCreationMenuEntry<TNode, TComponent> : IMenuEntry
+    public class ScriptableObjectNodeCreationMenuEntry<TNode, TNodeScriptableObject> : IMenuEntry
         where TNode : INode<GraphRuntime<TNode>>
-        where TComponent : MonoBehaviour, INodeComponent<TNode, TComponent>
+        where TNodeScriptableObject : NodeScriptableObject<TNode>
     {
         public void MakeEntry(GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
         {
-            if (!(graph.Module is GameObjectHierarchyGraphViewModule<TNode, TComponent> viewModule && PrefabStageUtility.GetCurrentPrefabStage() != null)) return;
+            if (!(graph.Module is ScriptableObjectGraphViewModule<TNode, TNodeScriptableObject> _)) return;
 
             var menuPosition = graph.viewTransform.matrix.inverse.MultiplyPoint(evt.localMousePosition);
             var nodes = TypeCache.GetTypesDerivedFrom<TNode>();
@@ -28,15 +27,10 @@ namespace GraphExt.Editor
 
             void CreateNode(Type nodeType)
             {
-                var stage = PrefabStageUtility.GetCurrentPrefabStage();
-                var root = stage == null ? null : stage.prefabContentsRoot.transform;
-                if (root == null)
+                if (graph.Module is ScriptableObjectGraphViewModule<TNode, TNodeScriptableObject> viewModule)
                 {
-                    Debug.LogWarning("must open a prefab to create a node.");
-                    return;
+                    viewModule.AddScriptableObjectNode(Guid.NewGuid(), (TNode)Activator.CreateInstance(nodeType), menuPosition);
                 }
-                viewModule.AddGameObjectNode(Guid.NewGuid(), (TNode)Activator.CreateInstance(nodeType), menuPosition);
-                stage.scene.SaveScene();
             }
         }
     }

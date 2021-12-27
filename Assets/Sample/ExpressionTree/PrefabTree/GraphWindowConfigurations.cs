@@ -1,11 +1,12 @@
 #if UNITY_EDITOR
 
-using GraphExt.Prefab;
+using GraphExt.Editor;
+using JetBrains.Annotations;
 
 public static class PrefabVisualTree
 {
-    public class NodeCreation : NodeCreationMenuEntry<IVisualNode, VisualTreeComponent> {}
-    public class WindowExtension : PrefabStageWindowExtension<IVisualNode, VisualTreeComponent> {}
+    [UsedImplicitly] private class NodeCreation : NodeCreationMenuEntry<IVisualNode, VisualTreeComponent> {}
+    [UsedImplicitly] private class WindowExtension : PrefabStageWindowExtension<IVisualNode, VisualTreeComponent> {}
 }
 
 #endif

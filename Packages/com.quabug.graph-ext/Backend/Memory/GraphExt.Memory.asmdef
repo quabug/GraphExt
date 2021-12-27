@@ -1,6 +1,6 @@
 {
     "name": "GraphExt.Memory",
-    "rootNamespace": "GraphExt.Memory",
+    "rootNamespace": "GraphExt",
     "references": [
         "GUID:756d163a75d2d4509b594fdc3b57f09d",
         "GUID:f6ce7a0c60f1840f88f04ea7bc21f73c",

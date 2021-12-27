@@ -1,14 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 namespace GraphExt
 {
-    [DisallowMultipleComponent, AddComponentMenu("")]
-    public class FlatNodeComponent<TNode, TComponent> : MonoBehaviour, INodeComponent<TNode, TComponent>
-        where TNode : INode<GraphRuntime<TNode>>
-        where TComponent : FlatNodeComponent<TNode, TComponent>
+    public class NodeScriptableObject<TNode> : ScriptableObject where TNode : INode<GraphRuntime<TNode>>
     {
         [SerializeReference] private TNode _node;
         public TNode Node { get => _node; set => _node = value; }
@@ -23,19 +20,14 @@ namespace GraphExt
 
         [field: SerializeField, HideInInspector] public Vector2 Position { get; set; }
 
-        public FlatNodeComponent()
+        public NodeScriptableObject()
         {
             _edges = new Lazy<HashSet<EdgeId>>(
                 () => new HashSet<EdgeId>(_serializedConnections.Select(conn => conn.ToEdge()))
             );
         }
 
-        public bool IsPortCompatible(GameObjectNodes<TNode, TComponent> data, in PortId input, in PortId output)
-        {
-            return true;
-        }
-
-        public void OnConnected(GameObjectNodes<TNode, TComponent> graph, in EdgeId edge)
+        public void OnConnected(in EdgeId edge)
         {
             if (!_edges.Value.Contains(edge))
             {
@@ -44,7 +36,7 @@ namespace GraphExt
             }
         }
 
-        public void OnDisconnected(GameObjectNodes<TNode, TComponent> graph, in EdgeId edge)
+        public void OnDisconnected(in EdgeId edge)
         {
             if (_edges.Value.Contains(edge))
             {

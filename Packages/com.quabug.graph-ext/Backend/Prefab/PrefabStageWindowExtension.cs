@@ -2,13 +2,12 @@
 
 using System;
 using System.Linq;
-using GraphExt.Editor;
 using JetBrains.Annotations;
 using UnityEditor;
 using UnityEditor.Experimental.SceneManagement;
 using UnityEngine;
 
-namespace GraphExt.Prefab
+namespace GraphExt.Editor
 {
     public class PrefabStageWindowExtension<TNode, TComponent> : IWindowExtension
         where TNode : INode<GraphRuntime<TNode>>
