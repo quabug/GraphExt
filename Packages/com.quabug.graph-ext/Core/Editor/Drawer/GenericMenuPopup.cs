@@ -1,39 +1,39 @@
 /*
- * MIT License
- *
- * Copyright (c) 2021 Peter @sHTiF Stefcek
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ *	Created by:  Peter @sHTiF Stefcek
  */
 
-/*
- *	Created by:  Peter @sHTiF Stefcek
- *  Modified by: quabug
- */
+//
+// MIT License
+//
+// Copyright (c) 2021 Peter @sHTiF Stefcek
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+// https://github.com/pshtif/GenericMenuPopup
 
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
-namespace BinaryEgo.Editor.UI
+namespace Shtif
 {
     internal class MenuItemNode
     {
@@ -190,6 +190,16 @@ namespace BinaryEgo.Editor.UI
             return new Vector2(width, height);
         }
 
+        public void Show(float p_x, float p_y)
+        {
+            PopupWindow.Show(new Rect(p_x, p_y, 0, 0), this);
+        }
+
+        public void Show(Vector2 p_position)
+        {
+            PopupWindow.Show(new Rect(p_position.x, p_position.y, 0, 0), this);
+        }
+
         public override void OnGUI(Rect p_rect)
         {
             if (Event.current.type == EventType.Layout)
@@ -223,11 +233,7 @@ namespace BinaryEgo.Editor.UI
             {
                 height = Mathf.Min(_contentHeight, maxHeight);
             }
-#if UNITY_EDITOR
             EditorGUI.FocusTextInControl("Search");
-#else
-            GUI.FocusControl("Search");
-#endif
         }
 
         private void DrawTitle(Rect p_rect)
@@ -266,7 +272,7 @@ namespace BinaryEgo.Editor.UI
             GUILayout.BeginArea(p_rect);
             if (_useScroll)
             {
-                _scrollPosition = GUILayout.BeginScrollView(_scrollPosition, GUIStyle.none, GUI.skin.verticalScrollbar);
+                _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition, GUIStyle.none, GUI.skin.verticalScrollbar);
             }
 
             GUILayout.BeginVertical();
@@ -283,7 +289,7 @@ namespace BinaryEgo.Editor.UI
             GUILayout.EndVertical();
             if (_useScroll)
             {
-                GUILayout.EndScrollView();
+                EditorGUILayout.EndScrollView();
             }
 
             GUILayout.EndArea();
@@ -308,12 +314,12 @@ namespace BinaryEgo.Editor.UI
                 string nodePath = node.parent.GetPath();
                 if (nodePath != lastPath)
                 {
-                    _contentHeight += 20;
-                    GUILayout.Label(nodePath, GUILayout.Height(20));
+                    _contentHeight += 21;
+                    GUILayout.Label(nodePath);
                     lastPath = nodePath;
                 }
 
-                _contentHeight += 20;
+                _contentHeight += 21;
                 GUI.color = _hoverNode == node ? Color.white : Color.gray;
                 GUIStyle style = new GUIStyle();
                 style.normal.background = Texture2D.grayTexture;
@@ -328,7 +334,7 @@ namespace BinaryEgo.Editor.UI
                 }
 
                 GUI.color = _hoverNode == node ? Color.white : Color.white;
-                GUILayout.Label(node.name, GUILayout.Height(20));
+                GUILayout.Label(node.name);
 
                 GUILayout.EndHorizontal();
 
@@ -377,8 +383,8 @@ namespace BinaryEgo.Editor.UI
         {
             if (_currentNode != _rootNode)
             {
-                _contentHeight += 20;
-                if (GUILayout.Button(_currentNode.GetPath(), BackStyle, GUILayout.Height(20)))
+                _contentHeight += 21;
+                if (GUILayout.Button(_currentNode.GetPath(), BackStyle))
                 {
                     _currentNode = _currentNode.parent;
                 }
@@ -393,7 +399,7 @@ namespace BinaryEgo.Editor.UI
                     continue;
                 }
 
-                _contentHeight += 20;
+                _contentHeight += 21;
                 GUI.color = _hoverNode == node ? Color.white : Color.gray;
                 GUIStyle style = new GUIStyle();
                 style.normal.background = Texture2D.grayTexture;
@@ -410,7 +416,7 @@ namespace BinaryEgo.Editor.UI
                 GUI.color = _hoverNode == node ? Color.white : Color.white;
                 style = new GUIStyle("label");
                 style.fontStyle = node.Nodes.Count > 0 ? FontStyle.Bold : FontStyle.Normal;
-                GUILayout.Label(node.name, style, GUILayout.Height(20));
+                GUILayout.Label(node.name, style);
 
                 GUILayout.EndHorizontal();
 
@@ -456,6 +462,14 @@ namespace BinaryEgo.Editor.UI
             }
         }
 
+        void OnEditorUpdate() {
+            if (_repaint)
+            {
+                _repaint = false;
+                base.editorWindow.Repaint();
+            }
+        }
+
         // TODO Possible type caching?
         public static MenuItemNode GenerateMenuItemNodeTree(GenericMenu p_menu)
         {
@@ -463,7 +477,9 @@ namespace BinaryEgo.Editor.UI
             if (p_menu == null)
                 return rootNode;
 
-            var menuItems = TryGetMenuItems("menuItems") ?? TryGetMenuItems("m_MenuItems");
+            var menuItemsField = TryGetField("menuItems");
+            if (menuItemsField == null) menuItemsField = TryGetField("m_MenuItems");
+            var menuItems = menuItemsField.GetValue(p_menu) as IEnumerable;
 
             foreach (var menuItem in menuItems)
             {
@@ -497,28 +513,9 @@ namespace BinaryEgo.Editor.UI
 
             return rootNode;
 
-            IEnumerable TryGetMenuItems(string fieldName)
+            FieldInfo TryGetField(string fieldName)
             {
-                var menuItemsField = p_menu.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
-                return menuItemsField?.GetValue(p_menu) as IEnumerable;
-            }
-        }
-
-        public void Show(float p_x, float p_y)
-        {
-            PopupWindow.Show(new Rect(p_x, p_y, 0, 0), this);
-        }
-
-        public void Show(Vector2 p_position)
-        {
-            PopupWindow.Show(new Rect(p_position.x, p_position.y, 0, 0), this);
-        }
-
-        void OnEditorUpdate() {
-            if (_repaint)
-            {
-                _repaint = false;
-                base.editorWindow.Repaint();
+                return p_menu.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
             }
         }
 
