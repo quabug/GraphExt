@@ -49,8 +49,8 @@ namespace GraphExt
         {
             if (_nodeMap.TryGetValue(nodeId, out var node))
             {
-                _nodeMap.Remove(nodeId);
                 RemoveNodeEdges(nodeId);
+                _nodeMap.Remove(nodeId);
                 OnNodeDeleted?.Invoke(nodeId, node);
             }
         }
@@ -88,9 +88,15 @@ namespace GraphExt
             }
         }
 
-        private void RemoveNodeEdges(NodeId nodeId)
+        private void RemoveNodeEdges(in NodeId nodeId)
         {
-            _edges.RemoveWhere(edge => edge.Input.NodeId == nodeId || edge.Output.NodeId == nodeId);
+            foreach (var (input, output) in _edges.ToArray())
+            {
+                if (input.NodeId == nodeId || output.NodeId == nodeId)
+                {
+                    Disconnect(input, output);
+                }
+            }
         }
     }
 
