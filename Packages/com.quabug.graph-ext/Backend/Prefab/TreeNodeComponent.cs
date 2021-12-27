@@ -23,7 +23,7 @@ namespace GraphExt
         [SerializeField, HideInInspector] private string _nodeId;
         public NodeId Id { get => Guid.Parse(_nodeId); set => _nodeId = value.ToString(); }
 
-        [field: SerializeField] public Vector2 Position { get; set; }
+        [field: SerializeField, HideInInspector] public Vector2 Position { get; set; }
 
         public IReadOnlySet<EdgeId> Edges
         {
