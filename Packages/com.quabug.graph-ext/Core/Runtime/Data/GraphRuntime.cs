@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
@@ -59,33 +60,40 @@ namespace GraphExt
 
         public bool IsCompatible(in PortId input, in PortId output)
         {
+            CheckPortNodeExistence(input);
+            CheckPortNodeExistence(output);
             return _compatibleCheck(input, output) &&
-                   GetNodeByPort(input).IsPortCompatible(this, output, input) &&
-                   GetNodeByPort(output).IsPortCompatible(this, output, input);
+                   GetNodeByPort(input).IsPortCompatible(this, input, output) &&
+                   GetNodeByPort(output).IsPortCompatible(this, input, output);
         }
 
         public void Connect(in PortId input, in PortId output)
         {
             var edge = new EdgeId(input, output);
-            if (!_edges.Contains(edge))
-            {
-                _edges.Add(edge);
-                GetNodeByPort(input).OnConnected(this, output, input);
-                GetNodeByPort(output).OnConnected(this, output, input);
-                OnEdgeConnected?.Invoke(edge);
-            }
+            CheckPortNodeExistence(input);
+            CheckPortNodeExistence(output);
+            if (_edges.Contains(edge)) throw new EdgeAlreadyConnectedException(edge);
+            _edges.Add(edge);
+            GetNodeByPort(input).OnConnected(this, input, output);
+            GetNodeByPort(output).OnConnected(this, input, output);
+            OnEdgeConnected?.Invoke(edge);
         }
 
         public void Disconnect(in PortId input, in PortId output)
         {
             var edge = new EdgeId(input, output);
-            if (_edges.Contains(edge))
-            {
-                _edges.Remove(edge);
-                GetNodeByPort(input).OnDisconnected(this, output, input);
-                GetNodeByPort(output).OnDisconnected(this, output, input);
-                OnEdgeDisconnected?.Invoke(edge);
-            }
+            CheckPortNodeExistence(input);
+            CheckPortNodeExistence(output);
+            if (!_edges.Contains(edge)) throw new EdgeAlreadyDisconnectedException(edge);
+            _edges.Remove(edge);
+            GetNodeByPort(input).OnDisconnected(this, input, output);
+            GetNodeByPort(output).OnDisconnected(this, input, output);
+            OnEdgeDisconnected?.Invoke(edge);
+        }
+
+        void CheckPortNodeExistence(in PortId portId)
+        {
+            if (!_nodeMap.ContainsKey(portId.NodeId)) throw new InvalidPortException(portId);
         }
 
         private void RemoveNodeEdges(in NodeId nodeId)
