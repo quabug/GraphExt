@@ -5,8 +5,8 @@ using JetBrains.Annotations;
 
 public static class PrefabVisualTree
 {
-    [UsedImplicitly] private class NodeCreation : NodeCreationMenuEntry<IVisualNode, VisualTreeComponent> {}
-    [UsedImplicitly] private class WindowExtension : PrefabStageWindowExtension<IVisualNode, VisualTreeComponent> {}
+    [UsedImplicitly] public class NodeCreation : NodeCreationMenuEntry<IVisualNode, VisualTreeComponent> {}
+    [UsedImplicitly] public class WindowExtension : PrefabStageWindowExtension<IVisualNode, VisualTreeComponent> {}
 }
 
 #endif
