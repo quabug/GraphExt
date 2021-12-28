@@ -17,11 +17,11 @@ public abstract class VisualNode : IVisualNode
 
     public abstract float GetValue(GraphRuntime<IVisualNode> graph);
 
-    public virtual bool IsPortCompatible(GraphRuntime<IVisualNode> graph, in PortId start, in PortId end)
+    public virtual bool IsPortCompatible(GraphRuntime<IVisualNode> graph, in PortId input, in PortId output)
     {
-        var startNode = graph.GetNodeByPort(start);
-        var endNode = graph.GetNodeByPort(end);
-        return start.NodeId != end.NodeId && startNode is VisualNode && endNode is VisualNode;
+        var startNode = graph.GetNodeByPort(output);
+        var endNode = graph.GetNodeByPort(input);
+        return output.NodeId != input.NodeId && startNode is VisualNode && endNode is VisualNode;
     }
 
     protected IEnumerable<float> GetConnectedValues(GraphRuntime<IVisualNode> graph)
@@ -29,8 +29,8 @@ public abstract class VisualNode : IVisualNode
         return graph.FindConnectedPorts(this, OutputPortName).Select(connectedPort => graph.GetNodeByPort(connectedPort).GetValue(graph));
     }
 
-    public virtual void OnConnected(GraphRuntime<IVisualNode> graph, in PortId start, in PortId end) {}
-    public virtual void OnDisconnected(GraphRuntime<IVisualNode> graph, in PortId start, in PortId end) {}
+    public virtual void OnConnected(GraphRuntime<IVisualNode> graph, in PortId input, in PortId output) {}
+    public virtual void OnDisconnected(GraphRuntime<IVisualNode> graph, in PortId input, in PortId output) {}
 }
 
 public class ValueNode : VisualNode

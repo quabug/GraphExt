@@ -26,5 +26,7 @@ namespace GraphExt
         {
             foreach (var item in collection.Where(match).ToArray()) collection.Remove(item);
         }
+
+        public static HashSet<T> ToHashSet<T>(this IEnumerable<T> items) => new HashSet<T>(items);
     }
 }
