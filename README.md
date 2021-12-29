@@ -37,7 +37,7 @@ public class ValueNode : IExpressionNode
 }
 ```
 
-3. Define `AddNode` with a single-input-port and a multi-output-port. `GetValue` will sum its output-connected node value together.
+3. Define `AddNode` with a single-input-port and a multi-output-port. `GetValue` will sum the value of output-connected nodes together.
 ``` c#
 [Serializable]
 [NodeTitle(ConstTitle = "add")] // set node title
