@@ -161,8 +161,10 @@ public class AddNode : ExpressionNode
     public class PrefabExpressionWindowExtension : PrefabStageWindowExtension<IExpressionNode, ExpressionTreeNodeComponent> {}
     ```
     
-    3. Create window config
+    3. Create window config:
+
     ![image](https://user-images.githubusercontent.com/683655/147681310-dbe5261f-dea6-4889-9db3-546aecf51ed8.png)
     
     4. Open a prefab and start to modify:
+ 
     ![image](https://user-images.githubusercontent.com/683655/147681512-e63c90b3-6727-4353-8434-a9179c6cdf62.png)
