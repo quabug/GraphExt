@@ -85,7 +85,7 @@ public class ExpressionNodeWindowExtension : ScriptableObjectWindowExtension<IEx
 ![image](https://user-images.githubusercontent.com/683655/147674011-a0a5b768-2cd7-4f65-91bf-9a064ebe393c.png)
 ![image](https://user-images.githubusercontent.com/683655/147674159-bad96cef-5f31-4505-9305-f607d088b308.png)
 
-### 5. Open expression graph window and choose a "Expression Graph" to modifing:
+### 5. Open expression graph window and choose a "Expression Graph" to modifying:
 ![image](https://user-images.githubusercontent.com/683655/147678233-2d4155cf-d46c-45ca-bf6a-d33925d87ba5.png)
 ![image](https://user-images.githubusercontent.com/683655/147678357-a8385a57-5070-4404-9a65-d1c1077bb9d5.png)
 
@@ -153,7 +153,7 @@ public class AddNode : ExpressionNode
     ...
     ```
     
-    2. Define neccessary component, menu entry and window extension:
+    2. Define necessary component, menu entry and window extension:
     ``` c#
     // ExpressionTreeNodeComponent.cs
     public class ExpressionTreeNodeComponent : TreeNodeComponent<IExpressionNode, ExpressionTreeNodeComponent> {}
