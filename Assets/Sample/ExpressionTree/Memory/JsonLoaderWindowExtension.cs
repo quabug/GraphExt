@@ -15,6 +15,10 @@ public class JsonLoaderWindowExtension : IWindowExtension
     }
 
     public void OnClosed(GraphWindow window, GraphConfig config, GraphView view) {}
+    public IWindowExtension CreateNew()
+    {
+        return new JsonLoaderWindowExtension { JsonFile = JsonFile };
+    }
 }
 
 #endif

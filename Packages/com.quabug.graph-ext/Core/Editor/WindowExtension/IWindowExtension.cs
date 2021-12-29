@@ -11,6 +11,7 @@ namespace GraphExt.Editor
     {
         void OnInitialized([NotNull] GraphWindow window, [NotNull] GraphConfig config, [NotNull] GraphView view);
         void OnClosed([NotNull] GraphWindow window, [NotNull] GraphConfig config, [NotNull] GraphView view);
+        IWindowExtension CreateNew();
     }
 
     [Serializable]
@@ -26,7 +27,7 @@ namespace GraphExt.Editor
         public IWindowExtension AddIfNotExist(IWindowExtension extension)
         {
             var ext = Extensions.SingleOrDefault(ext => ext.GetType() == extension.GetType());
-            if (ext == null) Extensions.Add(extension);
+            if (ext == null) Extensions.Add(extension.CreateNew());
             return ext ?? extension;
         }
 
@@ -61,6 +62,11 @@ namespace GraphExt.Editor
         public void OnClosed(GraphWindow window, GraphConfig config, GraphView view)
         {
             foreach (var ext in Extensions) ext.OnClosed(window, config, view);
+        }
+
+        public IWindowExtension CreateNew()
+        {
+            return new GroupWindowExtension { Extensions = Extensions.Select(ext => ext.CreateNew()).ToList() };
         }
     }
 }

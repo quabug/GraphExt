@@ -20,36 +20,33 @@ MonoBehaviour:
   - id: 2
   - id: 3
   - id: 4
-  - id: 5
   NodeViewFactory:
-    id: 6
+    id: 5
   PortViewFactory:
-    id: 7
+    id: 6
   EdgeViewFactory:
-    id: 8
+    id: 7
   references:
     version: 1
     00000000:
       type: {class: PrefabVisualTree/WindowExtension, ns: , asm: GraphExt.Sample.ExpressionTree}
     00000001:
-      type: {class: MemorySaveLoadMenu, ns: , asm: GraphExt.Sample.ExpressionTree}
+      type: {class: PrefabVisualTree/NodeCreation, ns: , asm: GraphExt.Sample.ExpressionTree}
     00000002:
-      type: {class: VisualNodeMenuEntry, ns: , asm: GraphExt.Sample.ExpressionTree}
-    00000003:
       type: {class: PrintValueMenu, ns: , asm: GraphExt.Sample.ExpressionTree}
-    00000004:
+    00000003:
       type: {class: SelectionEntry, ns: GraphExt.Editor, asm: GraphExt.Editor}
-    00000005:
+    00000004:
       type: {class: SeparatorEntry, ns: GraphExt.Editor, asm: GraphExt.Editor}
-    00000006:
+    00000005:
       type: {class: DefaultNodeViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
       data:
         NodePropertyViewFactory:
           Factories:
-          - id: 9
-    00000007:
+          - id: 8
+    00000006:
       type: {class: DefaultPortViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
-    00000008:
+    00000007:
       type: {class: DefaultEdgeViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
-    00000009:
+    00000008:
       type: {class: DefaultPropertyViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
