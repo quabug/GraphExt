@@ -1,4 +1,4 @@
-> ⚠️ This is not a comprehensive solution of Visual Scripting.
+> ⚠️ This is not a comprehensive Visual Script solution.
 # GraphExt
 A library to help you customize your own Unity3D Graph solution.
 
