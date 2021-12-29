@@ -2,18 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine.Assertions;
 
 namespace GraphExt.Editor
 {
     public static class NodePortUtility
     {
-        public static IEnumerable<PortData> FindPorts(Type nodeType)
+        public static IEnumerable<PortData> FindPorts(object node)
         {
+            var nodeType = node.GetType();
             var propertyInputPorts = new HashSet<string>();
             var propertyOutputPorts = new HashSet<string>();
             foreach (var (input, output) in
-                     from mi in nodeType.GetMembers(BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                     from mi in nodeType.GetMembers(NodePortAttribute.BindingFlags)
                      from propertyAttribute in mi.GetCustomAttributes<NodePropertyAttribute>()
                      select (propertyAttribute.InputPort, propertyAttribute.OutputPort)
                     )
@@ -25,61 +27,64 @@ namespace GraphExt.Editor
             }
 
             foreach (var (fi, portAttribute) in
-                     from fi in nodeType.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy)
+                     from fi in nodeType.GetFields(NodePortAttribute.BindingFlags)
                      from portAttribute in fi.GetCustomAttributes<NodePortAttribute>()
                      select (fi, portAttribute)
                     )
             {
                 var portName = fi.Name;
-                var direction = portAttribute.Direction;
+                var direction = portAttribute.Direction switch
+                {
+                    PortDirection.Invalid when portName.ToLower().Contains("input") => PortDirection.Input,
+                    PortDirection.Invalid when portName.ToLower().Contains("output") => PortDirection.Output,
+                    _ => portAttribute.Direction
+                };
                 var orientation = portAttribute.Orientation;
-                var capacity = portAttribute.Capacity;
-                var portType = portAttribute.PortType ?? fi.FieldType;
+                var capacity = portAttribute.Capacity > 0 ? portAttribute.Capacity : CapacityOfFieldInfo(fi);
+                var portType = portAttribute.PortType ?? (fi.FieldType.IsArray ? fi.FieldType.GetElementType() : fi.FieldType);
 
                 if (propertyInputPorts.Contains(portName))
                 {
                     direction = PortDirection.Input;
                     orientation = PortOrientation.Horizontal;
-                    capacity = capacity == PortCapacity.Invalid ? PortCapacity.Single : capacity;
                 }
                 else if (propertyOutputPorts.Contains(portName))
                 {
                     direction = PortDirection.Output;
                     orientation = PortOrientation.Horizontal;
-                    capacity = capacity == PortCapacity.Invalid ? PortCapacity.Multi : capacity;
                 }
                 Assert.AreNotEqual(direction, PortDirection.Invalid);
                 Assert.AreNotEqual(orientation, PortOrientation.Invalid);
-                Assert.AreNotEqual(capacity, PortCapacity.Invalid);
+                Assert.IsTrue(capacity > 0);
                 Assert.IsNotNull(portType);
-                yield return new PortData(portName, orientation.ToEditor(), direction.ToEditor(), capacity.ToEditor(), portType);
+                yield return new PortData(portName, orientation.ToEditor(), direction.ToEditor(), capacity, portType);
             }
 
             void AssertPropertyPort(string portName)
             {
                 Assert.IsFalse(propertyInputPorts.Contains(portName) || propertyOutputPorts.Contains(portName), $"port {portName} can only be assign to one property only.");
             }
+
+            int CapacityOfFieldInfo(FieldInfo fi)
+            {
+                if (!fi.FieldType.IsArray) return 1;
+                var fieldValue = fi.GetValue(node) as Array;
+                return fieldValue?.Length ?? int.MaxValue;
+            }
         }
 
-        public static UnityEditor.Experimental.GraphView.Direction ToEditor(this PortDirection direction) => direction switch
+        public static Direction ToEditor(this PortDirection direction) => direction switch
         {
-            PortDirection.Input => UnityEditor.Experimental.GraphView.Direction.Input,
-            PortDirection.Output => UnityEditor.Experimental.GraphView.Direction.Output,
+            PortDirection.Input => Direction.Input,
+            PortDirection.Output => Direction.Output,
             _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
         };
 
-        public static UnityEditor.Experimental.GraphView.Orientation ToEditor(this PortOrientation orientation) => orientation switch
+        public static Orientation ToEditor(this PortOrientation orientation) => orientation switch
         {
-            PortOrientation.Horizontal => UnityEditor.Experimental.GraphView.Orientation.Horizontal,
-            PortOrientation.Vertical => UnityEditor.Experimental.GraphView.Orientation.Vertical,
+            PortOrientation.Horizontal => Orientation.Horizontal,
+            PortOrientation.Vertical => Orientation.Vertical,
             _ => throw new ArgumentOutOfRangeException(nameof(orientation), orientation, null)
-        };
-
-        public static UnityEditor.Experimental.GraphView.Port.Capacity ToEditor(this PortCapacity capacity) => capacity switch
-        {
-            PortCapacity.Single => UnityEditor.Experimental.GraphView.Port.Capacity.Single,
-            PortCapacity.Multi => UnityEditor.Experimental.GraphView.Port.Capacity.Multi,
-            _ => throw new ArgumentOutOfRangeException(nameof(capacity), capacity, null)
         };
     }
 }

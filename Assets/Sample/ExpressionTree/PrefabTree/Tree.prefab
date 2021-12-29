@@ -68,6 +68,74 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 0
   CustomTitle: 
+--- !u!1 &1786178062941336179
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6577359373165076622}
+  - component: {fileID: 3689566743026495576}
+  - component: {fileID: 4122308727758409188}
+  m_Layer: 0
+  m_Name: ValueNode
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6577359373165076622
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1786178062941336179}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 6875367040425189484}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3689566743026495576
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1786178062941336179}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bf50d236c124e10aa6e9e039de3191f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _node:
+    id: 0
+  _nodeId: 911116f6-6be2-4b36-a056-68cfefe9359c
+  <Position>k__BackingField: {x: 874, y: 423}
+  references:
+    version: 1
+    00000000:
+      type: {class: ValueNode, ns: , asm: GraphExt.Sample.ExpressionTree}
+      data:
+        Value: 4
+--- !u!114 &4122308727758409188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1786178062941336179}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4674880bb123409c8e204074894eea6f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Type: 0
+  CustomTitle: 
 --- !u!1 &1915227222939529485
 GameObject:
   m_ObjectHideFlags: 0
@@ -99,6 +167,7 @@ Transform:
   m_Children:
   - {fileID: 8073913379082836080}
   - {fileID: 3185163748524728453}
+  - {fileID: 6577359373165076622}
   m_Father: {fileID: 7328268538564220993}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

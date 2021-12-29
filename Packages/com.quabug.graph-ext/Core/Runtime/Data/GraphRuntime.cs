@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
@@ -7,17 +6,15 @@ namespace GraphExt
 {
     public sealed class GraphRuntime<TNode> where TNode : INode<GraphRuntime<TNode>>
     {
-        public delegate void OnNodeAddedFunc(in NodeId id, TNode node);
-        public delegate void OnNodeDeletedFunc(in NodeId id, TNode node);
+        public delegate void OnNodeAddedFunc(in NodeId id, [NotNull] TNode node);
+        public delegate void OnNodeWillDeleteFunc(in NodeId id, [NotNull] TNode node);
         public delegate void OnEdgeConnectedFunc(in EdgeId edge);
-        public delegate void OnEdgeDisconnectedFunc(in EdgeId edge);
-        public delegate bool IsCompatibleFunc(in PortId input, in PortId output);
+        public delegate void OnEdgeWillDisconnectFunc(in EdgeId edge);
 
         public event OnNodeAddedFunc OnNodeAdded;
-        public event OnNodeDeletedFunc OnNodeDeleted;
+        public event OnNodeWillDeleteFunc OnNodeWillDelete;
         public event OnEdgeConnectedFunc OnEdgeConnected;
-        public event OnEdgeDisconnectedFunc OnEdgeDisconnected;
-        private readonly IsCompatibleFunc _compatibleCheck;
+        public event OnEdgeWillDisconnectFunc OnEdgeWillDisconnect;
 
         private readonly BiDictionary<NodeId, TNode> _nodeMap = new BiDictionary<NodeId, TNode>();
         private readonly HashSet<EdgeId> _edges = new HashSet<EdgeId>();
@@ -30,16 +27,6 @@ namespace GraphExt
         [NotNull] public TNode this[in NodeId id] => _nodeMap[id];
         public NodeId this[[NotNull] TNode node] => _nodeMap.GetKey(node);
 
-        public GraphRuntime()
-        {
-            _compatibleCheck = (in PortId input, in PortId output) => true;
-        }
-
-        public GraphRuntime([NotNull] IsCompatibleFunc compatibleCheck)
-        {
-            _compatibleCheck = compatibleCheck;
-        }
-
         public void AddNode(in NodeId id, [NotNull] TNode node)
         {
             _nodeMap[id] = node;
@@ -50,22 +37,13 @@ namespace GraphExt
         {
             if (_nodeMap.TryGetValue(nodeId, out var node))
             {
+                OnNodeWillDelete?.Invoke(nodeId, node);
                 RemoveNodeEdges(nodeId);
                 _nodeMap.Remove(nodeId);
-                OnNodeDeleted?.Invoke(nodeId, node);
             }
         }
 
         [NotNull] public TNode GetNodeByPort(in PortId port) => this[port.NodeId];
-
-        public bool IsCompatible(in PortId input, in PortId output)
-        {
-            CheckPortNodeExistence(input);
-            CheckPortNodeExistence(output);
-            return _compatibleCheck(input, output) &&
-                   GetNodeByPort(input).IsPortCompatible(this, input, output) &&
-                   GetNodeByPort(output).IsPortCompatible(this, input, output);
-        }
 
         public void Connect(in PortId input, in PortId output)
         {
@@ -85,10 +63,10 @@ namespace GraphExt
             CheckPortNodeExistence(input);
             CheckPortNodeExistence(output);
             if (!_edges.Contains(edge)) throw new EdgeAlreadyDisconnectedException(edge);
+            OnEdgeWillDisconnect?.Invoke(edge);
             _edges.Remove(edge);
             GetNodeByPort(input).OnDisconnected(this, input, output);
             GetNodeByPort(output).OnDisconnected(this, input, output);
-            OnEdgeDisconnected?.Invoke(edge);
         }
 
         void CheckPortNodeExistence(in PortId portId)
@@ -96,15 +74,10 @@ namespace GraphExt
             if (!_nodeMap.ContainsKey(portId.NodeId)) throw new InvalidPortException(portId);
         }
 
-        private void RemoveNodeEdges(in NodeId nodeId)
+        private void RemoveNodeEdges(NodeId nodeId)
         {
-            foreach (var (input, output) in _edges.ToArray())
-            {
-                if (input.NodeId == nodeId || output.NodeId == nodeId)
-                {
-                    Disconnect(input, output);
-                }
-            }
+            var removed = _edges.Where(edge => edge.Input.NodeId == nodeId || edge.Output.NodeId == nodeId).ToArray();
+            foreach (var (input, output) in removed) Disconnect(input, output);
         }
     }
 

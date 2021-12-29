@@ -14,8 +14,7 @@ namespace GraphExt.Editor
         )
         {
             var nodeType = nodeObj.GetType();
-
-            var members = nodeType.GetMembers(BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            var members = nodeType.GetMembers(NodePropertyAttribute.BindingFlags);
             var nodePropertyPorts = new HashSet<string>();
             foreach (var mi in members)
             {
@@ -35,7 +34,7 @@ namespace GraphExt.Editor
                 if (portName == null) return;
                 if (nodePropertyPorts.Contains(portName))
                     throw new Exception($"port {portName} of {nodeType.Name}.{mi.Name} have already been used in another property");
-                if (nodeType.GetField(portName, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy) == null)
+                if (nodeType.GetField(portName, NodePortAttribute.BindingFlags) == null)
                     throw new Exception($"invalid port {portName} of {nodeType.Name}.{mi.Name}");
                 nodePropertyPorts.Add(portName);
             }

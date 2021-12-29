@@ -25,6 +25,11 @@ namespace GraphExt.Editor
             _view = null;
         }
 
+        public IWindowExtension CreateNew()
+        {
+            return new ScriptableObjectWindowExtension<TNode, TNodeScriptableObject>();
+        }
+
         private void OnSelectionChanged()
         {
             if (Selection.activeObject is GraphScriptableObject<TNode, TNodeScriptableObject> graph)

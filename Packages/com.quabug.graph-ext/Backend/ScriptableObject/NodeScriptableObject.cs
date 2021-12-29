@@ -46,7 +46,7 @@ namespace GraphExt
         }
 
         [Serializable]
-        private struct Connection : IEquatable<Connection>
+        private struct Connection
         {
             public string InputNode;
             public string InputPort;
@@ -62,28 +62,6 @@ namespace GraphExt
             }
 
             public EdgeId ToEdge() => new EdgeId(new PortId(Guid.Parse(InputNode), InputPort), new PortId(Guid.Parse(OutputNode), OutputPort));
-
-            public bool Equals(Connection other)
-            {
-                return InputNode == other.InputNode && InputPort == other.InputPort && OutputNode == other.OutputNode && OutputPort == other.OutputPort;
-            }
-
-            public override bool Equals(object obj)
-            {
-                return obj is Connection other && Equals(other);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-                    var hashCode = (InputNode != null ? InputNode.GetHashCode() : 0);
-                    hashCode = (hashCode * 397) ^ (InputPort != null ? InputPort.GetHashCode() : 0);
-                    hashCode = (hashCode * 397) ^ (OutputNode != null ? OutputNode.GetHashCode() : 0);
-                    hashCode = (hashCode * 397) ^ (OutputPort != null ? OutputPort.GetHashCode() : 0);
-                    return hashCode;
-                }
-            }
         }
     }
 }

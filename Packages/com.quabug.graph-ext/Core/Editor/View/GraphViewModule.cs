@@ -66,8 +66,16 @@ namespace GraphExt.Editor
             var outputPort = _PortData[output];
             return inputPort.Direction != outputPort.Direction &&
                    inputPort.Orientation == outputPort.Orientation &&
-                   Runtime.IsCompatible(input, output)
+                   FindConnections(input).Count() < inputPort.Capacity &&
+                   FindConnections(output).Count() < outputPort.Capacity &&
+                   Runtime.GetNodeByPort(input).IsPortCompatible(Runtime, input, output) &&
+                   Runtime.GetNodeByPort(output).IsPortCompatible(Runtime, input, output)
             ;
+        }
+
+        protected IEnumerable<EdgeId> FindConnections(PortId portId)
+        {
+            return Runtime.Edges.Where(edge => edge.Contains(portId));
         }
 
         public virtual void Connect(in PortId input, in PortId output)
@@ -97,10 +105,11 @@ namespace GraphExt.Editor
         public readonly string Name;
         public readonly Orientation Orientation;
         public readonly Direction Direction;
-        public readonly Port.Capacity Capacity;
+        public readonly int Capacity;
+        public Port.Capacity PortCapacity => Capacity > 1 ? Port.Capacity.Multi : Port.Capacity.Single;
         public readonly Type PortType;
 
-        public PortData(string name, Orientation orientation, Direction direction, Port.Capacity capacity, Type portType)
+        public PortData(string name, Orientation orientation, Direction direction, int capacity, Type portType)
         {
             Name = name;
             Orientation = orientation;

@@ -36,6 +36,11 @@ namespace GraphExt.Editor
             _view = null;
         }
 
+        public IWindowExtension CreateNew()
+        {
+            return new PrefabStageWindowExtension<TNode, TComponent>();
+        }
+
         private void OnPrefabSelectionChanged()
         {
             var selected = Selection.activeGameObject == null ? null : Selection.activeGameObject.GetComponent<TComponent>();
