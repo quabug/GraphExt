@@ -10,8 +10,8 @@ public interface IVisualNode : ITreeNode<GraphRuntime<IVisualNode>>
 
 public abstract class VisualNode : IVisualNode
 {
-    [NodePort(Hide = true, Capacity = PortCapacity.Multi, Direction = PortDirection.Output)] protected static float _Out;
-    [NodePort(Hide = true, Capacity = PortCapacity.Single, Direction = PortDirection.Input)] protected static float _In;
+    [NodePort(Hide = true, Direction = PortDirection.Output, Capacity = 2)] protected static float[] _Out;
+    [NodePort(Hide = true, Direction = PortDirection.Input)] protected static float _In;
     public string InputPortName => nameof(_In);
     public string OutputPortName => nameof(_Out);
 

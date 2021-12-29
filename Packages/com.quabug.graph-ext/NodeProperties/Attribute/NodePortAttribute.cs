@@ -1,8 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using UnityEngine.Assertions;
 
 namespace GraphExt
 {
@@ -16,33 +12,52 @@ namespace GraphExt
         Horizontal, Vertical, Invalid
     }
 
-    public enum PortCapacity
-    {
-        Single, Multi, Invalid
-    }
-
     [AttributeUsage(AttributeTargets.Field)]
     public class NodePortAttribute : Attribute
     {
+        /// <summary>
+        /// true: hide entire port
+        /// will force set to true if this is a property port
+        /// </summary>
         public bool Hide = false;
+
+        /// <summary>
+        /// true: hide label only
+        /// </summary>
         public bool HideLabel = false;
         public Type PortType = null;
+
+        /// <summary>
+        /// input or output
+        /// </summary>
         public PortDirection Direction = PortDirection.Invalid;
-        public PortCapacity Capacity = PortCapacity.Invalid;
+
+        /// <summary>
+        /// restrict number of connections
+        /// </summary>
+        public int Capacity = 0;
+
+        /// <summary>
+        /// horizontal or vertical
+        /// </summary>
         public PortOrientation Orientation = PortOrientation.Horizontal;
+
+        /// <summary>
+        /// override port name for UI only
+        /// </summary>
         public string Name = null;
 
-        public static IEnumerable<string> FindPortNames(Type nodeType)
-        {
-            const BindingFlags flags = BindingFlags.Static |
-                                       BindingFlags.Public |
-                                       BindingFlags.NonPublic |
-                                       BindingFlags.FlattenHierarchy
-            ;
-            return nodeType.GetFields(flags)
-                .Where(fi => fi.GetCustomAttribute<NodePortAttribute>() != null)
-                .Select(fi => fi.Name)
-            ;
-        }
+        /// <summary>
+        /// identity the port
+        /// useful for renaming port
+        /// </summary>
+        // public string Id = Guid.NewGuid().ToString();
+
+        public const System.Reflection.BindingFlags BindingFlags =
+            System.Reflection.BindingFlags.Static |
+            System.Reflection.BindingFlags.Instance |
+            System.Reflection.BindingFlags.Public |
+            System.Reflection.BindingFlags.NonPublic |
+            System.Reflection.BindingFlags.FlattenHierarchy;
     }
 }

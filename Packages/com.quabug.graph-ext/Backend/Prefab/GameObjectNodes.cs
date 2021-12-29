@@ -28,7 +28,7 @@ namespace GraphExt
         public GameObjectNodes([NotNull] GameObject root)
         {
             _root = root;
-            Graph = new GraphRuntime<TNode>(IsPortCompatible);
+            Graph = new GraphRuntime<TNode>();
             var nodes = root.GetComponentsInChildren<TComponent>();
             foreach (var node in nodes)
             {
@@ -39,17 +39,17 @@ namespace GraphExt
             foreach (var (input, output) in nodes.SelectMany(node => node.Edges)) Graph.Connect(input, output);
 
             Graph.OnNodeAdded += OnNodeAdded;
-            Graph.OnNodeDeleted += OnNodeDeleted;
+            Graph.OnNodeWillDelete += OnNodeWillDelete;
             Graph.OnEdgeConnected += OnConnected;
-            Graph.OnEdgeDisconnected += OnDisconnected;
+            Graph.OnEdgeWillDisconnect += OnWillDisconnect;
         }
 
         public void Dispose()
         {
             Graph.OnNodeAdded -= OnNodeAdded;
-            Graph.OnNodeDeleted -= OnNodeDeleted;
+            Graph.OnNodeWillDelete -= OnNodeWillDelete;
             Graph.OnEdgeConnected -= OnConnected;
-            Graph.OnEdgeDisconnected -= OnDisconnected;
+            Graph.OnEdgeWillDisconnect -= OnWillDisconnect;
         }
 
         public void SetPosition(in NodeId id, Vector2 position)
@@ -57,7 +57,7 @@ namespace GraphExt
             _nodeObjectMap[id].GetComponent<TComponent>().Position = position;
         }
 
-        private bool IsPortCompatible(in PortId input, in PortId output)
+        public bool IsPortCompatible(in PortId input, in PortId output)
         {
             return IsNodeComponentPortCompatible(input.NodeId, input, output) &&
                    IsNodeComponentPortCompatible(output.NodeId, input, output);
@@ -78,7 +78,7 @@ namespace GraphExt
             _nodeObjectMap[id] = nodeComponent;
         }
 
-        private void OnNodeDeleted(in NodeId id, TNode node)
+        private void OnNodeWillDelete(in NodeId id, TNode node)
         {
             if (_nodeObjectMap.TryGetValue(id, out var nodeObject))
             {
@@ -99,7 +99,7 @@ namespace GraphExt
             outputComponent.OnConnected(this, edge);
         }
 
-        private void OnDisconnected(in EdgeId edge)
+        private void OnWillDisconnect(in EdgeId edge)
         {
             var inputComponent = _nodeObjectMap[edge.Input.NodeId].GetComponent<TComponent>();
             var outputComponent = _nodeObjectMap[edge.Output.NodeId].GetComponent<TComponent>();

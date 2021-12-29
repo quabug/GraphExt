@@ -73,7 +73,7 @@ namespace GraphExt.Editor
 
         protected override IEnumerable<PortData> FindNodePorts(TNode node)
         {
-            return NodePortUtility.FindPorts(node.GetType());
+            return NodePortUtility.FindPorts(node);
         }
 
         protected override NodeData ToNodeData(in NodeId id, TNode node)

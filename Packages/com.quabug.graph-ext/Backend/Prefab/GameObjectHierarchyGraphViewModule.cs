@@ -52,6 +52,11 @@ namespace GraphExt.Editor
             Utility.SavePrefabStage();
         }
 
+        public override bool IsCompatible(in PortId input, in PortId output)
+        {
+            return base.IsCompatible(in input, in output) && GameObjectNodes.IsPortCompatible(input, output);
+        }
+
         public override void DeleteNode(in NodeId nodeId)
         {
             base.DeleteNode(in nodeId);
@@ -78,7 +83,7 @@ namespace GraphExt.Editor
 
         protected override IEnumerable<PortData> FindNodePorts(TNode node)
         {
-            return NodePortUtility.FindPorts(node.GetType());
+            return NodePortUtility.FindPorts(node);
         }
 
         protected override NodeData ToNodeData(in NodeId id, TNode node)
