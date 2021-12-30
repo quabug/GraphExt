@@ -37,7 +37,17 @@ namespace GraphExt
         /// override name for UI only
         /// </summary>
         public string Name = null;
+
+        /// <summary>
+        /// serialized by Unity3D
+        /// will force set to false if not able to serialized by Unity3D
+        /// </summary>
         public bool SerializedField = true;
+
+        /// <summary>
+        /// override default node property creator by this custom one.
+        /// </summary>
+        public Type CustomFactory = null;
 
         public const System.Reflection.BindingFlags BindingFlags =
             System.Reflection.BindingFlags.Static |

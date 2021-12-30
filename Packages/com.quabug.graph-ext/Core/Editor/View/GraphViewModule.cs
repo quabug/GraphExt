@@ -94,6 +94,15 @@ namespace GraphExt.Editor
 
     public interface INodeProperty {}
 
+    public interface INodePropertyFactory
+    {
+        INodeProperty Create(
+            object nodeObj,
+            NodeId nodeId,
+            UnityEditor.SerializedProperty nodeSerializedProperty = null
+        );
+    }
+
     public readonly struct NodeData
     {
         [NotNull] public readonly IReadOnlyList<INodeProperty> Properties;
