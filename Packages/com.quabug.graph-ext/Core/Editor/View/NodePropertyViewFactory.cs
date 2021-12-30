@@ -66,7 +66,8 @@ namespace GraphExt.Editor
 
         public VisualElement Create(Node node, INodeProperty property, INodePropertyViewFactory factory)
         {
-            return property == null ? null : Factories.Select(f => f.Create(node, property, this)).FirstOrDefault(element => element != null);
+            factory ??= this;
+            return property == null ? null : Factories.Select(f => f.Create(node, property, factory)).FirstOrDefault(element => element != null);
         }
     }
 }
