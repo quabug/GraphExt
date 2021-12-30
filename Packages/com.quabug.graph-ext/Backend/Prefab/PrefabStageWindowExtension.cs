@@ -1,7 +1,7 @@
 ﻿#if UNITY_EDITOR
 
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEditor;
 using UnityEditor.Experimental.SceneManagement;
@@ -69,25 +69,43 @@ namespace GraphExt.Editor
             _selectedNodes.Clear();
         }
 
-        private void OnNodeViewSelected(in NodeId node, bool isSelected)
+        private void OnNodeViewSelected(in NodeId nodeId, bool isSelected)
         {
             if (isSelected)
             {
-                if (_selectedNodes.Contains(node)) return;
-                _selectedNodes.Add(node);
-                Select(_viewModule.GameObjectNodes[node].gameObject);
+                if (!_selectedNodes.Contains(nodeId) && _viewModule.GameObjectNodes.NodeObjectMap.ContainsKey(nodeId))
+                {
+                    _selectedNodes.Add(nodeId);
+                    SelectLast();
+                }
             }
             else
             {
-                if (!_selectedNodes.Contains(node)) return;
-                _selectedNodes.Remove(node);
-                Select(_selectedNodes.Any() ? _viewModule.GameObjectNodes[_selectedNodes.First()].gameObject : null);
+                if (!_selectedNodes.Contains(nodeId)) return;
+                _selectedNodes.Remove(nodeId);
+                SelectLast();
             }
         }
 
-        private void Select(GameObject node)
+        private void SelectLast()
         {
-            if (Selection.activeGameObject != node) Selection.activeGameObject = node;
+            var invalidNodes = new List<NodeId>();
+            foreach (var nodeId in _selectedNodes)
+            {
+                if (_viewModule.GameObjectNodes.NodeObjectMap.TryGetValue(nodeId, out var node))
+                {
+                    if (Selection.activeGameObject != node.gameObject) Selection.activeGameObject = node.gameObject;
+                }
+                else
+                {
+                    invalidNodes.Add(nodeId);
+                }
+            }
+
+            foreach (var removed in invalidNodes)
+            {
+                _selectedNodes.Remove(removed);
+            }
         }
     }
 }

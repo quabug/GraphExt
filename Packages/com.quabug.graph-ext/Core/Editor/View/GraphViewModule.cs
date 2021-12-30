@@ -44,9 +44,14 @@ namespace GraphExt.Editor
 
         protected void AddNode(in NodeId nodeId, TNode node)
         {
-            var ports = FindNodePorts(node).ToArray();
-            foreach (var port in ports) _PortData[new PortId(nodeId, port.Name)] = port;
+            AddNode(nodeId, node, 0, 0);
+        }
+
+        protected void AddNode(in NodeId nodeId, TNode node, float x, float y)
+        {
+            foreach (var port in FindNodePorts(node)) _PortData[new PortId(nodeId, port.Name)] = port;
             Runtime.AddNode(nodeId, node);
+            SetNodePosition(nodeId, x, y);
             _NodeData[nodeId] = ToNodeData(nodeId, node);
         }
 

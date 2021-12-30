@@ -37,8 +37,8 @@ namespace GraphExt
         {
             if (_nodeMap.TryGetValue(nodeId, out var node))
             {
-                OnNodeWillDelete?.Invoke(nodeId, node);
                 RemoveNodeEdges(nodeId);
+                OnNodeWillDelete?.Invoke(nodeId, node);
                 _nodeMap.Remove(nodeId);
             }
         }
