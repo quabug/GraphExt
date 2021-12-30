@@ -52,7 +52,11 @@ namespace GraphExt.Editor
             var miniMap = graphRoot.Q<MiniMap>();
             if (miniMap != null) miniMap.graphView = graph;
 
-            foreach (var extension in config.WindowExtensions) WindowExtension.AddIfNotExist(extension);
+            foreach (var extension in config.WindowExtensions)
+            {
+                WindowExtension.AddIfNotExist(extension);
+                SaveChanges();
+            }
             WindowExtension.OnInitialized(this, Config, graph);
         }
 

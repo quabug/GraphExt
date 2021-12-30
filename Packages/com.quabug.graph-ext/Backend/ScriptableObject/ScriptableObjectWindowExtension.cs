@@ -21,13 +21,11 @@ namespace GraphExt.Editor
         public void OnClosed(GraphWindow window, GraphConfig config, GraphView view)
         {
             Selection.selectionChanged -= OnSelectionChanged;
-            _view.Module = new EmptyGraphViewModule();
-            _view = null;
-        }
-
-        public IWindowExtension CreateNew()
-        {
-            return new ScriptableObjectWindowExtension<TNode, TNodeScriptableObject>();
+            if (_view != null)
+            {
+                _view.Module = new EmptyGraphViewModule();
+                _view = null;
+            }
         }
 
         private void OnSelectionChanged()
