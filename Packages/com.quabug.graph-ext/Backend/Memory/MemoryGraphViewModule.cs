@@ -24,8 +24,7 @@ namespace GraphExt.Editor
 
         public void AddMemoryNode(in NodeId nodeId, [NotNull] TNode node, Vector2 position)
         {
-            SetNodePosition(nodeId, position.x, position.y);
-            AddNode(nodeId, node);
+            AddNode(nodeId, node, position.x, position.y);
         }
 
         public override void SetNodePosition(in NodeId nodeId, float x, float y)

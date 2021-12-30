@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -11,7 +10,7 @@ namespace GraphExt
         where TNodeScriptableObject : NodeScriptableObject<TNode>
     {
         public GraphRuntime<TNode> Runtime { get; private set; } = new GraphRuntime<TNode>();
-        public BiDictionary<NodeId, TNodeScriptableObject> _nodeObjectMap = new BiDictionary<NodeId, TNodeScriptableObject>();
+        private BiDictionary<NodeId, TNodeScriptableObject> _nodeObjectMap = new BiDictionary<NodeId, TNodeScriptableObject>();
         [NotNull] public TNodeScriptableObject this[in NodeId nodeId] => _nodeObjectMap[nodeId];
 
         [SerializeField, HideInInspector] private List<TNodeScriptableObject> _nodes = new List<TNodeScriptableObject>();

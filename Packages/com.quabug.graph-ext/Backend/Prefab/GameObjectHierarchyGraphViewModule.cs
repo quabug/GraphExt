@@ -44,11 +44,7 @@ namespace GraphExt.Editor
 
         public void AddGameObjectNode(in NodeId nodeId, TNode node, Vector2 position)
         {
-            var ports = FindNodePorts(node).ToArray();
-            foreach (var port in ports) _PortData[new PortId(nodeId, port.Name)] = port;
-            Runtime.AddNode(nodeId, node);
-            GameObjectNodes[nodeId].Position = position;
-            _NodeData[nodeId] = ToNodeData(nodeId, node);
+            AddNode(nodeId, node, position.x, position.y);
             Utility.SavePrefabStage();
         }
 
