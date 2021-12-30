@@ -5,6 +5,7 @@ namespace GraphExt.Editor
 {
     public class LabelProperty : INodeProperty
     {
+        public int Order => 0;
         public string Value;
         public LabelProperty(string value) => Value = value;
 

@@ -6,6 +6,7 @@ namespace GraphExt.Editor
 {
     public class TitleProperty : INodeProperty
     {
+        public int Order => 0;
         public string Value;
         public TitleProperty(string value) => Value = value;
 

@@ -4,6 +4,7 @@ namespace GraphExt.Editor
 {
     public class PortContainerProperty : INodeProperty
     {
+        public int Order => 0;
         public PortId PortId { get; }
         public PortContainerProperty(PortId portId) => PortId = portId;
 

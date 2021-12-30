@@ -6,6 +6,7 @@ namespace GraphExt.Editor
 {
     public class LabelValuePortProperty : INodeProperty
     {
+        public int Order => 0;
         public INodeProperty LabelProperty { get; }
         public INodeProperty ValueProperty { get; }
         public INodeProperty LeftPort { get; }

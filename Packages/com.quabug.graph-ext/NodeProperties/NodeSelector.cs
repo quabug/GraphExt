@@ -5,6 +5,7 @@ namespace GraphExt.Editor
 {
     public class NodeSelector : INodeProperty
     {
+        public int Order => 0;
         public event Action<bool> OnSelectChanged;
 
         private class View : VisualElement, ITickableElement

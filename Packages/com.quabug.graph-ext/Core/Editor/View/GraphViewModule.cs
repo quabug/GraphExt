@@ -92,7 +92,10 @@ namespace GraphExt.Editor
         protected abstract NodeData ToNodeData(in NodeId nodeId, [NotNull] TNode node);
     }
 
-    public interface INodeProperty {}
+    public interface INodeProperty
+    {
+        int Order { get; }
+    }
 
     public interface INodePropertyFactory
     {

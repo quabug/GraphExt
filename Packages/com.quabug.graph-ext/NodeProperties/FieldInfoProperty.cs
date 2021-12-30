@@ -5,6 +5,7 @@ namespace GraphExt.Editor
 {
     public class FieldInfoProperty<T> : IValueProperty<T>
     {
+        public int Order => 0;
         private readonly object _target;
         private readonly FieldInfo _fieldInfo;
 
@@ -23,6 +24,7 @@ namespace GraphExt.Editor
 
     public class ReadOnlyFieldInfoProperty<T> : IReadOnlyValueProperty<T>
     {
+        public int Order => 0;
         private readonly object _target;
         private readonly FieldInfo _fieldInfo;
 
