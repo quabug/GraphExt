@@ -35,6 +35,7 @@ namespace GraphExt.Editor
                 foreach (var port in ports) _PortData[new PortId(nodeId, port.Name)] = port;
                 _NodeData[nodeId] = ToNodeData(nodeId, node);
             }
+            Utility.SavePrefabStage();
         }
 
         public void Dispose()
