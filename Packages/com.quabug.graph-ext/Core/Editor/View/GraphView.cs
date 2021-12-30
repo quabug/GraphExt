@@ -180,11 +180,15 @@ namespace GraphExt.Editor
         {
             if (_edges.Elements.ContainsKey(id)) return null;
 
-            var port1 = _ports.Elements[id.Input];
-            var port2 = _ports.Elements[id.Output];
-            var edge = Config.EdgeViewFactory.CreateEdge(port1, port2);
-            AddElement(edge);
-            return edge;
+            _ports.Elements.TryGetValue(id.Input, out var inputPortView);
+            _ports.Elements.TryGetValue(id.Output, out var outputPortView);
+            if (inputPortView != null && outputPortView != null)
+            {
+                var edge = Config.EdgeViewFactory.CreateEdge(inputPortView, outputPortView);
+                AddElement(edge);
+                return edge;
+            }
+            return null;
         }
 
         private void RemoveEdgeView(EdgeId id)

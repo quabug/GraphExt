@@ -44,6 +44,11 @@ namespace GraphExt.Editor
                 var attribute = mi.GetCustomAttribute<NodePropertyAttribute>();
                 if (attribute == null) return null;
 
+                if (attribute.CustomFactory != null)
+                {
+                    return ((INodePropertyFactory)Activator.CreateInstance(attribute.CustomFactory)).Create(nodeObj, nodeId, nodeSerializedProperty);
+                }
+
                 INodeProperty valueProperty = null;
                 if (attribute.SerializedField && nodeSerializedProperty != null && mi is FieldInfo)
                 {
