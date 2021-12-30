@@ -11,7 +11,77 @@ A library to help you customize your own Unity3D Graph solution.
 - Separate runtime and editor graph.
 - Easy to scratch a new type of node from [`INode`](Packages/com.quabug.graph-ext/Core/Runtime/Data/INode.cs)
 - Customize node looking by each properties via [`INodeProperty`](Packages/com.quabug.graph-ext/NodeProperties)
-- Have [`Memory`](Packages/com.quabug.graph-ext/Backend/Memory), `ScriptableObject` and `Prefab` back-end to store graph data by default.
+- Have [`Memory`](Packages/com.quabug.graph-ext/Backend/Memory), [`ScriptableObject`](Packages/com.quabug.graph-ext/Backend/ScriptableObject) and [`Prefab`](Packages/com.quabug.graph-ext/Backend/Prefab) back-end to store graph data by default.
+
+## Architecture
+```
+    +----------------------------------------------------------------------+
+    |                                                                      |
+    |  Editor                                                              |
+    |                                                                      |
+    |            +-------------------------------------------+             |
+    |            |                 GraphView                 |             |
+    |            +-------------------------------------------+             |
+    |            |                                           |             |
+    |            | 1. Implement `UIElement.Graph`            |             |
+    |            | 2. Pull graph data from `GraphViewModule` |             |
+    |            |    and generate corresponding elements    |             |
+    |            | 3. Send data/event to back-end            |             |
+    |            |    via API of `GraphViewModule`           |             |
+    |            |                                           |             |
+    |            +---------------------+---------------------+             |
+    |                                  |                                   |
+    |                                  |                                   |
+    |                                  v                                   |
+    |               +------------------+-------------------+               |
+    |               |           GraphViewModule            |               |
+    |               +--------------------------------------+               |
+    |               |1. Data collection of View            |               |
+    |               |   Including nodes, ports and edges.  |               |
+    |               |2. Provide API to `GraphView`         |               |
+    |               |   to control back-end                |               |
+    |               +--------------------------------------+               |
+    |                                  ^                                   |
+    |                                  | inhenrited                        |
+    |                                  |                                   |
+    |          +-----------------------+-----------------------+           |
+    |          |             BackendGraphViewModule*           |           |
+    |          +-----------------------------------------------+           |
+    |          |  1. Implement `GraphViewModule`               |           |
+    |          |  2. Collect data from specific back-end       |           |
+    |          |  3. Bridge call from `GraphView` to back-end  |           |
+    |          +--+----------------------------+---------------+           |
+    |             |                            |                           |
+    |             |                            |                           |
+    |             |                            |                           |
+    +----------------------------------------------------------------------+
+                  |                            |
+                  |                            |
++-------------------------------------------------------------------------------+
+|                 |                            |                                |
+|   Runtime       |                            |                                |
+|                 |                            v                                |
+|                 |         +------------------+-------------------------+      |
+|                 |         |            GraphRuntime<TNode>             |      |
+|                 |         +--------------------------------------------+      |
+|                 |         |Runtime graph data including nodes and edges|      |
+|                 |         +-------------+------------------------------+      |
+|                 |                       ^                                     |
+|                 |                       |                                     |
+|                 |                       |                                     |
+|                 v                       |                                     |
+|     +-----------+-----------------------+-----+                               |
+|     |           BackendRuntime*               |                               |
+|     +-----------------------------------------+                               |
+|     |Data and processing for specifc back-end,|                               |
+|     |like prefab, ScriptableObject, etc.      |                               |
+|     +-----------------------------------------+                               |
+|                                                                               |
+|                                                                               |
++-------------------------------------------------------------------------------+
+
+```
+* [`Memory`](Packages/com.quabug.graph-ext/Backend/Memory), [`ScriptableObject`](Packages/com.quabug.graph-ext/Backend/ScriptableObject) and [`Prefab`](Packages/com.quabug.graph-ext/Backend/Prefab) back-end by default.
 
 ## Tutorial (Binary Expression Tree)
 
@@ -179,3 +249,31 @@ public class AddNode : ExpressionNode
     4. Open a prefab and start to modify:
  
     ![image](https://user-images.githubusercontent.com/683655/147681512-e63c90b3-6727-4353-8434-a9179c6cdf62.png)
+    
+## HowTo
+### Customize graph menu
+1. Implement a class of [`IMenuEntry`](Packages/com.quabug.graph-ext/Core/Editor/Menu/IMenuEntry.cs)
+2. Add it into _Menu_ of `GraphConfig`
+
+![image](https://user-images.githubusercontent.com/683655/147736001-46d230c6-60ca-452e-a258-44e8380f894e.png)
+
+### Customize view of node property
+1. Implement a property factory of [`INodePropertyFactory`](Packages/com.quabug.graph-ext/Core/Editor/View/NodePropertyViewFactory.cs)
+``` c#
+    public class FloatFieldViewFactory : INodePropertyViewFactory
+    {
+        public VisualElement Create(Node node, INodeProperty property, INodePropertyViewFactory factory)
+        {
+            return property is FieldInfoProperty<float> _ ? new Label("replace view") : null;
+        }
+    }
+```
+
+2. Add it into the top of _Factories_ of _Node Property View Factory_
+
+![image](https://user-images.githubusercontent.com/683655/147737968-21151171-6b3f-4e3e-9ef1-97d4d23374d3.png)
+
+3. Create a node and will change its property view.
+
+![image](https://user-images.githubusercontent.com/683655/147737633-a7c982f0-1e86-4e34-8ca8-d89025014ece.png)
+
