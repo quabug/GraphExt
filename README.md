@@ -2,13 +2,24 @@
 # GraphExt
 A library to help you customize your own Unity3D Graph solution.
 
+## Why not use `UIElement.Graph` directly?
+1. Editor-only, you have to implement your own runtime graph if needed.
+2. Lack of serializer and deserializer.
+3. Not easy to start, have to set up bunch of stuff before actually write your own code.
+
+## Features
+- Separate runtime and editor graph.
+- Easy to scratch a new type of node from [`INode`](Packages/com.quabug.graph-ext/Core/Runtime/Data/INode.cs)
+- Customize node looking by each properties via [`INodeProperty`](Packages/com.quabug.graph-ext/NodeProperties)
+- Have [`Memory`](Packages/com.quabug.graph-ext/Backend/Memory), `ScriptableObject` and `Prefab` back-end to store graph data by default.
+
 ## Tutorial (Binary Expression Tree)
 
 Step-by-step tutorial to build a following binary expression tree:
 ![image](https://user-images.githubusercontent.com/683655/147669435-5c057c71-ad60-4f01-a177-bece9091b912.png)
 
 ### 1. Define runtime nodes:
-1. Define interface of expression node:
+1. Define the interface of expression node:
 ``` c#
 public interface IExpressionNode : INode<GraphRuntime<IExpressionNode>>
 {
