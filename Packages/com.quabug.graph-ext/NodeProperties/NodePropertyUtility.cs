@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
-using UnityEngine.Assertions;
+using UnityEditor.Experimental.GraphView;
 
 namespace GraphExt.Editor
 {
@@ -22,12 +23,20 @@ namespace GraphExt.Editor
                 AddPropertyPort(nodePropertyAttribute?.InputPort, mi);
                 AddPropertyPort(nodePropertyAttribute?.OutputPort, mi);
             }
+            var ports = NodePortUtility.FindPorts(nodeObj).Where(port => !nodePropertyPorts.Contains(port.Name)).ToDictionary(port => port.Name, port => port);
+
+            var inputPortsVerticalContainer = new VerticalPortsProperty { Order = -10000 };
+            var outputPortsVerticalContainer = new VerticalPortsProperty { Order = 10000 };
+
+            yield return inputPortsVerticalContainer;
 
             foreach (var mi in members)
             {
                 var property = TryCreateNodeProperty(mi) ?? TryCreateNodePort(mi);
                 if (property != null) yield return property;
             }
+
+            yield return outputPortsVerticalContainer;
 
             void AddPropertyPort(string portName, MemberInfo mi)
             {
@@ -80,18 +89,23 @@ namespace GraphExt.Editor
             {
                 var attribute = mi.GetCustomAttribute<NodePortAttribute>();
                 if (attribute == null) return null;
-                Assert.IsTrue(mi is FieldInfo { IsStatic: true }, $"port must be a static field: {nodeType.Name}.{mi.Name}");
                 if (attribute.Hide) return null;
-                var portId = mi.Name;
-                if (nodePropertyPorts.Contains(portId)) return null;
+                if (!ports.TryGetValue(mi.Name, out var port)) return null;
 
-                var port = new PortContainerProperty(new PortId(nodeId, portId));
-                return new LabelValuePortProperty(
-                    labelProperty: attribute.HideLabel ? null : new LabelProperty(attribute.Name ?? portId),
-                    valueProperty: null,
-                    leftPort: attribute.Direction == PortDirection.Input ? port : null,
-                    rightPort: attribute.Direction == PortDirection.Output ? port : null
-                );
+                var portContainer = new PortContainerProperty(new PortId(nodeId, port.Name));
+                if (port.Orientation == Orientation.Horizontal)
+                {
+                    return new LabelValuePortProperty(
+                        labelProperty: attribute.HideLabel ? null : new LabelProperty(attribute.Name ?? port.Name),
+                        valueProperty: null,
+                        leftPort: port.Direction == Direction.Input ? portContainer : null,
+                        rightPort: port.Direction == Direction.Output ? portContainer : null
+                    );
+                }
+
+                if (port.Direction == Direction.Input) inputPortsVerticalContainer.Ports.Add(portContainer);
+                else outputPortsVerticalContainer.Ports.Add(portContainer);
+                return null;
             }
         }
     }

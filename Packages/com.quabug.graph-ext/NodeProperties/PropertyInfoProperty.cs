@@ -7,6 +7,7 @@ namespace GraphExt.Editor
 {
     public class PropertyInfoProperty<T> : IValueProperty<T>
     {
+        public int Order => 0;
         private readonly object _target;
         private readonly MethodInfo _getter;
         private readonly MethodInfo _setter;
@@ -32,6 +33,7 @@ namespace GraphExt.Editor
 
     public class ReadOnlyPropertyInfoProperty<T> : IReadOnlyValueProperty<T>
     {
+        public int Order => 0;
         private readonly object _target;
         private readonly MethodInfo _getter;
 

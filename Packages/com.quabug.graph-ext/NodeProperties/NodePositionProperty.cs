@@ -6,6 +6,7 @@ namespace GraphExt.Editor
 {
     public class NodePositionProperty : INodeProperty
     {
+        public int Order => 0;
         private readonly float _x;
         private readonly float _y;
 
