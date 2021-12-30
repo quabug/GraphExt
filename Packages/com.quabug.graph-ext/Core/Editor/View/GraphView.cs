@@ -195,6 +195,8 @@ namespace GraphExt.Editor
         {
             if (_edges.Elements.TryGetValue(id, out var edge))
             {
+                edge.input.Disconnect(edge);
+                edge.output.Disconnect(edge);
                 RemoveElement(edge);
             }
         }
