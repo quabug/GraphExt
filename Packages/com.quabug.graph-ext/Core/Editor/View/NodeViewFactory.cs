@@ -31,7 +31,7 @@ namespace GraphExt.Editor
 
             VisualElement CreatePropertyView(INodeProperty property)
             {
-                return NodePropertyViewFactory.Create(nodeView, property, new INodePropertyViewFactory.Null());
+                return NodePropertyViewFactory.Create(nodeView, property, null);
             }
         }
 
