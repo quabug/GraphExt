@@ -84,9 +84,9 @@ namespace GraphExt
             {
                 _nodeObjectMap.Remove(id);
 #if UNITY_EDITOR
-                GameObject.DestroyImmediate(nodeObject);
+                GameObject.DestroyImmediate(nodeObject.gameObject);
 #else
-                GameObject.Destroy(nodeObject);
+                GameObject.Destroy(nodeObject.gameObject);
 #endif
             }
         }
