@@ -2,7 +2,7 @@
 # GraphExt
 A library to help you customize your own Unity3D Graph solution.
 
-## Quick Start (Binary Expression Tree)
+## Tutorial (Binary Expression Tree)
 
 Step-by-step tutorial to build a following binary expression tree:
 ![image](https://user-images.githubusercontent.com/683655/147669435-5c057c71-ad60-4f01-a177-bece9091b912.png)
