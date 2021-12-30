@@ -10,7 +10,8 @@ A library to help you customize your own Unity3D Graph solution.
 ## Features
 - Separate runtime and editor graph.
 - Easy to scratch a new type of node from [`INode`](Packages/com.quabug.graph-ext/Core/Runtime/Data/INode.cs)
-- Customize node looking by each properties via [`INodeProperty`](Packages/com.quabug.graph-ext/NodeProperties)
+- Customize node by each properties via [`INodeProperty`](Packages/com.quabug.graph-ext/NodeProperties)
+- Customize graph menu by extend [`IMenuEntry`](Packages/com.quabug.graph-ext/Core/Editor/Menu/IMenuEntry.cs)
 - Have [`Memory`](Packages/com.quabug.graph-ext/Backend/Memory), [`ScriptableObject`](Packages/com.quabug.graph-ext/Backend/ScriptableObject) and [`Prefab`](Packages/com.quabug.graph-ext/Backend/Prefab) back-end to store graph data by default.
 
 ## Architecture
