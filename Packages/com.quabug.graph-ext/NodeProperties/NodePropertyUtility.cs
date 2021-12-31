@@ -96,7 +96,7 @@ namespace GraphExt.Editor
                 if (port.Orientation == Orientation.Horizontal)
                 {
                     return new LabelValuePortProperty(
-                        labelProperty: attribute.HideLabel ? null : new LabelProperty(attribute.Name ?? port.Name),
+                        labelProperty: attribute.HideLabel ? null : new LabelProperty(attribute.DisplayName ?? port.Name),
                         valueProperty: null,
                         leftPort: port.Direction == Direction.Input ? portContainer : null,
                         rightPort: port.Direction == Direction.Output ? portContainer : null

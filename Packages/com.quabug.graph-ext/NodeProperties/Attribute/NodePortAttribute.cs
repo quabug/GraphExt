@@ -45,7 +45,7 @@ namespace GraphExt
         /// <summary>
         /// override port name for UI only
         /// </summary>
-        public string Name = null;
+        public string DisplayName = null;
 
         /// <summary>
         /// identity the port
