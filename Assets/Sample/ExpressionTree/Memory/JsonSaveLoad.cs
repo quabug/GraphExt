@@ -57,19 +57,28 @@ public static class JsonUtility
     {
         public Guid InputNode;
         public string InputPort;
+        public string InputPortId;
         public Guid OutputNode;
         public string OutputPort;
+        public string OutputPortId;
 
-        public SerializableEdge(in EdgeId edge)
+        public SerializableEdge(in EdgeId edge, string inputPortId, string outputPortId)
         {
             InputNode = edge.Input.NodeId.Id;
             InputPort = edge.Input.Name;
             OutputNode = edge.Output.NodeId.Id;
             OutputPort = edge.Output.Name;
+            InputPortId = inputPortId;
+            OutputPortId = outputPortId;
         }
 
-        public EdgeId ToMemory()
+        public EdgeId? ToMemory<TNode>(GraphRuntime<TNode> graph) where TNode : INode<GraphRuntime<TNode>>
         {
+#if UNITY_EDITOR || ENABLE_RUNTIME_PORT_NAME_CORRECTION
+            graph[InputNode].CorrectIdName(portId: ref InputPortId, portName: ref InputPort);
+            graph[OutputNode].CorrectIdName(portId: ref OutputPortId, portName: ref OutputPort);
+            if (string.IsNullOrEmpty(InputPort) || string.IsNullOrEmpty(OutputPort)) return null;
+#endif
             return new EdgeId(input: new PortId(InputNode, InputPort), output: new PortId(OutputNode, OutputPort));
         }
     }
@@ -82,16 +91,24 @@ public static class JsonUtility
         public GraphRuntimeData(GraphRuntime<TNode> graph)
         {
             Nodes = graph.NodeMap.ToDictionary(pair => pair.Key.Id, pair => pair.Value);
-            Edges = graph.Edges.Distinct().Select(edge => new SerializableEdge(edge)).ToArray();
+            Edges = graph.Edges.Distinct().Select(edge =>
+            {
+                var inputPortId = "";
+                var outputPortId = "";
+#if UNITY_EDITOR || ENABLE_RUNTIME_PORT_NAME_CORRECTION
+                inputPortId = graph[edge.Input.NodeId].FindSerializedId(edge.Input.Name);
+                outputPortId = graph[edge.Output.NodeId].FindSerializedId(edge.Output.Name);
+#endif
+                return new SerializableEdge(edge, inputPortId: inputPortId, outputPortId: outputPortId);
+            }).ToArray();
         }
 
         public GraphRuntime<TNode> ToMemory()
         {
             var graph = new GraphRuntime<TNode>();
-            foreach (var pair in Nodes)
-                graph.AddNode(pair.Key, pair.Value);
-            foreach (var edge in Edges.Select(e => e.ToMemory()))
-                graph.Connect(input: edge.Input, output: edge.Output);
+            foreach (var pair in Nodes) graph.AddNode(pair.Key, pair.Value);
+            foreach (var edge in Edges.Select(e => e.ToMemory(graph)).Where(edge => edge.HasValue))
+                graph.Connect(input: edge.Value.Input, output: edge.Value.Output);
             return graph;
         }
     }
