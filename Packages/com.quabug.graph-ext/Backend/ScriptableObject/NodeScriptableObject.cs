@@ -36,16 +36,16 @@ namespace GraphExt
             return _edges;
         }
 
-        public void OnConnected(in EdgeId edge)
+        public void OnConnected(GraphRuntime<TNode> graph, in EdgeId edge)
         {
             if (!_edges.Contains(edge))
             {
                 _edges.Add(edge);
-                _serializedConnections.Add(new Connection(edge, _node));
+                _serializedConnections.Add(new Connection(edge, inputNode: graph[edge.Input.NodeId], outputNode: graph[edge.Output.NodeId]));
             }
         }
 
-        public void OnDisconnected(in EdgeId edge)
+        public void OnDisconnected(GraphRuntime<TNode> graph, in EdgeId edge)
         {
             if (_edges.Contains(edge))
             {
@@ -72,15 +72,15 @@ namespace GraphExt
             public string OutputPort;
             public string OutputPortId;
 
-            public Connection(in EdgeId edge, TNode node)
+            public Connection(in EdgeId edge, TNode inputNode, TNode outputNode)
             {
                 InputNode = edge.Input.NodeId.ToString();
                 InputPort = edge.Input.Name;
                 OutputNode = edge.Output.NodeId.ToString();
                 OutputPort = edge.Output.Name;
 #if UNITY_EDITOR || ENABLE_RUNTIME_PORT_NAME_CORRECTION
-                InputPortId = node.FindSerializedId(InputPort);
-                OutputPortId = node.FindSerializedId(OutputPort);
+                InputPortId = inputNode.FindSerializedId(InputPort);
+                OutputPortId = outputNode.FindSerializedId(OutputPort);
 #endif
             }
 
