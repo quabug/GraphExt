@@ -25,19 +25,16 @@ namespace GraphExt
 
         [field: SerializeField, HideInInspector] public Vector2 Position { get; set; }
 
-        public IReadOnlySet<EdgeId> Edges
-        {
-            get
-            {
-                var parentNode = transform.parent.GetComponent<TreeNodeComponent<TNode, TComponent>>();
-                var edges = new HashSet<EdgeId>();
-                if (parentNode != null) edges.Add(new EdgeId(InputPort, parentNode.OutputPort));
-                return edges;
-            }
-        }
-
         public PortId InputPort => new PortId(Id, Node.InputPortName);
         public PortId OutputPort => new PortId(Id, Node.OutputPortName);
+
+        public IReadOnlySet<EdgeId> GetEdges(GraphRuntime<TNode> graph)
+        {
+            var parentNode = transform.parent.GetComponent<TreeNodeComponent<TNode, TComponent>>();
+            var edges = new HashSet<EdgeId>();
+            if (parentNode != null) edges.Add(new EdgeId(InputPort, parentNode.OutputPort));
+            return edges;
+        }
 
         public bool IsPortCompatible(GameObjectNodes<TNode, TComponent> graph, in PortId input, in PortId output)
         {

@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using JetBrains.Annotations;
-using UnityEngine.Assertions;
 
 namespace GraphExt
 {
@@ -53,10 +51,9 @@ namespace GraphExt
         public string DisplayName = null;
 
         /// <summary>
-        /// identity the port
-        /// useful for renaming port
+        /// node scoped port id to identify port after renaming
         /// </summary>
-        public string Id = null;
+        public string SerializeId = null;
 
         public const System.Reflection.BindingFlags BindingFlags =
             System.Reflection.BindingFlags.Static |
@@ -130,7 +127,7 @@ namespace GraphExt
         {
             return from fi in nodeType.GetFields(NodePortAttribute.BindingFlags)
                 from attribute in fi.GetCustomAttributes<NodePortAttribute>()
-                select (id: attribute.Id, port: fi.Name)
+                select (id: attribute.SerializeId, port: fi.Name)
             ;
         }
     }

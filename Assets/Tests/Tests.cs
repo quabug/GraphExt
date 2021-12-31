@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using GraphExt;
 using GraphExt.Editor;
@@ -16,6 +17,24 @@ public class TestEdge
         Assert.AreEqual(port1 == port2, new EdgeId(port1, port1) == new EdgeId(port2, port2));
         Assert.AreEqual(port1 != port2, new EdgeId(port1, port1) != new EdgeId(port2, port2));
     }
+
+    [Test]
+    public void should_remove_correct_serializable_edge()
+    {
+        var port1 = new PortId(Guid.NewGuid(), "port");
+        var port2 = new PortId(Guid.NewGuid(), "port");
+        var edge = new EdgeId(port1, port2);
+        var serializableEdge = edge.ToSerializable();
+        var list = new List<SerializableEdge> { serializableEdge };
+        list.Remove(edge.ToSerializable());
+        Assert.IsEmpty(list);
+
+        serializableEdge.InputPortId = "123";
+        serializableEdge.OutputPortId = "123";
+        list = new List<SerializableEdge> { serializableEdge };
+        list.Remove(edge.ToSerializable());
+        Assert.IsEmpty(list);
+    }
 }
 
 public class TestNodePortAttribute
@@ -25,8 +44,8 @@ public class TestNodePortAttribute
         [NodePort(Orientation = PortOrientation.Vertical)] public static int InputInt;
         [NodePort] public static float[] OutputFloatMulti;
         [NodePort(DisplayName = "double3")] public static double[] OutputDoulbe3 = new double[3];
-        [NodePort(Id = "input-long")] public static long InputLongWithId;
-        [NodePort(Direction = PortDirection.Output, Id = "output-short")] public static short ShortWithId;
+        [NodePort(SerializeId = "input-long")] public static long InputLongWithId;
+        [NodePort(Direction = PortDirection.Output, SerializeId = "output-short")] public static short ShortWithId;
         [NodePort(Direction = PortDirection.Output, Capacity = 100, DisplayName = "123", PortType = typeof(string))] public static int Port;
 
         public bool IsPortCompatible(GraphRuntime<Node> graph, in PortId input, in PortId output) { throw new NotImplementedException(); }
