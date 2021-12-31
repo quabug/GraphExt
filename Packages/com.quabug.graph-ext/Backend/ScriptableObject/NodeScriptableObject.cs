@@ -23,8 +23,19 @@ namespace GraphExt
         public NodeScriptableObject()
         {
             _edges = new Lazy<HashSet<EdgeId>>(
-                () => new HashSet<EdgeId>(_serializedConnections.Select(conn => conn.ToEdge()))
-            );
+                () =>
+                {
+#if UNITY_EDITOR || ENABLE_RUNTIME_PORT_NAME_CORRECTION
+                    for (var i = _serializedConnections.Count - 1; i >= 0; i--)
+                    {
+                        var connection = _serializedConnections[i];
+                        _node.CorrectIdName(portId: ref connection.InputPortId, portName: ref connection.InputPort);
+                        _node.CorrectIdName(portId: ref connection.OutputPortId, portName: ref connection.OutputPort);
+                        if (!connection.IsValid()) _serializedConnections.RemoveAt(i);
+                    }
+#endif
+                    return new HashSet<EdgeId>(_serializedConnections.Select(conn => conn.ToEdge()));
+                });
         }
 
         public void OnConnected(in EdgeId edge)
@@ -32,7 +43,7 @@ namespace GraphExt
             if (!_edges.Value.Contains(edge))
             {
                 _edges.Value.Add(edge);
-                _serializedConnections.Add(new Connection(edge));
+                _serializedConnections.Add(new Connection(edge, _node));
             }
         }
 
@@ -41,24 +52,45 @@ namespace GraphExt
             if (_edges.Value.Contains(edge))
             {
                 _edges.Value.Remove(edge);
-                _serializedConnections.Remove(new Connection(edge));
+                var inputNode = edge.Input.NodeId.ToString();
+                var inputPort = edge.Input.Name;
+                var outputNode = edge.Output.NodeId.ToString();
+                var outputPort = edge.Output.Name;
+                var index = _serializedConnections.FindIndex(c =>
+                    c.InputNode == inputNode && c.InputPort == inputPort &&
+                    c.OutputNode == outputNode && c.OutputPort == outputPort
+                );
+                _serializedConnections.RemoveAt(index);
             }
         }
 
         [Serializable]
-        private struct Connection
+        private class Connection
         {
             public string InputNode;
             public string InputPort;
+            public string InputPortId;
             public string OutputNode;
             public string OutputPort;
+            public string OutputPortId;
 
-            public Connection(in EdgeId edge)
+            public Connection(in EdgeId edge, TNode node)
             {
                 InputNode = edge.Input.NodeId.ToString();
                 InputPort = edge.Input.Name;
                 OutputNode = edge.Output.NodeId.ToString();
                 OutputPort = edge.Output.Name;
+#if UNITY_EDITOR || ENABLE_RUNTIME_PORT_NAME_CORRECTION
+                InputPortId = node.FindSerializedId(InputPort);
+                OutputPortId = node.FindSerializedId(OutputPort);
+#endif
+            }
+
+            public bool IsValid()
+            {
+                return !string.IsNullOrEmpty(InputPort) && !string.IsNullOrEmpty(InputNode) &&
+                       !string.IsNullOrEmpty(OutputPort) && !string.IsNullOrEmpty(OutputNode)
+                ;
             }
 
             public EdgeId ToEdge() => new EdgeId(new PortId(Guid.Parse(InputNode), InputPort), new PortId(Guid.Parse(OutputNode), OutputPort));
