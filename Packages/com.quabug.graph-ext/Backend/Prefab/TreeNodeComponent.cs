@@ -11,6 +11,7 @@ namespace GraphExt
         string OutputPortName { get; }
     }
 
+    [ExecuteAlways]
     [AddComponentMenu("")]
     public class TreeNodeComponent<TNode, TComponent> : MonoBehaviour, INodeComponent<TNode, TComponent>
         where TNode : ITreeNode<GraphRuntime<TNode>>
@@ -27,6 +28,34 @@ namespace GraphExt
 
         public PortId InputPort => new PortId(Id, Node.InputPortName);
         public PortId OutputPort => new PortId(Id, Node.OutputPortName);
+
+        private Transform _parent = null;
+
+        public event INodeComponent<TNode, TComponent>.NodeComponentDestroy OnNodeComponentDestroy;
+
+        private bool _isDestroying = false;
+
+        public void DestroyGameObject()
+        {
+            if (!_isDestroying)
+            {
+                _isDestroying = true;
+#if UNITY_EDITOR
+                GameObject.DestroyImmediate(gameObject);
+#else
+                GameObject.Destroy(gameObject);
+#endif
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (!_isDestroying)
+            {
+                _isDestroying = true;
+                OnNodeComponentDestroy?.Invoke(Id);
+            }
+        }
 
         public IReadOnlySet<EdgeId> GetEdges(GraphRuntime<TNode> graph)
         {
@@ -48,12 +77,20 @@ namespace GraphExt
         public void OnConnected(GameObjectNodes<TNode, TComponent> graph, in EdgeId edge)
         {
             var (input, output) = edge;
-            if (input.NodeId == Id) transform.SetParent(graph[output.NodeId].transform);
+            if (input.NodeId == Id && !_isDestroying)
+            {
+                _parent = graph[output.NodeId].transform;
+                transform.SetParent(_parent);
+            }
         }
 
         public void OnDisconnected(GameObjectNodes<TNode, TComponent> graph, in EdgeId edge)
         {
-            if (edge.Input.NodeId == Id) transform.SetParent(FindStageRoot());
+            if (edge.Input.NodeId == Id && !_isDestroying)
+            {
+                _parent = FindStageRoot();
+                transform.SetParent(_parent);
+            }
         }
 
         private Transform FindStageRoot()
@@ -61,6 +98,20 @@ namespace GraphExt
             var self = transform;
             while (self.parent != null) self = self.parent;
             return self;
+        }
+
+        private void Awake()
+        {
+            _parent = transform.parent;
+        }
+
+        private void OnTransformParentChanged()
+        {
+            if (transform.parent != _parent && transform.parent != null /* destroying? */)
+            {
+                Debug.LogWarning("it is forbidden to set parent in hierarchy window.");
+                transform.SetParent(_parent, true);
+            }
         }
     }
 }

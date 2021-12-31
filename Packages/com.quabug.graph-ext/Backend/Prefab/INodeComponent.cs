@@ -17,5 +17,9 @@ namespace GraphExt
         bool IsPortCompatible(GameObjectNodes<TNode, TComponent> data, in PortId input, in PortId output);
         void OnConnected(GameObjectNodes<TNode, TComponent> data, in EdgeId edge);
         void OnDisconnected(GameObjectNodes<TNode, TComponent> data, in EdgeId edge);
+
+        delegate void NodeComponentDestroy(in NodeId nodeId);
+        event NodeComponentDestroy OnNodeComponentDestroy;
+        void DestroyGameObject();
     }
 }

@@ -21,6 +21,32 @@ namespace GraphExt
 
         [field: SerializeField, HideInInspector] public Vector2 Position { get; set; }
 
+        public event INodeComponent<TNode, TComponent>.NodeComponentDestroy OnNodeComponentDestroy;
+
+        private bool _isDestroying = false;
+
+        public void DestroyGameObject()
+        {
+            if (!_isDestroying)
+            {
+                _isDestroying = true;
+#if UNITY_EDITOR
+                GameObject.DestroyImmediate(gameObject);
+#else
+                GameObject.Destroy(gameObject);
+#endif
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (!_isDestroying)
+            {
+                _isDestroying = true;
+                OnNodeComponentDestroy?.Invoke(Id);
+            }
+        }
+
         public IReadOnlySet<EdgeId> GetEdges(GraphRuntime<TNode> graph)
         {
             _edges.Clear();

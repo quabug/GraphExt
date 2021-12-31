@@ -34,6 +34,7 @@ namespace GraphExt
             {
                 Graph.AddNode(node.Id, node.Node);
                 _nodeObjectMap[node.Id] = node;
+                node.OnNodeComponentDestroy += OnNodeComponentDestroy;
             }
             
             foreach (var (input, output) in nodes.SelectMany(node => node.GetEdges(Graph))) Graph.Connect(input, output);
@@ -68,6 +69,11 @@ namespace GraphExt
             return _nodeObjectMap[nodeId].GetComponent<TComponent>().IsPortCompatible(this, input, output);
         }
 
+        private void OnNodeComponentDestroy(in NodeId nodeId)
+        {
+            Graph.DeleteNode(nodeId);
+        }
+
         private void OnNodeAdded(in NodeId id, TNode node)
         {
             var nodeObject = new GameObject(node.GetType().Name);
@@ -76,6 +82,7 @@ namespace GraphExt
             nodeComponent.Id = id;
             nodeComponent.Node = node;
             _nodeObjectMap[id] = nodeComponent;
+            nodeComponent.OnNodeComponentDestroy += OnNodeComponentDestroy;
         }
 
         private void OnNodeWillDelete(in NodeId id, TNode node)
@@ -83,11 +90,7 @@ namespace GraphExt
             if (_nodeObjectMap.TryGetValue(id, out var nodeObject))
             {
                 _nodeObjectMap.Remove(id);
-#if UNITY_EDITOR
-                GameObject.DestroyImmediate(nodeObject.gameObject);
-#else
-                GameObject.Destroy(nodeObject.gameObject);
-#endif
+                nodeObject.DestroyGameObject();
             }
         }
 

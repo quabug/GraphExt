@@ -36,7 +36,24 @@ namespace GraphExt.Editor
         public abstract GraphRuntime<TNode> Runtime { get; }
 
         public IEnumerable<(PortId id, PortData data)> PortMap => _PortData.Select(pair => (pair.Key, pair.Value));
-        public IEnumerable<(NodeId id, NodeData data)> NodeMap => _NodeData.Select(pair => (pair.Key, pair.Value));
+        public IEnumerable<(NodeId id, NodeData data)> NodeMap
+        {
+            get
+            {
+                var removed = new HashSet<NodeId>(_NodeData.Keys);
+                foreach (var nodeId in Runtime.NodeMap.Keys)
+                {
+                    if (_NodeData.ContainsKey(nodeId)) removed.Remove(nodeId);
+                    else AddNode(nodeId, Runtime[nodeId]);
+                }
+
+                foreach (var portId in _PortData.Keys.Where(port => removed.Contains(port.NodeId)).ToArray()) _PortData.Remove(portId);
+                foreach (var nodeId in removed) _NodeData.Remove(nodeId);
+
+                return _NodeData.Select(pair => (pair.Key, pair.Value));
+            }
+        }
+
         public IEnumerable<EdgeId> Edges => Runtime.Edges;
 
         protected readonly Dictionary<NodeId, NodeData> _NodeData = new Dictionary<NodeId, NodeData>();
