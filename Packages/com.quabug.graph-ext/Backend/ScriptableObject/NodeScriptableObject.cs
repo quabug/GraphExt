@@ -12,46 +12,44 @@ namespace GraphExt
         public string NodeSerializedPropertyName => nameof(_node);
 
         [SerializeField, HideInInspector] private List<Connection> _serializedConnections = new List<Connection>();
-        private readonly Lazy<HashSet<EdgeId>> _edges;
-        public IReadOnlySet<EdgeId> Edges => _edges.Value;
+        private HashSet<EdgeId> _edges;
 
         [SerializeField, HideInInspector] private string _nodeId;
         public NodeId Id { get => Guid.Parse(_nodeId); set => _nodeId = value.ToString(); }
 
         [field: SerializeField, HideInInspector] public Vector2 Position { get; set; }
 
-        public NodeScriptableObject()
+        public IReadOnlySet<EdgeId> GetEdges(GraphRuntime<TNode> graph)
         {
-            _edges = new Lazy<HashSet<EdgeId>>(
-                () =>
-                {
+            if (_edges != null) return _edges;
+
 #if UNITY_EDITOR || ENABLE_RUNTIME_PORT_NAME_CORRECTION
-                    for (var i = _serializedConnections.Count - 1; i >= 0; i--)
-                    {
-                        var connection = _serializedConnections[i];
-                        _node.CorrectIdName(portId: ref connection.InputPortId, portName: ref connection.InputPort);
-                        _node.CorrectIdName(portId: ref connection.OutputPortId, portName: ref connection.OutputPort);
-                        if (!connection.IsValid()) _serializedConnections.RemoveAt(i);
-                    }
+            for (var i = _serializedConnections.Count - 1; i >= 0; i--)
+            {
+                var connection = _serializedConnections[i];
+                graph[Guid.Parse(connection.InputNode)].CorrectIdName(portId: ref connection.InputPortId, portName: ref connection.InputPort);
+                graph[Guid.Parse(connection.OutputNode)].CorrectIdName(portId: ref connection.OutputPortId, portName: ref connection.OutputPort);
+                if (!connection.IsValid()) _serializedConnections.RemoveAt(i);
+            }
 #endif
-                    return new HashSet<EdgeId>(_serializedConnections.Select(conn => conn.ToEdge()));
-                });
+            _edges = new HashSet<EdgeId>(_serializedConnections.Select(conn => conn.ToEdge()));
+            return _edges;
         }
 
         public void OnConnected(in EdgeId edge)
         {
-            if (!_edges.Value.Contains(edge))
+            if (!_edges.Contains(edge))
             {
-                _edges.Value.Add(edge);
+                _edges.Add(edge);
                 _serializedConnections.Add(new Connection(edge, _node));
             }
         }
 
         public void OnDisconnected(in EdgeId edge)
         {
-            if (_edges.Value.Contains(edge))
+            if (_edges.Contains(edge))
             {
-                _edges.Value.Remove(edge);
+                _edges.Remove(edge);
                 var inputNode = edge.Input.NodeId.ToString();
                 var inputPort = edge.Input.Name;
                 var outputNode = edge.Output.NodeId.ToString();

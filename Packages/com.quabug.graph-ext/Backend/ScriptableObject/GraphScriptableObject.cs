@@ -31,7 +31,9 @@ namespace GraphExt
                 _nodeObjectMap[node.Id] = node;
             }
 
-            foreach (var (input, output) in _nodes.SelectMany(node => node.Edges).Where(edge => !Runtime.Edges.Contains(edge)))
+            foreach (var (input, output) in _nodes
+                         .SelectMany(node => node.GetEdges(Runtime))
+                         .Where(edge => !Runtime.Edges.Contains(edge)))
             {
                 Runtime.Connect(input, output);
             }

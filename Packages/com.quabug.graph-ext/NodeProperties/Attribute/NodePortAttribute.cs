@@ -69,13 +69,13 @@ namespace GraphExt
 
     public static class NodePortExtension
     {
-        private class PortIdName
+        private class Port
         {
             public Dictionary<string /*portName*/, string /*portId*/> NameIdMap = new Dictionary<string, string>();
             public Dictionary<string /*portId*/, string /*portName*/> IdNameMap = new Dictionary<string, string>();
         }
 
-        private static readonly Dictionary<Type/*nodeType*/, PortIdName> _NODE_PORT_MAP = new Dictionary<Type, PortIdName>();
+        private static readonly Dictionary<Type/*nodeType*/, Port> _NODE_PORT_MAP = new Dictionary<Type, Port>();
 
         public static string FindSerializedId<TGraph>(this INode<TGraph> node, string portName)
         {
@@ -111,12 +111,12 @@ namespace GraphExt
             }
         }
 
-        private static PortIdName GetOrCreatePort(Type nodeType)
+        private static Port GetOrCreatePort(Type nodeType)
         {
             if (!_NODE_PORT_MAP.TryGetValue(nodeType, out var port))
             {
                 var idNames = FindIdNames(nodeType).ToArray();
-                port = new PortIdName
+                port = new Port
                 {
                     IdNameMap = idNames.Where(t => !string.IsNullOrEmpty(t.id)).ToDictionary(t => t.id, t => t.name),
                     NameIdMap = idNames.ToDictionary(t => t.name, t => t.id),
