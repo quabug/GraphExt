@@ -107,6 +107,7 @@ namespace GraphExt.Editor
             {
                 return new DynamicTitleProperty(() =>
                 {
+                    if (nodeObject == null) return "*** deleted ***";
                     var titleComponent = nodeObject.GetComponent<NodeTitle>();
                     if (titleComponent == null) return nodeObject.name;
                     return titleComponent.Type switch
