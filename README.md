@@ -85,9 +85,10 @@ A library to help you customize your own Unity3D Graph solution.
 * [`Memory`](Packages/com.quabug.graph-ext/Backend/Memory), [`ScriptableObject`](Packages/com.quabug.graph-ext/Backend/ScriptableObject) and [`Prefab`](Packages/com.quabug.graph-ext/Backend/Prefab) back-end by default.
 
 ## Tutorial (Binary Expression Tree)
-
-Step-by-step tutorial to build a following binary expression tree:
+<details><summary>Step-by-step tutorial to build a following binary expression tree:
+    
 ![image](https://user-images.githubusercontent.com/683655/147669435-5c057c71-ad60-4f01-a177-bece9091b912.png)
+</summary>
 
 ### 1. Define runtime nodes:
 1. Define the interface of expression node:
@@ -250,6 +251,8 @@ public class AddNode : ExpressionNode
     4. Open a prefab and start to modify:
  
     ![image](https://user-images.githubusercontent.com/683655/147681512-e63c90b3-6727-4353-8434-a9179c6cdf62.png)
+    
+</details>
     
 ## HowTo
 ### Customize graph menu
