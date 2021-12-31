@@ -32,9 +32,8 @@ namespace GraphExt
             var nodes = root.GetComponentsInChildren<TComponent>();
             foreach (var node in nodes)
             {
+                AddNode(node);
                 Graph.AddNode(node.Id, node.Node);
-                _nodeObjectMap[node.Id] = node;
-                node.OnNodeComponentDestroy += OnNodeComponentDestroy;
             }
             
             foreach (var (input, output) in nodes.SelectMany(node => node.GetEdges(Graph))) Graph.Connect(input, output);
@@ -53,9 +52,34 @@ namespace GraphExt
             Graph.OnEdgeWillDisconnect -= OnWillDisconnect;
         }
 
+        public void Refresh()
+        {
+            if (_root == null) return;
+
+            var nodes = _root.GetComponentsInChildren<TComponent>();
+            var removedNodes = new HashSet<NodeId>(Graph.NodeMap.Keys);
+            var addedNodes = new HashSet<TComponent>();
+            foreach (var node in nodes)
+            {
+                if (_nodeObjectMap.ContainsKey(node.Id)) removedNodes.Remove(node.Id);
+                else addedNodes.Add(node);
+            }
+
+            foreach (var node in addedNodes)
+            {
+                AddNode(node);
+                Graph.AddNode(node.Id, node.Node);
+            }
+
+            foreach (var (input, output) in addedNodes.SelectMany(node => node.GetEdges(Graph)))
+                Graph.Connect(input, output);
+
+            foreach (var nodeId in removedNodes) Graph.DeleteNode(nodeId);
+        }
+
         public void SetPosition(in NodeId id, Vector2 position)
         {
-            _nodeObjectMap[id].GetComponent<TComponent>().Position = position;
+            _nodeObjectMap[id].Position = position;
         }
 
         public bool IsPortCompatible(in PortId input, in PortId output)
@@ -64,25 +88,39 @@ namespace GraphExt
                    IsNodeComponentPortCompatible(output.NodeId, input, output);
         }
 
-        private bool IsNodeComponentPortCompatible(in NodeId nodeId, in PortId input, in PortId output)
+        private void AddNode(TComponent node)
         {
-            return _nodeObjectMap[nodeId].GetComponent<TComponent>().IsPortCompatible(this, input, output);
+            _nodeObjectMap[node.Id] = node;
+            node.OnNodeComponentConnect += OnNodeComponentConnect;
+            node.OnNodeComponentDisconnect += OnNodeComponentDisconnect;
         }
 
-        private void OnNodeComponentDestroy(in NodeId nodeId)
+        private bool IsNodeComponentPortCompatible(in NodeId nodeId, in PortId input, in PortId output)
         {
-            Graph.DeleteNode(nodeId);
+            return _nodeObjectMap[nodeId].IsPortCompatible(this, input, output);
+        }
+
+        private void OnNodeComponentConnect(in NodeId nodeId, in EdgeId edge)
+        {
+            Graph.Connect(edge.Input, edge.Output);
+        }
+
+        private void OnNodeComponentDisconnect(in NodeId nodeId, in EdgeId edge)
+        {
+            Graph.Disconnect(edge.Input, edge.Output);
         }
 
         private void OnNodeAdded(in NodeId id, TNode node)
         {
-            var nodeObject = new GameObject(node.GetType().Name);
-            nodeObject.transform.SetParent(_root.transform);
-            var nodeComponent = nodeObject.AddComponent<TComponent>();
-            nodeComponent.Id = id;
-            nodeComponent.Node = node;
-            _nodeObjectMap[id] = nodeComponent;
-            nodeComponent.OnNodeComponentDestroy += OnNodeComponentDestroy;
+            if (!_nodeObjectMap.ContainsKey(id))
+            {
+                var nodeObject = new GameObject(node.GetType().Name);
+                nodeObject.transform.SetParent(_root.transform);
+                var nodeComponent = nodeObject.AddComponent<TComponent>();
+                nodeComponent.Id = id;
+                nodeComponent.Node = node;
+                AddNode(nodeComponent);
+            }
         }
 
         private void OnNodeWillDelete(in NodeId id, TNode node)
@@ -90,24 +128,31 @@ namespace GraphExt
             if (_nodeObjectMap.TryGetValue(id, out var nodeObject))
             {
                 _nodeObjectMap.Remove(id);
-                nodeObject.DestroyGameObject();
+                if (nodeObject != null)
+                {
+    #if UNITY_EDITOR
+                    GameObject.DestroyImmediate(nodeObject.gameObject);
+    #else
+                    GameObject.Destroy(nodeObject.gameObject);
+    #endif
+                }
             }
         }
 
         private void OnConnected(in EdgeId edge)
         {
-            var inputComponent = _nodeObjectMap[edge.Input.NodeId].GetComponent<TComponent>();
-            var outputComponent = _nodeObjectMap[edge.Output.NodeId].GetComponent<TComponent>();
-            inputComponent.OnConnected(this, edge);
-            outputComponent.OnConnected(this, edge);
+            var inputComponent = _nodeObjectMap[edge.Input.NodeId];
+            var outputComponent = _nodeObjectMap[edge.Output.NodeId];
+            if (inputComponent != null) inputComponent.OnConnected(this, edge);
+            if (outputComponent != null) outputComponent.OnConnected(this, edge);
         }
 
         private void OnWillDisconnect(in EdgeId edge)
         {
-            var inputComponent = _nodeObjectMap[edge.Input.NodeId].GetComponent<TComponent>();
-            var outputComponent = _nodeObjectMap[edge.Output.NodeId].GetComponent<TComponent>();
-            inputComponent.OnDisconnected(this, edge);
-            outputComponent.OnDisconnected(this, edge);
+            var inputComponent = _nodeObjectMap[edge.Input.NodeId];
+            var outputComponent = _nodeObjectMap[edge.Output.NodeId];
+            if (inputComponent != null) inputComponent.OnDisconnected(this, edge);
+            if (outputComponent != null) outputComponent.OnDisconnected(this, edge);
         }
     }
 

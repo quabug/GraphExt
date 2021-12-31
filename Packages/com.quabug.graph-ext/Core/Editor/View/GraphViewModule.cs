@@ -41,10 +41,19 @@ namespace GraphExt.Editor
             get
             {
                 var removed = new HashSet<NodeId>(_NodeData.Keys);
-                foreach (var nodeId in Runtime.NodeMap.Keys)
+                foreach (var pair in Runtime.NodeMap)
                 {
-                    if (_NodeData.ContainsKey(nodeId)) removed.Remove(nodeId);
-                    else AddNode(nodeId, Runtime[nodeId]);
+                    var nodeId = pair.Key;
+                    var node = pair.Value;
+                    if (_NodeData.ContainsKey(nodeId))
+                    {
+                        removed.Remove(nodeId);
+                    }
+                    else
+                    {
+                        foreach (var port in FindNodePorts(node)) _PortData[new PortId(nodeId, port.Name)] = port;
+                        _NodeData[nodeId] = ToNodeData(nodeId, node);
+                    }
                 }
 
                 foreach (var portId in _PortData.Keys.Where(port => removed.Contains(port.NodeId)).ToArray()) _PortData.Remove(portId);
