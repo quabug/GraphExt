@@ -8,8 +8,8 @@ namespace GraphExt.Editor
 {
     public static class NodePropertyUtility
     {
-        public static IEnumerable<INodeProperty> CreateProperties(
-            object nodeObj,
+        public static IEnumerable<INodeProperty> CreateProperties<TGraph>(
+            this INode<TGraph> nodeObj,
             NodeId nodeId,
             UnityEditor.SerializedProperty nodeSerializedProperty = null
         )
@@ -96,7 +96,7 @@ namespace GraphExt.Editor
                 if (port.Orientation == Orientation.Horizontal)
                 {
                     return new LabelValuePortProperty(
-                        labelProperty: attribute.HideLabel ? null : new LabelProperty(attribute.Name ?? port.Name),
+                        labelProperty: attribute.HideLabel ? null : new LabelProperty(attribute.DisplayName ?? port.Name),
                         valueProperty: null,
                         leftPort: port.Direction == Direction.Input ? portContainer : null,
                         rightPort: port.Direction == Direction.Output ? portContainer : null

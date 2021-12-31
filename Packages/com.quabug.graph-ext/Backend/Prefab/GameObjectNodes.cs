@@ -36,7 +36,7 @@ namespace GraphExt
                 _nodeObjectMap[node.Id] = node;
             }
             
-            foreach (var (input, output) in nodes.SelectMany(node => node.Edges)) Graph.Connect(input, output);
+            foreach (var (input, output) in nodes.SelectMany(node => node.GetEdges(Graph))) Graph.Connect(input, output);
 
             Graph.OnNodeAdded += OnNodeAdded;
             Graph.OnNodeWillDelete += OnNodeWillDelete;

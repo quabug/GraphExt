@@ -31,7 +31,9 @@ namespace GraphExt
                 _nodeObjectMap[node.Id] = node;
             }
 
-            foreach (var (input, output) in _nodes.SelectMany(node => node.Edges).Where(edge => !Runtime.Edges.Contains(edge)))
+            foreach (var (input, output) in _nodes
+                         .SelectMany(node => node.GetEdges(Runtime))
+                         .Where(edge => !Runtime.Edges.Contains(edge)))
             {
                 Runtime.Connect(input, output);
             }
@@ -89,16 +91,16 @@ namespace GraphExt
         {
             var inputComponent = _nodeObjectMap[edge.Input.NodeId];
             var outputComponent = _nodeObjectMap[edge.Output.NodeId];
-            inputComponent.OnConnected(edge);
-            outputComponent.OnConnected(edge);
+            inputComponent.OnConnected(Runtime, edge);
+            outputComponent.OnConnected(Runtime, edge);
         }
 
         private void OnWillDisconnect(in EdgeId edge)
         {
             var inputComponent = _nodeObjectMap[edge.Input.NodeId];
             var outputComponent = _nodeObjectMap[edge.Output.NodeId];
-            inputComponent.OnDisconnected(edge);
-            outputComponent.OnDisconnected(edge);
+            inputComponent.OnDisconnected(Runtime, edge);
+            outputComponent.OnDisconnected(Runtime, edge);
         }
     }
 }

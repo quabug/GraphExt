@@ -53,27 +53,6 @@ public static class JsonUtility
         return ((GraphRuntimeData<TNode>) JsonSaveLoad.Deserialize(json, typeof(GraphRuntimeData<TNode>)).Single()).ToMemory();
     }
 
-    internal struct SerializableEdge
-    {
-        public Guid InputNode;
-        public string InputPort;
-        public Guid OutputNode;
-        public string OutputPort;
-
-        public SerializableEdge(in EdgeId edge)
-        {
-            InputNode = edge.Input.NodeId.Id;
-            InputPort = edge.Input.Name;
-            OutputNode = edge.Output.NodeId.Id;
-            OutputPort = edge.Output.Name;
-        }
-
-        public EdgeId ToMemory()
-        {
-            return new EdgeId(input: new PortId(InputNode, InputPort), output: new PortId(OutputNode, OutputPort));
-        }
-    }
-
     internal struct GraphRuntimeData<TNode> where TNode : INode<GraphRuntime<TNode>>
     {
         public Dictionary<Guid, TNode> Nodes;
@@ -82,16 +61,25 @@ public static class JsonUtility
         public GraphRuntimeData(GraphRuntime<TNode> graph)
         {
             Nodes = graph.NodeMap.ToDictionary(pair => pair.Key.Id, pair => pair.Value);
-            Edges = graph.Edges.Distinct().Select(edge => new SerializableEdge(edge)).ToArray();
+            Edges = graph.Edges.Distinct().Select(edge => edge.ToSerializable(graph)).ToArray();
         }
 
         public GraphRuntime<TNode> ToMemory()
         {
             var graph = new GraphRuntime<TNode>();
-            foreach (var pair in Nodes)
-                graph.AddNode(pair.Key, pair.Value);
-            foreach (var edge in Edges.Select(e => e.ToMemory()))
-                graph.Connect(input: edge.Input, output: edge.Output);
+            foreach (var pair in Nodes) graph.AddNode(pair.Key, pair.Value);
+            foreach (var serializableEdge in Edges)
+            {
+                try
+                {
+                    var (input, output) = serializableEdge.ToEdge(graph);
+                    graph.Connect(input: input, output: output);
+                }
+                catch
+                {
+                    Debug.LogWarning($"invalid edge {serializableEdge.OutputNode}.{serializableEdge.OutputPort}->{serializableEdge.InputNode}.{serializableEdge.InputPort}");
+                }
+            }
             return graph;
         }
     }

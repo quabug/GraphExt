@@ -10,10 +10,10 @@ public interface IVisualNode : ITreeNode<GraphRuntime<IVisualNode>>
 
 public abstract class VisualNode : IVisualNode
 {
-    [NodePort(Hide = true, Direction = PortDirection.Output, Capacity = 2)] protected static float[] _Out;
-    [NodePort(Hide = true, Direction = PortDirection.Input)] protected static float _In;
-    public string InputPortName => nameof(_In);
-    public string OutputPortName => nameof(_Out);
+    [NodePort(Hide = true, Capacity = 2, SerializeId = "out")] protected static float[] _output;
+    [NodePort(Hide = true, SerializeId = "in")] protected static float _input;
+    public string InputPortName => nameof(_input);
+    public string OutputPortName => nameof(_output);
 
     public abstract float GetValue(GraphRuntime<IVisualNode> graph);
 
@@ -35,13 +35,13 @@ public abstract class VisualNode : IVisualNode
 
 public class ValueNode : VisualNode
 {
-    [NodeProperty(InputPort = nameof(_In))] public float Value;
+    [NodeProperty(InputPort = nameof(_input))] public float Value;
     public override float GetValue(GraphRuntime<IVisualNode> graph) => Value;
 }
 
 public class AddNode : VisualNode
 {
-    [NodeProperty(InputPort = nameof(_In), OutputPort = nameof(_Out), HideValue = true, Name = "add")]
+    [NodeProperty(InputPort = nameof(_input), OutputPort = nameof(_output), HideValue = true, Name = "add")]
     private const int _ = 0;
     public override float GetValue(GraphRuntime<IVisualNode> graph) => GetConnectedValues(graph).Sum();
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace GraphExt
@@ -11,57 +10,48 @@ namespace GraphExt
         public TNode Node { get => _node; set => _node = value; }
         public string NodeSerializedPropertyName => nameof(_node);
 
-        [SerializeField, HideInInspector] private List<Connection> _serializedConnections = new List<Connection>();
-        private readonly Lazy<HashSet<EdgeId>> _edges;
-        public IReadOnlySet<EdgeId> Edges => _edges.Value;
+        [SerializeField, HideInInspector] private List<SerializableEdge> _serializableEdges = new List<SerializableEdge>();
+        private HashSet<EdgeId> _edges = new HashSet<EdgeId>();
 
         [SerializeField, HideInInspector] private string _nodeId;
         public NodeId Id { get => Guid.Parse(_nodeId); set => _nodeId = value.ToString(); }
 
         [field: SerializeField, HideInInspector] public Vector2 Position { get; set; }
 
-        public NodeScriptableObject()
+        public IReadOnlySet<EdgeId> GetEdges(GraphRuntime<TNode> graph)
         {
-            _edges = new Lazy<HashSet<EdgeId>>(
-                () => new HashSet<EdgeId>(_serializedConnections.Select(conn => conn.ToEdge()))
-            );
+            _edges.Clear();
+            foreach (var serializableEdge in _serializableEdges)
+            {
+                try
+                {
+                    _edges.Add(serializableEdge.ToEdge(graph));
+                }
+                catch
+                {
+                    Debug.LogWarning($"invalid edge {serializableEdge.OutputNode}.{serializableEdge.OutputPort}->{serializableEdge.InputNode}.{serializableEdge.InputPort}");
+                }
+            }
+            return _edges;
         }
 
-        public void OnConnected(in EdgeId edge)
+        public void OnConnected(GraphRuntime<TNode> graph, in EdgeId edge)
         {
-            if (!_edges.Value.Contains(edge))
+            if (!_edges.Contains(edge))
             {
-                _edges.Value.Add(edge);
-                _serializedConnections.Add(new Connection(edge));
+                _edges.Add(edge);
+                var serializableEdge = edge.ToSerializable(graph);
+                _serializableEdges.Add(serializableEdge);
             }
         }
 
-        public void OnDisconnected(in EdgeId edge)
+        public void OnDisconnected(GraphRuntime<TNode> graph, in EdgeId edge)
         {
-            if (_edges.Value.Contains(edge))
+            if (_edges.Contains(edge))
             {
-                _edges.Value.Remove(edge);
-                _serializedConnections.Remove(new Connection(edge));
+                _edges.Remove(edge);
+                _serializableEdges.Remove(edge.ToSerializable());
             }
-        }
-
-        [Serializable]
-        private struct Connection
-        {
-            public string InputNode;
-            public string InputPort;
-            public string OutputNode;
-            public string OutputPort;
-
-            public Connection(in EdgeId edge)
-            {
-                InputNode = edge.Input.NodeId.ToString();
-                InputPort = edge.Input.Name;
-                OutputNode = edge.Output.NodeId.ToString();
-                OutputPort = edge.Output.Name;
-            }
-
-            public EdgeId ToEdge() => new EdgeId(new PortId(Guid.Parse(InputNode), InputPort), new PortId(Guid.Parse(OutputNode), OutputPort));
         }
     }
 }

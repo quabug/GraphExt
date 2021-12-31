@@ -11,7 +11,8 @@ namespace GraphExt
         TNode Node { get; set; }
         string NodeSerializedPropertyName { get; }
         Vector2 Position { get; set; }
-        IReadOnlySet<EdgeId> Edges { get; }
+
+        IReadOnlySet<EdgeId> GetEdges(GraphRuntime<TNode> graph);
 
         bool IsPortCompatible(GameObjectNodes<TNode, TComponent> data, in PortId input, in PortId output);
         void OnConnected(GameObjectNodes<TNode, TComponent> data, in EdgeId edge);
