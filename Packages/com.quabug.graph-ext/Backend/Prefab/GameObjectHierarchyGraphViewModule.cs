@@ -36,11 +36,18 @@ namespace GraphExt.Editor
                 _NodeData[nodeId] = ToNodeData(nodeId, node);
             }
             Utility.SavePrefabStage();
+            EditorApplication.hierarchyChanged += OnHierarchyChanged;
         }
 
         public void Dispose()
         {
+            EditorApplication.hierarchyChanged -= OnHierarchyChanged;
             GameObjectNodes.Dispose();
+        }
+
+        private void OnHierarchyChanged()
+        {
+            GameObjectNodes.Refresh();
         }
 
         public void AddGameObjectNode(in NodeId nodeId, TNode node, Vector2 position)

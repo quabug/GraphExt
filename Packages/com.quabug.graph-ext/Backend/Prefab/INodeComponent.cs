@@ -18,8 +18,10 @@ namespace GraphExt
         void OnConnected(GameObjectNodes<TNode, TComponent> data, in EdgeId edge);
         void OnDisconnected(GameObjectNodes<TNode, TComponent> data, in EdgeId edge);
 
-        delegate void NodeComponentDestroy(in NodeId nodeId);
-        event NodeComponentDestroy OnNodeComponentDestroy;
-        void DestroyGameObject();
+        delegate void NodeComponentConnect(in NodeId nodeId, in EdgeId edge);
+        event NodeComponentConnect OnNodeComponentConnect;
+
+        delegate void NodeComponentDisconnect(in NodeId nodeId, in EdgeId edge);
+        event NodeComponentDisconnect OnNodeComponentDisconnect;
     }
 }

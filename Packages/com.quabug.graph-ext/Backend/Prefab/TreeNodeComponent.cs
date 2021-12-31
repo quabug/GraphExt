@@ -29,40 +29,25 @@ namespace GraphExt
         public PortId InputPort => new PortId(Id, Node.InputPortName);
         public PortId OutputPort => new PortId(Id, Node.OutputPortName);
 
-        private Transform _parent = null;
+        public event INodeComponent<TNode, TComponent>.NodeComponentConnect OnNodeComponentConnect;
+        public event INodeComponent<TNode, TComponent>.NodeComponentDisconnect OnNodeComponentDisconnect;
 
-        public event INodeComponent<TNode, TComponent>.NodeComponentDestroy OnNodeComponentDestroy;
-
-        private bool _isDestroying = false;
-
-        public void DestroyGameObject()
-        {
-            if (!_isDestroying)
-            {
-                _isDestroying = true;
-#if UNITY_EDITOR
-                GameObject.DestroyImmediate(gameObject);
-#else
-                GameObject.Destroy(gameObject);
-#endif
-            }
-        }
-
-        private void OnDestroy()
-        {
-            if (!_isDestroying)
-            {
-                _isDestroying = true;
-                OnNodeComponentDestroy?.Invoke(Id);
-            }
-        }
+        private bool _isTransforming = false;
 
         public IReadOnlySet<EdgeId> GetEdges(GraphRuntime<TNode> graph)
         {
-            var parentNode = transform.parent.GetComponent<TreeNodeComponent<TNode, TComponent>>();
+            var edge = GetEdge();
             var edges = new HashSet<EdgeId>();
-            if (parentNode != null) edges.Add(new EdgeId(InputPort, parentNode.OutputPort));
+            if (edge.HasValue) edges.Add(edge.Value);
             return edges;
+        }
+
+        private EdgeId? GetEdge()
+        {
+            if (transform.parent == null) return null;
+            var parentNode = transform.parent.GetComponent<TreeNodeComponent<TNode, TComponent>>();
+            if (parentNode == null) return null;
+            return new EdgeId(InputPort, parentNode.OutputPort);
         }
 
         public bool IsPortCompatible(GameObjectNodes<TNode, TComponent> graph, in PortId input, in PortId output)
@@ -77,19 +62,21 @@ namespace GraphExt
         public void OnConnected(GameObjectNodes<TNode, TComponent> graph, in EdgeId edge)
         {
             var (input, output) = edge;
-            if (input.NodeId == Id && !_isDestroying)
+            if (input.NodeId == Id && !_isTransforming)
             {
-                _parent = graph[output.NodeId].transform;
-                transform.SetParent(_parent);
+                _isTransforming = true;
+                transform.SetParent(graph[output.NodeId].transform);
+                _isTransforming = false;
             }
         }
 
         public void OnDisconnected(GameObjectNodes<TNode, TComponent> graph, in EdgeId edge)
         {
-            if (edge.Input.NodeId == Id && !_isDestroying)
+            if (edge.Input.NodeId == Id && !_isTransforming)
             {
-                _parent = FindStageRoot();
-                transform.SetParent(_parent);
+                _isTransforming = true;
+                transform.SetParent(FindStageRoot());
+                _isTransforming = false;
             }
         }
 
@@ -100,17 +87,29 @@ namespace GraphExt
             return self;
         }
 
-        private void Awake()
+        private void OnBeforeTransformParentChanged()
         {
-            _parent = transform.parent;
+            if (_isTransforming) return;
+
+            var edge = GetEdge();
+            if (edge.HasValue)
+            {
+                _isTransforming = true;
+                OnNodeComponentDisconnect?.Invoke(Id, edge.Value);
+                _isTransforming = false;
+            }
         }
 
         private void OnTransformParentChanged()
         {
-            if (transform.parent != _parent && transform.parent != null /* destroying? */)
+            if (_isTransforming) return;
+
+            var edge = GetEdge();
+            if (edge.HasValue)
             {
-                Debug.LogWarning("it is forbidden to set parent in hierarchy window.");
-                transform.SetParent(_parent, true);
+                _isTransforming = true;
+                OnNodeComponentConnect?.Invoke(Id, edge.Value);
+                _isTransforming = false;
             }
         }
     }
