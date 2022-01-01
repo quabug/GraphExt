@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using JetBrains.Annotations;
 using UnityEditor.Experimental.GraphView;
 
@@ -131,6 +132,7 @@ namespace GraphExt.Editor
     public interface INodePropertyFactory
     {
         INodeProperty Create(
+            MemberInfo mi,
             object nodeObj,
             NodeId nodeId,
             UnityEditor.SerializedProperty nodeSerializedProperty = null

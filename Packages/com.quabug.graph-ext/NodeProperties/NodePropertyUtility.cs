@@ -25,8 +25,8 @@ namespace GraphExt.Editor
             }
             var ports = NodePortUtility.FindPorts(nodeObj).Where(port => !nodePropertyPorts.Contains(port.Name)).ToDictionary(port => port.Name, port => port);
 
-            var inputPortsVerticalContainer = new VerticalPortsProperty { Order = -10000 };
-            var outputPortsVerticalContainer = new VerticalPortsProperty { Order = 10000 };
+            var inputPortsVerticalContainer = new VerticalPortsProperty { Name = "vertical-input-ports", Order = -10000 };
+            var outputPortsVerticalContainer = new VerticalPortsProperty { Name = "vertical-output-ports", Order = 10000 };
 
             yield return inputPortsVerticalContainer;
 
@@ -55,7 +55,7 @@ namespace GraphExt.Editor
 
                 if (attribute.CustomFactory != null)
                 {
-                    return ((INodePropertyFactory)Activator.CreateInstance(attribute.CustomFactory)).Create(nodeObj, nodeId, nodeSerializedProperty);
+                    return ((INodePropertyFactory)Activator.CreateInstance(attribute.CustomFactory)).Create(mi, nodeObj, nodeId, nodeSerializedProperty);
                 }
 
                 INodeProperty valueProperty = null;
