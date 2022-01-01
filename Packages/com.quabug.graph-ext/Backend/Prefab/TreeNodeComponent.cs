@@ -17,7 +17,7 @@ namespace GraphExt
         where TNode : ITreeNode<GraphRuntime<TNode>>
         where TComponent : TreeNodeComponent<TNode, TComponent>
     {
-        [SerializeReference] private TNode _node;
+        [SerializeReference] protected TNode _node;
         public TNode Node { get => _node; set => _node = value; }
         public string NodeSerializedPropertyName => nameof(_node);
 
