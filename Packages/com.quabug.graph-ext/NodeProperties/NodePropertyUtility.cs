@@ -53,15 +53,16 @@ namespace GraphExt.Editor
                 var attribute = mi.GetCustomAttribute<NodePropertyAttribute>();
                 if (attribute == null) return null;
 
+                var serializedProperty = nodeSerializedProperty?.FindPropertyRelative(mi.Name);
                 if (attribute.CustomFactory != null)
                 {
-                    return ((INodePropertyFactory)Activator.CreateInstance(attribute.CustomFactory)).Create(mi, nodeObj, nodeId, nodeSerializedProperty);
+                    return ((INodePropertyFactory)Activator.CreateInstance(attribute.CustomFactory)).Create(mi, nodeObj, nodeId, serializedProperty, nodeSerializedProperty);
                 }
 
-                INodeProperty valueProperty = null;
-                if (attribute.SerializedField && nodeSerializedProperty != null && mi is FieldInfo)
+                INodeProperty valueProperty;
+                if (attribute.SerializedField && serializedProperty != null)
                 {
-                    valueProperty = new SerializedFieldProperty(nodeSerializedProperty.FindPropertyRelative(mi.Name));
+                    valueProperty = new SerializedFieldProperty(serializedProperty);
                 }
                 else
                 {

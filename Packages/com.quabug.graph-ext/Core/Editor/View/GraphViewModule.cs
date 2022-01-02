@@ -132,10 +132,11 @@ namespace GraphExt.Editor
     public interface INodePropertyFactory
     {
         INodeProperty Create(
-            MemberInfo mi,
+            MemberInfo memberInfo,
             object nodeObj,
             NodeId nodeId,
-            UnityEditor.SerializedProperty nodeSerializedProperty = null
+            UnityEditor.SerializedProperty fieldProperty = null,
+            UnityEditor.SerializedProperty nodeProperty = null
         );
     }
 
@@ -153,14 +154,16 @@ namespace GraphExt.Editor
         public readonly int Capacity;
         public Port.Capacity PortCapacity => Capacity > 1 ? Port.Capacity.Multi : Port.Capacity.Single;
         public readonly Type PortType;
+        public readonly string[] AdditionalClasses;
 
-        public PortData(string name, Orientation orientation, Direction direction, int capacity, Type portType)
+        public PortData(string name, Orientation orientation, Direction direction, int capacity, Type portType, string[] additionalClasses)
         {
             Name = name;
             Orientation = orientation;
             Direction = direction;
             Capacity = capacity;
             PortType = portType;
+            AdditionalClasses = additionalClasses;
         }
     }
 }

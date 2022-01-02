@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
@@ -22,6 +23,15 @@ namespace GraphExt.Editor
         public Node this[in NodeId nodeId] => _nodes.Elements[nodeId];
         public Port this[in PortId portId] => _ports.Elements[portId];
         public Edge this[in EdgeId edgeId] => _edges.Elements[edgeId];
+
+        public event Action<Node> OnNodeCreated;
+        public event Action<Node> OnNodeWillDelete;
+
+        public event Action<Edge> OnEdgeCreated;
+        public event Action<Edge> OnEdgeWillDelete;
+
+        public event Action<Port> OnPortCreated;
+        public event Action<Port> OnPortWillDelete;
 
         public GraphView([NotNull] GraphConfig config)
         {
@@ -78,7 +88,7 @@ namespace GraphExt.Editor
         {
             if (@event.elementsToRemove != null)
             {
-                foreach (var edge in @event.elementsToRemove.OfType<Edge>()) OnEdgeDeleted(edge);
+                foreach (var edge in @event.elementsToRemove.OfType<Edge>()) OnEdgeViewDeleted(edge);
 
                 foreach (var nodeId in @event.elementsToRemove.OfType<Node>()
                     .Where(node => _nodes.Elements.ContainsValue(node))
@@ -88,7 +98,7 @@ namespace GraphExt.Editor
 
             if (@event.edgesToCreate != null)
             {
-                foreach (var edge in @event.edgesToCreate) OnEdgeCreated(edge, ref @event);
+                foreach (var edge in @event.edgesToCreate) OnEdgeViewCreated(edge, ref @event);
             }
 
             if (@event.movedElements != null)
@@ -106,26 +116,28 @@ namespace GraphExt.Editor
             return @event;
         }
 
-        void OnEdgeCreated(Edge edge, ref GraphViewChange @event)
+        void OnEdgeViewCreated(Edge edge, ref GraphViewChange @event)
         {
-            edge.showInMiniMap = true;
             var inputId = _ports.Elements.GetKey(edge.input);
             var outputId = _ports.Elements.GetKey(edge.output);
             var edgeId = new EdgeId(inputId, outputId);
             if (!_edges.Elements.ContainsKey(edgeId))
             {
+                Config.EdgeViewFactory.AfterCreated(edge);
                 _edges.Elements.Add(edgeId, edge);
                 Module.Connect(input: inputId, output: outputId);
+                OnEdgeCreated?.Invoke(edge);
             }
         }
 
-        void OnEdgeDeleted(Edge edge)
+        void OnEdgeViewDeleted(Edge edge)
         {
             var inputId = _ports.Elements.GetKey(edge.input);
             var outputId = _ports.Elements.GetKey(edge.output);
             var edgeId = new EdgeId(inputId, outputId);
             if (_edges.Elements.ContainsKey(edgeId))
             {
+                OnEdgeWillDelete?.Invoke(edge);
                 _edges.Elements.Remove(edgeId);
                 Module.Disconnect(input: inputId, output: outputId);
             }
@@ -145,15 +157,21 @@ namespace GraphExt.Editor
 
         private Node CreateNodeView(NodeId id, NodeData data)
         {
-            var node = Config.NodeViewFactory.Create(data);
-            AddElement(node);
-            return node;
+            if (!_nodes.Elements.ContainsKey(id))
+            {
+                var node = Config.NodeViewFactory.Create(data);
+                AddElement(node);
+                OnNodeCreated?.Invoke(node);
+                return node;
+            }
+            return null;
         }
 
         private void RemoveNodeView(NodeId id)
         {
             if (_nodes.Elements.TryGetValue(id, out var node))
             {
+                OnNodeWillDelete?.Invoke(node);
                 RemoveElement(node);
             }
         }
@@ -165,6 +183,7 @@ namespace GraphExt.Editor
             {
                 var port = Config.PortViewFactory.CreatePort(data);
                 container.AddPort(port);
+                OnPortCreated?.Invoke(port);
                 return port;
             }
             return null;
@@ -186,6 +205,7 @@ namespace GraphExt.Editor
             {
                 var edge = Config.EdgeViewFactory.CreateEdge(inputPortView, outputPortView);
                 AddElement(edge);
+                OnEdgeCreated?.Invoke(edge);
                 return edge;
             }
             return null;
@@ -195,6 +215,7 @@ namespace GraphExt.Editor
         {
             if (_edges.Elements.TryGetValue(id, out var edge))
             {
+                OnEdgeWillDelete?.Invoke(edge);
                 edge.input.Disconnect(edge);
                 edge.output.Disconnect(edge);
                 RemoveElement(edge);
