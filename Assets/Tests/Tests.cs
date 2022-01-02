@@ -60,12 +60,12 @@ public class TestNodePortAttribute
     {
         var expectedPorts = new PortData[]
         {
-            new PortData(nameof(Node.InputInt), Orientation.Vertical, Direction.Input, 1, typeof(int)),
-            new PortData(nameof(Node.OutputFloatMulti), Orientation.Horizontal, Direction.Output, int.MaxValue, typeof(float)),
-            new PortData(nameof(Node.OutputDoulbe3), Orientation.Horizontal, Direction.Output, 3, typeof(double)),
-            new PortData(nameof(Node.InputLongWithId), Orientation.Horizontal, Direction.Input, 1, typeof(long)),
-            new PortData(nameof(Node.ShortWithId), Orientation.Horizontal, Direction.Output, 1, typeof(short)),
-            new PortData(nameof(Node.Port), Orientation.Horizontal, Direction.Output, 100, typeof(string)),
+            new PortData(nameof(Node.InputInt), Orientation.Vertical, Direction.Input, 1, typeof(int), Array.Empty<string>()),
+            new PortData(nameof(Node.OutputFloatMulti), Orientation.Horizontal, Direction.Output, int.MaxValue, typeof(float), Array.Empty<string>()),
+            new PortData(nameof(Node.OutputDoulbe3), Orientation.Horizontal, Direction.Output, 3, typeof(double), Array.Empty<string>()),
+            new PortData(nameof(Node.InputLongWithId), Orientation.Horizontal, Direction.Input, 1, typeof(long), Array.Empty<string>()),
+            new PortData(nameof(Node.ShortWithId), Orientation.Horizontal, Direction.Output, 1, typeof(short), Array.Empty<string>()),
+            new PortData(nameof(Node.Port), Orientation.Horizontal, Direction.Output, 100, typeof(string), Array.Empty<string>()),
         };
 
         var ports = _node.FindPorts().ToArray();
@@ -84,7 +84,7 @@ public class TestNodePortAttribute
     public void should_correct_port_name()
     {
         var id = "input-long";
-        var name = "unkonwn";
+        var name = "unknown";
         _node.CorrectIdName(ref id, ref name);
         Assert.AreEqual("input-long", id);
         Assert.AreEqual(nameof(Node.InputLongWithId), name);
