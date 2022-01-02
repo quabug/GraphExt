@@ -48,7 +48,7 @@ namespace GraphExt
 
         public void OnConnected(GameObjectNodes<TNode, TComponent> graph, in EdgeId edge)
         {
-            if (!_edges.Contains(edge))
+            if (!_edges.Contains(edge) && edge.Output.NodeId == Id)
             {
                 _edges.Add(edge);
                 var serializableEdge = edge.ToSerializable(graph.Graph);
@@ -58,7 +58,7 @@ namespace GraphExt
 
         public void OnDisconnected(GameObjectNodes<TNode, TComponent> graph, in EdgeId edge)
         {
-            if (_edges.Contains(edge))
+            if (_edges.Contains(edge) && edge.Output.NodeId == Id)
             {
                 _edges.Remove(edge);
                 _serializableEdges.Remove(edge.ToSerializable());

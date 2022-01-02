@@ -5,12 +5,6 @@ using UnityEngine;
 
 namespace GraphExt
 {
-    public interface ITreeNode<in TGraph> : INode<TGraph>
-    {
-        string InputPortName { get; }
-        string OutputPortName { get; }
-    }
-
     [ExecuteAlways]
     [AddComponentMenu("")]
     public class TreeNodeComponent<TNode, TComponent> : MonoBehaviour, INodeComponent<TNode, TComponent>
@@ -26,6 +20,9 @@ namespace GraphExt
 
         [field: SerializeField, HideInInspector] public Vector2 Position { get; set; }
 
+        [SerializeField, HideInInspector] private List<SerializableEdge> _serializableEdges = new List<SerializableEdge>();
+        private readonly HashSet<EdgeId> _edges = new HashSet<EdgeId>();
+
         public PortId InputPort => new PortId(Id, Node.InputPortName);
         public PortId OutputPort => new PortId(Id, Node.OutputPortName);
 
@@ -34,15 +31,27 @@ namespace GraphExt
 
         private bool _isTransforming = false;
 
-        public IReadOnlySet<EdgeId> GetEdges(GraphRuntime<TNode> graph)
+        IReadOnlySet<EdgeId> INodeComponent<TNode, TComponent>.GetEdges(GraphRuntime<TNode> graph)
         {
-            var edge = GetEdge();
-            var edges = new HashSet<EdgeId>();
-            if (edge.HasValue) edges.Add(edge.Value);
-            return edges;
+            _edges.Clear();
+            _edges.UnionWith(GetEdges(graph));
+            foreach (var serializableEdge in _serializableEdges)
+            {
+                try
+                {
+                    _edges.Add(serializableEdge.ToEdge(graph));
+                }
+                catch
+                {
+                    Debug.LogWarning($"invalid edge {serializableEdge.OutputNode}.{serializableEdge.OutputPort}->{serializableEdge.InputNode}.{serializableEdge.InputPort}");
+                }
+            }
+            var treeEdge = GetTreeEdge();
+            if (treeEdge.HasValue) _edges.Add(treeEdge.Value);
+            return _edges;
         }
 
-        private EdgeId? GetEdge()
+        private EdgeId? GetTreeEdge()
         {
             if (transform.parent == null) return null;
             var parentNode = transform.parent.GetComponent<TreeNodeComponent<TNode, TComponent>>();
@@ -50,33 +59,67 @@ namespace GraphExt
             return new EdgeId(InputPort, parentNode.OutputPort);
         }
 
-        public bool IsPortCompatible(GameObjectNodes<TNode, TComponent> graph, in PortId input, in PortId output)
+        bool INodeComponent<TNode, TComponent>.IsPortCompatible(GameObjectNodes<TNode, TComponent> graph, in PortId input, in PortId output)
         {
             if (input.NodeId == Id && output.NodeId == Id) return false; // same node
             if (input.NodeId == Id) return true; // only check compatible on output/start node
-            // cannot connect to input/end node which is parent of output/start node
-            var inputNodeId = input.NodeId;
-            return GetComponentsInParent<TreeNodeComponent<TNode, TComponent>>().All(node => node.Id != inputNodeId);
+
+            // tree port must connect to another tree port
+            if (output == OutputPort && graph[input.NodeId].InputPort != input) return false;
+            if (output != OutputPort && graph[input.NodeId].InputPort == input) return false;
+
+            // cannot connect to input/end node which is parent of output/start node to avoid circle dependency
+            var inputPort = input;
+            var isParentConnection = GetComponentsInParent<TreeNodeComponent<TNode, TComponent>>().Any(node => node.InputPort == inputPort);
+
+            return !isParentConnection && IsPortCompatible(graph, input, output);
         }
 
-        public void OnConnected(GameObjectNodes<TNode, TComponent> graph, in EdgeId edge)
+        void INodeComponent<TNode, TComponent>.OnConnected(GameObjectNodes<TNode, TComponent> graph, in EdgeId edge)
         {
+            if (_edges.Contains(edge)) return;
+            _edges.Add(edge);
             var (input, output) = edge;
-            if (input.NodeId == Id && !_isTransforming)
+            // set parent for tree edges
+            if (!_isTransforming && input == InputPort)
             {
                 _isTransforming = true;
                 transform.SetParent(graph[output.NodeId].transform);
                 _isTransforming = false;
             }
+            // save non-tree output edges
+            if (input != InputPort && output != OutputPort && output.NodeId == Id)
+            {
+                var serializableEdge = edge.ToSerializable(graph.Graph);
+                _serializableEdges.Add(serializableEdge);
+            }
+            OnConnected(graph, edge);
         }
 
-        public void OnDisconnected(GameObjectNodes<TNode, TComponent> graph, in EdgeId edge)
+        void INodeComponent<TNode, TComponent>.OnDisconnected(GameObjectNodes<TNode, TComponent> graph, in EdgeId edge)
         {
-            if (edge.Input.NodeId == Id && !_isTransforming)
+            if (!_edges.Contains(edge)) return;
+
+            try
             {
-                _isTransforming = true;
-                transform.SetParent(FindStageRoot());
-                _isTransforming = false;
+                OnDisconnected(graph, edge);
+            }
+            finally
+            {
+                var (input, output) = edge;
+
+                // delete non-tree output edges
+                if (input != InputPort && output != OutputPort && output.NodeId == Id) _serializableEdges.Remove(edge.ToSerializable());
+
+                // reset parent for tree edges
+                if (!_isTransforming && edge.Input == InputPort)
+                {
+                    _isTransforming = true;
+                    transform.SetParent(FindStageRoot());
+                    _isTransforming = false;
+                }
+
+                _edges.Remove(edge);
             }
         }
 
@@ -87,11 +130,11 @@ namespace GraphExt
             return self;
         }
 
-        private void OnBeforeTransformParentChanged()
+        protected virtual void OnBeforeTransformParentChanged()
         {
             if (_isTransforming) return;
 
-            var edge = GetEdge();
+            var edge = GetTreeEdge();
             if (edge.HasValue)
             {
                 _isTransforming = true;
@@ -100,11 +143,11 @@ namespace GraphExt
             }
         }
 
-        private void OnTransformParentChanged()
+        protected virtual void OnTransformParentChanged()
         {
             if (_isTransforming) return;
 
-            var edge = GetEdge();
+            var edge = GetTreeEdge();
             if (edge.HasValue)
             {
                 _isTransforming = true;
@@ -112,5 +155,10 @@ namespace GraphExt
                 _isTransforming = false;
             }
         }
+
+        protected virtual IReadOnlySet<EdgeId> GetEdges(GraphRuntime<TNode> graph) => new HashSet<EdgeId>();
+        protected virtual bool IsPortCompatible(GameObjectNodes<TNode, TComponent> graph, in PortId input, in PortId output) => true;
+        protected virtual void OnConnected(GameObjectNodes<TNode, TComponent> graph, in EdgeId edge) {}
+        protected virtual void OnDisconnected(GameObjectNodes<TNode, TComponent> graph, in EdgeId edge) {}
     }
 }
