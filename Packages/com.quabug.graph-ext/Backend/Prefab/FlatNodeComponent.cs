@@ -55,7 +55,7 @@ namespace GraphExt
             _edges.Connect(Id, edge, graph.Graph);
         }
 
-        public void OnDisconnected(GameObjectNodes<TNode, TComponent> graph, in EdgeId edge)
+        public void OnDisconnected(GameObjectNodes<TNode, TComponent> _, in EdgeId edge)
         {
             _edges.Disconnect(Id, edge);
         }

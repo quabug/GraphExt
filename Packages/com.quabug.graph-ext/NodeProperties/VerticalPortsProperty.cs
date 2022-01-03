@@ -8,8 +8,8 @@ namespace GraphExt.Editor
     public class VerticalPortsProperty : INodeProperty
     {
         public int Order { get; set; } = 0;
-        public List<INodeProperty> Ports = new List<INodeProperty>();
-        public string Name = null;
+        public List<INodeProperty> Ports { get; } = new List<INodeProperty>();
+        public string Name { get; set; }
 
         public class Factory : NodePropertyViewFactory<VerticalPortsProperty>
         {

@@ -10,7 +10,7 @@ namespace GraphExt
         [SerializeField, HideInInspector] private List<SerializableEdge> _serializableEdges = new List<SerializableEdge>();
         private readonly HashSet<EdgeId> _edges = new HashSet<EdgeId>();
 
-        public IReadOnlySet<EdgeId> GetEdges<TNode>(GraphRuntime<TNode> graph = null) where TNode : INode<GraphRuntime<TNode>>
+        public IReadOnlySet<EdgeId> GetEdges<TNode>(GraphRuntime<TNode> graph) where TNode : INode<GraphRuntime<TNode>>
         {
             _edges.Clear();
             foreach (var serializableEdge in _serializableEdges)

@@ -90,7 +90,7 @@ namespace GraphExt
             if (input != InputPort && output != OutputPort) _flatEdges.Connect(Id, edge, graph.Graph);
         }
 
-        void INodeComponent<TNode, TComponent>.OnDisconnected(GameObjectNodes<TNode, TComponent> graph, in EdgeId edge)
+        void INodeComponent<TNode, TComponent>.OnDisconnected(GameObjectNodes<TNode, TComponent> _, in EdgeId edge)
         {
             if (!_edges.Contains(edge)) return;
             var (input, output) = edge;

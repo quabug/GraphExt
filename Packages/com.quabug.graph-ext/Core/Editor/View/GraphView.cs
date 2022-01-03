@@ -40,7 +40,7 @@ namespace GraphExt.Editor
         public Port this[in PortId portId] => _ports.Elements[portId];
         public Edge this[in EdgeId edgeId] => _edges.Elements[edgeId];
 
-        private HashSet<NodeId> _selectedNodes = new HashSet<NodeId>();
+        private readonly HashSet<NodeId> _selectedNodes = new HashSet<NodeId>();
 
         public GraphView([NotNull] GraphConfig config)
         {
@@ -107,7 +107,7 @@ namespace GraphExt.Editor
 
             if (@event.edgesToCreate != null)
             {
-                foreach (var edge in @event.edgesToCreate) OnEdgeViewCreated(edge, ref @event);
+                foreach (var edge in @event.edgesToCreate) OnEdgeViewCreated(edge);
             }
 
             if (@event.movedElements != null)
@@ -125,7 +125,7 @@ namespace GraphExt.Editor
             return @event;
         }
 
-        void OnEdgeViewCreated(Edge edge, ref GraphViewChange @event)
+        void OnEdgeViewCreated(Edge edge)
         {
             var inputId = _ports.Elements.GetKey(edge.input);
             var outputId = _ports.Elements.GetKey(edge.output);

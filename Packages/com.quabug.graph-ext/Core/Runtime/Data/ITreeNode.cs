@@ -8,7 +8,7 @@ namespace GraphExt
         string OutputPortName { get; }
     }
 
-    public static partial class TreeNodeExtension
+    public static class TreeNodeExtension
     {
         public static bool IsTreePort<TNode>([NotNull] this GraphRuntime<TNode> graph, in PortId port) where TNode : ITreeNode<GraphRuntime<TNode>>
         {
