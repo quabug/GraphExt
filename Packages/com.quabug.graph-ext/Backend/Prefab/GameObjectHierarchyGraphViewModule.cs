@@ -16,9 +16,6 @@ namespace GraphExt.Editor
         [NotNull] public GameObjectNodes<TNode, TComponent> GameObjectNodes { get; }
         [NotNull] public override GraphRuntime<TNode> Runtime => GameObjectNodes.Graph;
 
-        public delegate void OnNodeSelectedChangedFunc(in NodeId nodeId, bool isSelected);
-        public OnNodeSelectedChangedFunc OnNodeSelectedChanged;
-
         public GameObjectHierarchyGraphViewModule()
         {
             GameObjectNodes = new GameObjectNodes<TNode, TComponent>();
@@ -87,7 +84,7 @@ namespace GraphExt.Editor
 
         protected override IEnumerable<PortData> FindNodePorts(TNode node)
         {
-            return NodePortUtility.FindPorts(node);
+            return node.FindPorts();
         }
 
         protected override NodeData ToNodeData(in NodeId id, TNode node)
@@ -95,20 +92,11 @@ namespace GraphExt.Editor
             var nodeObject = GameObjectNodes[id];
             var nodeComponent = nodeObject.GetComponent<TComponent>();
             var nodeSerializedProperty = new SerializedObject(nodeComponent).FindProperty(nodeComponent.NodeSerializedPropertyName);
-            var nodeId = id;
-            return new NodeData(CreateNodeSelector().Yield()
-                .Append<INodeProperty>(new NodePositionProperty(nodeComponent.Position.x, nodeComponent.Position.y))
-                .Append(CreateTitleProperty())
+            return new NodeData(new NodePositionProperty(nodeComponent.Position.x, nodeComponent.Position.y).Yield()
+                .Append<INodeProperty>(CreateTitleProperty())
                 .Concat(NodePropertyUtility.CreateProperties(node, id, nodeSerializedProperty))
                 .ToArray()
             );
-
-            NodeSelector CreateNodeSelector()
-            {
-                var selector = new NodeSelector();
-                selector.OnSelectChanged += isSelected => OnNodeSelectedChanged?.Invoke(nodeId, isSelected);
-                return selector;
-            }
 
             DynamicTitleProperty CreateTitleProperty()
             {

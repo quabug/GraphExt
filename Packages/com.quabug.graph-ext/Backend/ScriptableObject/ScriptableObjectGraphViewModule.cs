@@ -76,21 +76,12 @@ namespace GraphExt.Editor
         {
             var nodeObject = Graph[id];
             var nodeSerializedProperty = new SerializedObject(nodeObject).FindProperty(nodeObject.NodeSerializedPropertyName);
-            var nodeId = id;
             var position = nodeObject.Position;
-            return new NodeData(CreateNodeSelector().Yield()
-                .Append<INodeProperty>(new NodePositionProperty(position.x, position.y))
+            return new NodeData(new NodePositionProperty(position.x, position.y).Yield()
                 .Append(NodeTitleAttribute.CreateTitleProperty(node))
-                .Concat(NodePropertyUtility.CreateProperties(node, id, nodeSerializedProperty))
+                .Concat(node.CreateProperties(id, nodeSerializedProperty))
                 .ToArray()
             );
-
-            NodeSelector CreateNodeSelector()
-            {
-                var selector = new NodeSelector();
-                selector.OnSelectChanged += isSelected => OnNodeSelectedChanged?.Invoke(nodeId, isSelected);
-                return selector;
-            }
         }
     }
 }

@@ -13,6 +13,22 @@ namespace GraphExt.Editor
 {
     public class GraphView : UnityEditor.Experimental.GraphView.GraphView, ITickableElement
     {
+        public delegate void NodeEvent(in NodeId nodeId, Node node);
+        public delegate void EdgeEvent(in EdgeId edgeId, Edge edge);
+        public delegate void PortEvent(in PortId nodeId, Port node);
+
+        public event NodeEvent OnNodeCreated;
+        public event NodeEvent OnNodeWillDelete;
+
+        public event EdgeEvent OnEdgeCreated;
+        public event EdgeEvent OnEdgeWillDelete;
+
+        public event PortEvent OnPortCreated;
+        public event PortEvent OnPortWillDelete;
+
+        public event NodeEvent OnNodeSelected;
+        public event NodeEvent OnNodeUnselected;
+
         [NotNull] public GraphConfig Config { get; }
         [NotNull] public IGraphViewModule Module { get; set; } = new EmptyGraphViewModule();
 
@@ -24,14 +40,7 @@ namespace GraphExt.Editor
         public Port this[in PortId portId] => _ports.Elements[portId];
         public Edge this[in EdgeId edgeId] => _edges.Elements[edgeId];
 
-        public event Action<Node> OnNodeCreated;
-        public event Action<Node> OnNodeWillDelete;
-
-        public event Action<Edge> OnEdgeCreated;
-        public event Action<Edge> OnEdgeWillDelete;
-
-        public event Action<Port> OnPortCreated;
-        public event Action<Port> OnPortWillDelete;
+        private HashSet<NodeId> _selectedNodes = new HashSet<NodeId>();
 
         public GraphView([NotNull] GraphConfig config)
         {
@@ -126,7 +135,7 @@ namespace GraphExt.Editor
                 Config.EdgeViewFactory.AfterCreated(edge);
                 _edges.Elements.Add(edgeId, edge);
                 Module.Connect(input: inputId, output: outputId);
-                OnEdgeCreated?.Invoke(edge);
+                OnEdgeCreated?.Invoke(edgeId, edge);
             }
         }
 
@@ -137,7 +146,7 @@ namespace GraphExt.Editor
             var edgeId = new EdgeId(inputId, outputId);
             if (_edges.Elements.ContainsKey(edgeId))
             {
-                OnEdgeWillDelete?.Invoke(edge);
+                OnEdgeWillDelete?.Invoke(edgeId, edge);
                 _edges.Elements.Remove(edgeId);
                 Module.Disconnect(input: inputId, output: outputId);
             }
@@ -148,6 +157,26 @@ namespace GraphExt.Editor
             _nodes.UpdateElements(Module.NodeMap.Select(t => (t.id, t.data)));
             _ports.UpdateElements(Module.PortMap.Select(t => (t.id, t.data)));
             _edges.UpdateElements(Module.Edges.Select(edge => (edge, edge)));
+            SendNodeSelection();
+        }
+
+        void SendNodeSelection()
+        {
+            foreach (var pair in _nodes.Elements)
+            {
+                var nodeId = pair.Key;
+                var node = pair.Value;
+                if (node.selected && !_selectedNodes.Contains(nodeId))
+                {
+                    _selectedNodes.Add(nodeId);
+                    OnNodeSelected?.Invoke(nodeId, node);
+                }
+                else if (!node.selected && _selectedNodes.Contains(nodeId))
+                {
+                    _selectedNodes.Remove(nodeId);
+                    OnNodeUnselected?.Invoke(nodeId, node);
+                }
+            }
         }
 
         [CanBeNull] private PortContainer FindPortContainer(PortId portId)
@@ -161,7 +190,7 @@ namespace GraphExt.Editor
             {
                 var node = Config.NodeViewFactory.Create(data);
                 AddElement(node);
-                OnNodeCreated?.Invoke(node);
+                OnNodeCreated?.Invoke(id, node);
                 return node;
             }
             return null;
@@ -171,7 +200,12 @@ namespace GraphExt.Editor
         {
             if (_nodes.Elements.TryGetValue(id, out var node))
             {
-                OnNodeWillDelete?.Invoke(node);
+                if (_selectedNodes.Contains(id))
+                {
+                    _selectedNodes.Remove(id);
+                    OnNodeUnselected?.Invoke(id, node);
+                }
+                OnNodeWillDelete?.Invoke(id, node);
                 RemoveElement(node);
             }
         }
@@ -183,7 +217,7 @@ namespace GraphExt.Editor
             {
                 var port = Config.PortViewFactory.CreatePort(data);
                 container.AddPort(port);
-                OnPortCreated?.Invoke(port);
+                OnPortCreated?.Invoke(id, port);
                 return port;
             }
             return null;
@@ -205,7 +239,7 @@ namespace GraphExt.Editor
             {
                 var edge = Config.EdgeViewFactory.CreateEdge(inputPortView, outputPortView);
                 AddElement(edge);
-                OnEdgeCreated?.Invoke(edge);
+                OnEdgeCreated?.Invoke(id, edge);
                 return edge;
             }
             return null;
@@ -215,7 +249,7 @@ namespace GraphExt.Editor
         {
             if (_edges.Elements.TryGetValue(id, out var edge))
             {
-                OnEdgeWillDelete?.Invoke(edge);
+                OnEdgeWillDelete?.Invoke(id, edge);
                 edge.input.Disconnect(edge);
                 edge.output.Disconnect(edge);
                 RemoveElement(edge);

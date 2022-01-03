@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEditor;
+using UnityEditor.Experimental.GraphView;
 using UnityEditor.Experimental.SceneManagement;
 using UnityEngine;
 
@@ -65,26 +66,25 @@ namespace GraphExt.Editor
             ;
             if (_view.Module is IDisposable disposable) disposable.Dispose();
             _view.Module = _viewModule;
-            _viewModule.OnNodeSelectedChanged += OnNodeViewSelected;
+            _view.OnNodeSelected += OnNodeViewSelected;
+            _view.OnNodeUnselected += OnNodeViewUnselected;
             _selectedNodes.Clear();
         }
 
-        private void OnNodeViewSelected(in NodeId nodeId, bool isSelected)
+        private void OnNodeViewSelected(in NodeId nodeId, Node node)
         {
-            if (isSelected)
+            if (!_selectedNodes.Contains(nodeId) && _viewModule.GameObjectNodes.NodeObjectMap.ContainsKey(nodeId))
             {
-                if (!_selectedNodes.Contains(nodeId) && _viewModule.GameObjectNodes.NodeObjectMap.ContainsKey(nodeId))
-                {
-                    _selectedNodes.Add(nodeId);
-                    SelectLast();
-                }
-            }
-            else
-            {
-                if (!_selectedNodes.Contains(nodeId)) return;
-                _selectedNodes.Remove(nodeId);
+                _selectedNodes.Add(nodeId);
                 SelectLast();
             }
+        }
+
+        private void OnNodeViewUnselected(in NodeId nodeId, Node node)
+        {
+            if (!_selectedNodes.Contains(nodeId)) return;
+            _selectedNodes.Remove(nodeId);
+            SelectLast();
         }
 
         private void SelectLast()
