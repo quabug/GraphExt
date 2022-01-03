@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using JetBrains.Annotations;
-using UnityEditor.Experimental.GraphView;
 
 namespace GraphExt.Editor
 {
@@ -42,18 +39,16 @@ namespace GraphExt.Editor
             get
             {
                 var removed = new HashSet<NodeId>(_NodeData.Keys);
-                foreach (var pair in Runtime.NodeMap)
+                foreach (var nodeId in Runtime.NodeMap.Keys)
                 {
-                    var nodeId = pair.Key;
-                    var node = pair.Value;
                     if (_NodeData.ContainsKey(nodeId))
                     {
                         removed.Remove(nodeId);
                     }
                     else
                     {
-                        foreach (var port in FindNodePorts(node)) _PortData[new PortId(nodeId, port.Name)] = port;
-                        _NodeData[nodeId] = ToNodeData(nodeId, node);
+                        foreach (var port in FindNodePorts(nodeId)) _PortData[new PortId(nodeId, port.Name)] = port;
+                        _NodeData[nodeId] = ToNodeData(nodeId);
                     }
                 }
 
@@ -76,10 +71,10 @@ namespace GraphExt.Editor
 
         protected void AddNode(in NodeId nodeId, TNode node, float x, float y)
         {
-            foreach (var port in FindNodePorts(node)) _PortData[new PortId(nodeId, port.Name)] = port;
             Runtime.AddNode(nodeId, node);
+            foreach (var port in FindNodePorts(nodeId)) _PortData[new PortId(nodeId, port.Name)] = port;
             SetNodePosition(nodeId, x, y);
-            _NodeData[nodeId] = ToNodeData(nodeId, node);
+            _NodeData[nodeId] = ToNodeData(nodeId);
         }
 
         public virtual void DeleteNode(in NodeId nodeId)
@@ -120,50 +115,7 @@ namespace GraphExt.Editor
             Runtime.Disconnect(input, output);
         }
 
-        [NotNull] protected abstract IEnumerable<PortData> FindNodePorts([NotNull] TNode node);
-        protected abstract NodeData ToNodeData(in NodeId nodeId, [NotNull] TNode node);
-    }
-
-    public interface INodeProperty
-    {
-        int Order { get; }
-    }
-
-    public interface INodePropertyFactory
-    {
-        INodeProperty Create(
-            MemberInfo memberInfo,
-            object nodeObj,
-            NodeId nodeId,
-            UnityEditor.SerializedProperty fieldProperty = null,
-            UnityEditor.SerializedProperty nodeProperty = null
-        );
-    }
-
-    public readonly struct NodeData
-    {
-        [NotNull] public readonly IReadOnlyList<INodeProperty> Properties;
-        public NodeData([NotNull] IReadOnlyList<INodeProperty> properties) => Properties = properties;
-    }
-
-    public readonly struct PortData
-    {
-        public readonly string Name;
-        public readonly Orientation Orientation;
-        public readonly Direction Direction;
-        public readonly int Capacity;
-        public Port.Capacity PortCapacity => Capacity > 1 ? Port.Capacity.Multi : Port.Capacity.Single;
-        public readonly Type PortType;
-        public readonly string[] AdditionalClasses;
-
-        public PortData(string name, Orientation orientation, Direction direction, int capacity, Type portType, string[] additionalClasses)
-        {
-            Name = name;
-            Orientation = orientation;
-            Direction = direction;
-            Capacity = capacity;
-            PortType = portType;
-            AdditionalClasses = additionalClasses;
-        }
+        [NotNull] protected abstract IEnumerable<PortData> FindNodePorts(in NodeId nodeId);
+        protected abstract NodeData ToNodeData(in NodeId nodeId);
     }
 }

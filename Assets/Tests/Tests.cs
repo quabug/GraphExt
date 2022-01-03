@@ -60,12 +60,12 @@ public class TestNodePortAttribute
     {
         var expectedPorts = new PortData[]
         {
-            new PortData(nameof(Node.InputInt), Orientation.Vertical, Direction.Input, 1, typeof(int), Array.Empty<string>()),
-            new PortData(nameof(Node.OutputFloatMulti), Orientation.Horizontal, Direction.Output, int.MaxValue, typeof(float), Array.Empty<string>()),
-            new PortData(nameof(Node.OutputDoulbe3), Orientation.Horizontal, Direction.Output, 3, typeof(double), Array.Empty<string>()),
-            new PortData(nameof(Node.InputLongWithId), Orientation.Horizontal, Direction.Input, 1, typeof(long), Array.Empty<string>()),
-            new PortData(nameof(Node.ShortWithId), Orientation.Horizontal, Direction.Output, 1, typeof(short), Array.Empty<string>()),
-            new PortData(nameof(Node.Port), Orientation.Horizontal, Direction.Output, 100, typeof(string), Array.Empty<string>()),
+            new PortData(nameof(Node.InputInt), PortOrientation.Vertical, PortDirection.Input, 1, typeof(int), Array.Empty<string>()),
+            new PortData(nameof(Node.OutputFloatMulti), PortOrientation.Horizontal, PortDirection.Output, int.MaxValue, typeof(float), Array.Empty<string>()),
+            new PortData(nameof(Node.OutputDoulbe3), PortOrientation.Horizontal, PortDirection.Output, 3, typeof(double), Array.Empty<string>()),
+            new PortData(nameof(Node.InputLongWithId), PortOrientation.Horizontal, PortDirection.Input, 1, typeof(long), Array.Empty<string>()),
+            new PortData(nameof(Node.ShortWithId), PortOrientation.Horizontal, PortDirection.Output, 1, typeof(short), Array.Empty<string>()),
+            new PortData(nameof(Node.Port), PortOrientation.Horizontal, PortDirection.Output, 100, typeof(string), Array.Empty<string>()),
         };
 
         var ports = _node.FindPorts().ToArray();

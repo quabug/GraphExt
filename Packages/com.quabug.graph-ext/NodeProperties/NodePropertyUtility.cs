@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using UnityEditor.Experimental.GraphView;
 
 namespace GraphExt.Editor
 {
@@ -94,18 +93,18 @@ namespace GraphExt.Editor
                 if (!ports.TryGetValue(mi.Name, out var port)) return null;
 
                 var portContainer = new PortContainerProperty(new PortId(nodeId, port.Name));
-                if (port.Orientation == Orientation.Horizontal)
+                if (port.Orientation == PortOrientation.Horizontal)
                 {
                     return new LabelValuePortProperty(
                         labelProperty: attribute.HideLabel ? null : new LabelProperty(attribute.DisplayName ?? port.Name),
                         valueProperty: null,
-                        leftPort: port.Direction == Direction.Input ? portContainer : null,
-                        rightPort: port.Direction == Direction.Output ? portContainer : null
+                        leftPort: port.Direction == PortDirection.Input ? portContainer : null,
+                        rightPort: port.Direction == PortDirection.Output ? portContainer : null
                     );
                 }
 
-                if (port.Direction == Direction.Input) inputPortsVerticalContainer.Ports.Add(portContainer);
-                else outputPortsVerticalContainer.Ports.Add(portContainer);
+                if (port.Direction == PortDirection.Input) inputPortsVerticalContainer.Ports.Add(portContainer);
+                else if (port.Direction == PortDirection.Output) outputPortsVerticalContainer.Ports.Add(portContainer);
                 return null;
             }
         }

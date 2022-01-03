@@ -3,14 +3,23 @@ using UnityEngine;
 
 namespace GraphExt
 {
-    public interface INodeComponent<TNode, TComponent>
+    public interface INodeComponent
+    {
+        NodeId Id { get; set; }
+        Vector2 Position { get; set; }
+
+        delegate void NodeComponentConnect(in NodeId nodeId, in EdgeId edge);
+        NodeComponentConnect OnNodeComponentConnect { get; set; }
+
+        delegate void NodeComponentDisconnect(in NodeId nodeId, in EdgeId edge);
+        NodeComponentDisconnect OnNodeComponentDisconnect { get; set; }
+    }
+
+    public interface INodeComponent<TNode, TComponent> : INodeComponent
         where TNode : INode<GraphRuntime<TNode>>
         where TComponent : MonoBehaviour, INodeComponent<TNode, TComponent>
     {
-        NodeId Id { get; set; }
         TNode Node { get; set; }
-        string NodeSerializedPropertyName { get; }
-        Vector2 Position { get; set; }
 
         IReadOnlySet<EdgeId> GetEdges(GraphRuntime<TNode> graph);
 
@@ -18,10 +27,7 @@ namespace GraphExt
         void OnConnected(GameObjectNodes<TNode, TComponent> data, in EdgeId edge);
         void OnDisconnected(GameObjectNodes<TNode, TComponent> data, in EdgeId edge);
 
-        delegate void NodeComponentConnect(in NodeId nodeId, in EdgeId edge);
-        event NodeComponentConnect OnNodeComponentConnect;
-
-        delegate void NodeComponentDisconnect(in NodeId nodeId, in EdgeId edge);
-        event NodeComponentDisconnect OnNodeComponentDisconnect;
+        NodeData FindNodeProperties(GameObjectNodes<TNode, TComponent> data);
+        IEnumerable<PortData> FindNodePorts(GameObjectNodes<TNode, TComponent> data);
     }
 }

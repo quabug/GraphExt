@@ -1,0 +1,92 @@
+﻿using System.Linq;
+using UnityEngine;
+
+namespace GraphExt
+{
+    [RequireComponent(typeof(ITreeNodeComponent)), AddComponentMenu(""), ExecuteAlways, DisallowMultipleComponent]
+    public class TreeEdge : MonoBehaviour
+    {
+        public bool IsTransforming { get; private set; } = false;
+
+        private ITreeNodeComponent _Node => GetComponent<ITreeNodeComponent>();
+
+        public EdgeId? Edge
+        {
+            get
+            {
+                if (transform.parent == null) return null;
+                var selfNode = GetComponent<ITreeNodeComponent>();
+                var parentNode = transform.parent.GetComponent<ITreeNodeComponent>();
+                if (parentNode == null) return null;
+                return new EdgeId(selfNode.InputPort, parentNode.OutputPort);
+            }
+        }
+
+        public bool IsPortCompatible(in PortId input, in PortId output, in PortId remoteInput)
+        {
+            if (input.NodeId == _Node.Id) return true; // only check compatible on output/start node
+
+            // tree port must connect to another tree port
+            if (output == _Node.OutputPort && remoteInput != input) return false;
+            if (output != _Node.OutputPort && remoteInput == input) return false;
+
+            // cannot connect to input/end node which is parent of output/start node to avoid circle dependency
+            var inputPort = input;
+            var isParentConnection = GetComponentsInParent<ITreeNodeComponent>().Any(node => node.InputPort == inputPort);
+            return !isParentConnection;
+        }
+
+        public void ConnectParent(in EdgeId edge, Transform parent)
+        {
+            if (edge.Input == _Node.InputPort) SetParent(parent);
+        }
+
+        public void DisconnectParent(in EdgeId edge)
+        {
+            if (edge.Input == _Node.InputPort) SetParent(FindStageRoot());
+        }
+
+        private void OnBeforeTransformParentChanged()
+        {
+            if (IsTransforming) return;
+
+            var edge = Edge;
+            if (edge.HasValue)
+            {
+                IsTransforming = true;
+                _Node.OnNodeComponentDisconnect?.Invoke(_Node.Id, edge.Value);
+                IsTransforming = false;
+            }
+        }
+
+        private void OnTransformParentChanged()
+        {
+            if (IsTransforming) return;
+
+            var edge = Edge;
+            if (edge.HasValue)
+            {
+                IsTransforming = true;
+                _Node.OnNodeComponentConnect?.Invoke(_Node.Id, edge.Value);
+                IsTransforming = false;
+            }
+        }
+
+        private Transform FindStageRoot()
+        {
+            var self = transform;
+            while (self.parent != null) self = self.parent;
+            return self;
+        }
+
+        private void SetParent(Transform parent)
+        {
+            if (!IsTransforming)
+            {
+                IsTransforming = true;
+                transform.SetParent(parent);
+                IsTransforming = false;
+            }
+        }
+    }
+}

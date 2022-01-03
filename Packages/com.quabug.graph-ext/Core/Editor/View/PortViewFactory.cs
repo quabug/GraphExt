@@ -11,7 +11,7 @@ namespace GraphExt.Editor
     {
         public Port CreatePort(in PortData data)
         {
-            var port = Port.Create<Edge>(data.Orientation, data.Direction, data.PortCapacity, data.PortType);
+            var port = Port.Create<Edge>(data.Orientation.ToEditor(), data.Direction.ToEditor(), data.Capacity > 1 ? Port.Capacity.Multi : Port.Capacity.Single, data.PortType);
             port.showInMiniMap = true;
             port.style.paddingLeft = 0;
             port.style.paddingRight = 0;

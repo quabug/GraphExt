@@ -4,41 +4,51 @@ using UnityEngine;
 
 namespace GraphExt
 {
-    [DisallowMultipleComponent, AddComponentMenu("")]
+    [DisallowMultipleComponent]
     public class FlatNodeComponent<TNode, TComponent> : MonoBehaviour, INodeComponent<TNode, TComponent>
         where TNode : INode<GraphRuntime<TNode>>
         where TComponent : FlatNodeComponent<TNode, TComponent>
     {
         [SerializeReference] private TNode _node;
         public TNode Node { get => _node; set => _node = value; }
-        public string NodeSerializedPropertyName => nameof(_node);
-
-        [SerializeField, HideInInspector] private List<SerializableEdge> _serializableEdges = new List<SerializableEdge>();
-        private readonly HashSet<EdgeId> _edges = new HashSet<EdgeId>();
 
         [SerializeField, HideInInspector] private string _nodeId;
         public NodeId Id { get => Guid.Parse(_nodeId); set => _nodeId = value.ToString(); }
 
         [field: SerializeField, HideInInspector] public Vector2 Position { get; set; }
 
-        public event INodeComponent<TNode, TComponent>.NodeComponentConnect OnNodeComponentConnect;
-        public event INodeComponent<TNode, TComponent>.NodeComponentDisconnect OnNodeComponentDisconnect;
+        public INodeComponent.NodeComponentConnect OnNodeComponentConnect { get; set; }
+        public INodeComponent.NodeComponentDisconnect OnNodeComponentDisconnect { get; set; }
+
+        private FlatEdges _edges;
+
+        private void Awake()
+        {
+            _edges = GetComponent<FlatEdges>();
+            if (_edges == null) _edges = gameObject.AddComponent<FlatEdges>();
+        }
 
         public IReadOnlySet<EdgeId> GetEdges(GraphRuntime<TNode> graph)
         {
-            _edges.Clear();
-            foreach (var serializableEdge in _serializableEdges)
-            {
-                try
-                {
-                    _edges.Add(serializableEdge.ToEdge(graph));
-                }
-                catch
-                {
-                    Debug.LogWarning($"invalid edge {serializableEdge.OutputNode}.{serializableEdge.OutputPort}->{serializableEdge.InputNode}.{serializableEdge.InputPort}");
-                }
-            }
-            return _edges;
+            return _edges.GetEdges(graph);
+        }
+
+        public NodeData FindNodeProperties(GameObjectNodes<TNode, TComponent> data)
+        {
+#if UNITY_EDITOR
+            return Editor.Utility.CreateDefaultNodeData<TNode, TComponent>((TComponent)this, nameof(_node), Position);
+#else
+            return new NodeData(Array.Empty<INodeProperty>());
+#endif
+        }
+
+        public IEnumerable<PortData> FindNodePorts(GameObjectNodes<TNode, TComponent> data)
+        {
+#if UNITY_EDITOR
+            return Editor.NodePortUtility.FindPorts(Node);
+#else
+            return Enumerable.Empty<PortData>();
+#endif
         }
 
         public bool IsPortCompatible(GameObjectNodes<TNode, TComponent> data, in PortId input, in PortId output)
@@ -48,21 +58,12 @@ namespace GraphExt
 
         public void OnConnected(GameObjectNodes<TNode, TComponent> graph, in EdgeId edge)
         {
-            if (!_edges.Contains(edge) && edge.Output.NodeId == Id)
-            {
-                _edges.Add(edge);
-                var serializableEdge = edge.ToSerializable(graph.Graph);
-                _serializableEdges.Add(serializableEdge);
-            }
+            _edges.Connect(Id, edge, graph.Graph);
         }
 
         public void OnDisconnected(GameObjectNodes<TNode, TComponent> graph, in EdgeId edge)
         {
-            if (_edges.Contains(edge) && edge.Output.NodeId == Id)
-            {
-                _edges.Remove(edge);
-                _serializableEdges.Remove(edge.ToSerializable());
-            }
+            _edges.Disconnect(Id, edge);
         }
     }
 }
