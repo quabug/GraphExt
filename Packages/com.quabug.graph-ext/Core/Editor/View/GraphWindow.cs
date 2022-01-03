@@ -35,6 +35,7 @@ namespace GraphExt.Editor
 
             var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(ussPath);
             rootVisualElement.styleSheets.Add(styleSheet);
+            if (Config.WindowStyleSheet != null) rootVisualElement.styleSheets.Add(Config.WindowStyleSheet);
             return rootVisualElement;
         }
 

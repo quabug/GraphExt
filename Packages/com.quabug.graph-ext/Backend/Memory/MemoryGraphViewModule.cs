@@ -38,17 +38,18 @@ namespace GraphExt.Editor
             base.DeleteNode(nodeId);
         }
 
-        protected override IEnumerable<PortData> FindNodePorts(TNode node)
+        protected override IEnumerable<PortData> FindNodePorts(in NodeId nodeId)
         {
-            return NodePortUtility.FindPorts(node);
+            return Runtime[nodeId].FindPorts();
         }
 
-        protected override NodeData ToNodeData(in NodeId id, TNode node)
+        protected override NodeData ToNodeData(in NodeId id)
         {
+            var node = Runtime[id];
             var position = _nodePositions[id];
             return new NodeData(new NodePositionProperty(position.x, position.y).Yield()
                     .Append(NodeTitleAttribute.CreateTitleProperty(node))
-                    .Concat(NodePropertyUtility.CreateProperties(node, id))
+                    .Concat(node.CreateProperties(id))
                     .ToArray()
             );
         }

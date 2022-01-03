@@ -8,7 +8,8 @@ namespace GraphExt.Editor
     public class VerticalPortsProperty : INodeProperty
     {
         public int Order { get; set; } = 0;
-        public List<INodeProperty> Ports = new List<INodeProperty>();
+        public List<INodeProperty> Ports { get; } = new List<INodeProperty>();
+        public string Name { get; set; }
 
         public class Factory : NodePropertyViewFactory<VerticalPortsProperty>
         {
@@ -19,12 +20,13 @@ namespace GraphExt.Editor
                 {
                     style =
                     {
-                        alignSelf = new StyleEnum<Align>(Align.Center),
-                        alignItems = new StyleEnum<Align>(Align.Center),
-                        alignContent = new StyleEnum<Align>(Align.Center),
-                        flexDirection = new StyleEnum<FlexDirection>(FlexDirection.Row)
+                        flexGrow = new StyleFloat(1),
+                        flexDirection = new StyleEnum<FlexDirection>(FlexDirection.Row),
+                        justifyContent = new StyleEnum<Justify>(Justify.SpaceAround)
                     }
                 };
+                if (!string.IsNullOrEmpty(property.Name)) container.name = property.Name;
+                container.AddToClassList("vertical-ports");
                 foreach (var port in property.Ports.Select(port => factory.Create(node, port, factory))) container.Add(port);
                 return container;
             }

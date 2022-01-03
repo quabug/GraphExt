@@ -22,38 +22,47 @@ namespace GraphExt
         /// true: hide entire port
         /// will force set to true if this is a property port
         /// </summary>
-        public bool Hide = false;
+        public bool Hide { get; set; } = false;
 
         /// <summary>
         /// true: hide label only
         /// </summary>
-        public bool HideLabel = false;
-        public Type PortType = null;
+        public bool HideLabel { get; set; } = false;
+
+        /// <summary>
+        /// force set port type
+        /// </summary>
+        public Type PortType { get; set; } = null;
 
         /// <summary>
         /// input or output
         /// </summary>
-        public PortDirection Direction = PortDirection.Invalid;
+        public PortDirection Direction { get; set; } = PortDirection.Invalid;
 
         /// <summary>
         /// restrict number of connections
         /// </summary>
-        public int Capacity = 0;
+        public int Capacity { get; set; } = 0;
 
         /// <summary>
         /// horizontal or vertical
         /// </summary>
-        public PortOrientation Orientation = PortOrientation.Horizontal;
+        public PortOrientation Orientation { get; set; } = PortOrientation.Horizontal;
 
         /// <summary>
         /// override port name for UI only
         /// </summary>
-        public string DisplayName = null;
+        public string DisplayName { get; set; } = null;
 
         /// <summary>
         /// node scoped port id to identify port after renaming
         /// </summary>
-        public string SerializeId = null;
+        public string SerializeId { get; set; } = null;
+
+        /// <summary>
+        /// additional classes for port
+        /// </summary>
+        public string[] Classes { get; set; } = Array.Empty<string>();
 
         public const System.Reflection.BindingFlags BindingFlags =
             System.Reflection.BindingFlags.Static |

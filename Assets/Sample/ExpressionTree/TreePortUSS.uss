@@ -1,0 +1,7 @@
+Port.port.tree {
+    --port-color: rgb(12, 234, 30);
+}
+
+Port.port.tree > #connector {
+    border-radius: 0;
+}

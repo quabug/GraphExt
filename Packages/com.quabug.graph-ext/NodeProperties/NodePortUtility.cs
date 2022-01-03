@@ -57,7 +57,7 @@ namespace GraphExt.Editor
                 Assert.AreNotEqual(orientation, PortOrientation.Invalid);
                 Assert.IsTrue(capacity > 0);
                 Assert.IsNotNull(portType);
-                yield return new PortData(portName, orientation.ToEditor(), direction.ToEditor(), capacity, portType);
+                yield return new PortData(portName, orientation, direction, capacity, portType, portAttribute.Classes);
             }
 
             void AssertPropertyPort(string portName)

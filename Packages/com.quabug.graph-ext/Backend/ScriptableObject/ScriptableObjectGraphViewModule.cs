@@ -15,19 +15,14 @@ namespace GraphExt.Editor
         [NotNull] public GraphScriptableObject<TNode, TNodeScriptableObject> Graph { get; }
         [NotNull] public override GraphRuntime<TNode> Runtime => Graph.Runtime;
 
-        public delegate void OnNodeSelectedChangedFunc(in NodeId nodeId, bool isSelected);
-        public OnNodeSelectedChangedFunc OnNodeSelectedChanged;
-
         public ScriptableObjectGraphViewModule(GraphScriptableObject<TNode, TNodeScriptableObject> graph)
         {
             Graph = graph;
             graph.Initialize();
-            foreach (var nodePair in Runtime.NodeMap)
+            foreach (var nodeId in Runtime.NodeMap.Keys)
             {
-                var nodeId = nodePair.Key;
-                var node = nodePair.Value;
-                foreach (var port in FindNodePorts(node)) _PortData[new PortId(nodeId, port.Name)] = port;
-                _NodeData[nodeId] = ToNodeData(nodeId, node);
+                foreach (var port in FindNodePorts(nodeId)) _PortData[new PortId(nodeId, port.Name)] = port;
+                _NodeData[nodeId] = ToNodeData(nodeId);
             }
         }
 
@@ -67,30 +62,22 @@ namespace GraphExt.Editor
             AssetDatabase.Refresh();
         }
 
-        protected override IEnumerable<PortData> FindNodePorts(TNode node)
+        protected override IEnumerable<PortData> FindNodePorts(in NodeId nodeId)
         {
-            return NodePortUtility.FindPorts(node);
+            return Runtime[nodeId].FindPorts();
         }
 
-        protected override NodeData ToNodeData(in NodeId id, TNode node)
+        protected override NodeData ToNodeData(in NodeId id)
         {
             var nodeObject = Graph[id];
+            var node = nodeObject.Node;
             var nodeSerializedProperty = new SerializedObject(nodeObject).FindProperty(nodeObject.NodeSerializedPropertyName);
-            var nodeId = id;
             var position = nodeObject.Position;
-            return new NodeData(CreateNodeSelector().Yield()
-                .Append<INodeProperty>(new NodePositionProperty(position.x, position.y))
+            return new NodeData(new NodePositionProperty(position.x, position.y).Yield()
                 .Append(NodeTitleAttribute.CreateTitleProperty(node))
-                .Concat(NodePropertyUtility.CreateProperties(node, id, nodeSerializedProperty))
+                .Concat(node.CreateProperties(id, nodeSerializedProperty))
                 .ToArray()
             );
-
-            NodeSelector CreateNodeSelector()
-            {
-                var selector = new NodeSelector();
-                selector.OnSelectChanged += isSelected => OnNodeSelectedChanged?.Invoke(nodeId, isSelected);
-                return selector;
-            }
         }
     }
 }

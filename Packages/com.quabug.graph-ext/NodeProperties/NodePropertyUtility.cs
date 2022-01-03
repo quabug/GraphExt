@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using UnityEditor.Experimental.GraphView;
 
 namespace GraphExt.Editor
 {
@@ -25,8 +24,8 @@ namespace GraphExt.Editor
             }
             var ports = NodePortUtility.FindPorts(nodeObj).Where(port => !nodePropertyPorts.Contains(port.Name)).ToDictionary(port => port.Name, port => port);
 
-            var inputPortsVerticalContainer = new VerticalPortsProperty { Order = -10000 };
-            var outputPortsVerticalContainer = new VerticalPortsProperty { Order = 10000 };
+            var inputPortsVerticalContainer = new VerticalPortsProperty { Name = "vertical-input-ports", Order = -10000 };
+            var outputPortsVerticalContainer = new VerticalPortsProperty { Name = "vertical-output-ports", Order = 10000 };
 
             yield return inputPortsVerticalContainer;
 
@@ -53,15 +52,16 @@ namespace GraphExt.Editor
                 var attribute = mi.GetCustomAttribute<NodePropertyAttribute>();
                 if (attribute == null) return null;
 
+                var serializedProperty = nodeSerializedProperty?.FindPropertyRelative(mi.Name);
                 if (attribute.CustomFactory != null)
                 {
-                    return ((INodePropertyFactory)Activator.CreateInstance(attribute.CustomFactory)).Create(nodeObj, nodeId, nodeSerializedProperty);
+                    return ((INodePropertyFactory)Activator.CreateInstance(attribute.CustomFactory)).Create(mi, nodeObj, nodeId, serializedProperty, nodeSerializedProperty);
                 }
 
-                INodeProperty valueProperty = null;
-                if (attribute.SerializedField && nodeSerializedProperty != null && mi is FieldInfo)
+                INodeProperty valueProperty;
+                if (attribute.SerializedField && serializedProperty != null)
                 {
-                    valueProperty = new SerializedFieldProperty(nodeSerializedProperty.FindPropertyRelative(mi.Name));
+                    valueProperty = new SerializedFieldProperty(serializedProperty);
                 }
                 else
                 {
@@ -93,18 +93,18 @@ namespace GraphExt.Editor
                 if (!ports.TryGetValue(mi.Name, out var port)) return null;
 
                 var portContainer = new PortContainerProperty(new PortId(nodeId, port.Name));
-                if (port.Orientation == Orientation.Horizontal)
+                if (port.Orientation == PortOrientation.Horizontal)
                 {
                     return new LabelValuePortProperty(
                         labelProperty: attribute.HideLabel ? null : new LabelProperty(attribute.DisplayName ?? port.Name),
                         valueProperty: null,
-                        leftPort: port.Direction == Direction.Input ? portContainer : null,
-                        rightPort: port.Direction == Direction.Output ? portContainer : null
+                        leftPort: port.Direction == PortDirection.Input ? portContainer : null,
+                        rightPort: port.Direction == PortDirection.Output ? portContainer : null
                     );
                 }
 
-                if (port.Direction == Direction.Input) inputPortsVerticalContainer.Ports.Add(portContainer);
-                else outputPortsVerticalContainer.Ports.Add(portContainer);
+                if (port.Direction == PortDirection.Input) inputPortsVerticalContainer.Ports.Add(portContainer);
+                else if (port.Direction == PortDirection.Output) outputPortsVerticalContainer.Ports.Add(portContainer);
                 return null;
             }
         }

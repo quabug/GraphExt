@@ -18,6 +18,7 @@ namespace GraphExt.Editor
             public View(Func<string> getName)
             {
                 _getName = getName;
+                name = "title-property";
                 style.height = 40;
                 style.flexGrow = 1;
                 style.unityTextAlign = new StyleEnum<TextAnchor>(TextAnchor.MiddleCenter);

@@ -16,9 +16,6 @@ namespace GraphExt.Editor
         [NotNull] public GameObjectNodes<TNode, TComponent> GameObjectNodes { get; }
         [NotNull] public override GraphRuntime<TNode> Runtime => GameObjectNodes.Graph;
 
-        public delegate void OnNodeSelectedChangedFunc(in NodeId nodeId, bool isSelected);
-        public OnNodeSelectedChangedFunc OnNodeSelectedChanged;
-
         public GameObjectHierarchyGraphViewModule()
         {
             GameObjectNodes = new GameObjectNodes<TNode, TComponent>();
@@ -27,13 +24,11 @@ namespace GraphExt.Editor
         public GameObjectHierarchyGraphViewModule(GameObject root)
         {
             GameObjectNodes = new GameObjectNodes<TNode, TComponent>(root);
-            foreach (var nodePair in Runtime.NodeMap)
+            foreach (var nodeId in Runtime.NodeMap.Keys)
             {
-                var nodeId = nodePair.Key;
-                var node = nodePair.Value;
-                var ports = FindNodePorts(node);
+                var ports = FindNodePorts(nodeId);
                 foreach (var port in ports) _PortData[new PortId(nodeId, port.Name)] = port;
-                _NodeData[nodeId] = ToNodeData(nodeId, node);
+                _NodeData[nodeId] = ToNodeData(nodeId);
             }
             Utility.SavePrefabStage();
             EditorApplication.hierarchyChanged += OnHierarchyChanged;
@@ -85,48 +80,14 @@ namespace GraphExt.Editor
             Utility.SavePrefabStage();
         }
 
-        protected override IEnumerable<PortData> FindNodePorts(TNode node)
+        protected override IEnumerable<PortData> FindNodePorts(in NodeId nodeId)
         {
-            return NodePortUtility.FindPorts(node);
+            return GameObjectNodes[nodeId].GetComponent<TComponent>().FindNodePorts(GameObjectNodes);
         }
 
-        protected override NodeData ToNodeData(in NodeId id, TNode node)
+        protected override NodeData ToNodeData(in NodeId nodeId)
         {
-            var nodeObject = GameObjectNodes[id];
-            var nodeComponent = nodeObject.GetComponent<TComponent>();
-            var nodeSerializedProperty = new SerializedObject(nodeComponent).FindProperty(nodeComponent.NodeSerializedPropertyName);
-            var nodeId = id;
-            return new NodeData(CreateNodeSelector().Yield()
-                .Append<INodeProperty>(new NodePositionProperty(nodeComponent.Position.x, nodeComponent.Position.y))
-                .Append(CreateTitleProperty())
-                .Concat(NodePropertyUtility.CreateProperties(node, id, nodeSerializedProperty))
-                .ToArray()
-            );
-
-            NodeSelector CreateNodeSelector()
-            {
-                var selector = new NodeSelector();
-                selector.OnSelectChanged += isSelected => OnNodeSelectedChanged?.Invoke(nodeId, isSelected);
-                return selector;
-            }
-
-            DynamicTitleProperty CreateTitleProperty()
-            {
-                return new DynamicTitleProperty(() =>
-                {
-                    if (nodeObject == null) return "*** deleted ***";
-                    var titleComponent = nodeObject.GetComponent<NodeTitle>();
-                    if (titleComponent == null) return nodeObject.name;
-                    return titleComponent.Type switch
-                    {
-                        NodeTitle.TitleType.Hidden => null,
-                        NodeTitle.TitleType.GameObjectName => nodeObject.name,
-                        NodeTitle.TitleType.NodeTitleAttribute => NodeTitleAttribute.GetTitle(nodeComponent.Node),
-                        NodeTitle.TitleType.CustomTitle => titleComponent.CustomTitle,
-                        _ => throw new ArgumentOutOfRangeException()
-                    };
-                });
-            }
+            return GameObjectNodes[nodeId].GetComponent<TComponent>().FindNodeProperties(GameObjectNodes);
         }
     }
 }
