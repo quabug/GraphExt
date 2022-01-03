@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace GraphExt
 {
-    [RequireComponent(typeof(INodeComponent)), AddComponentMenu(""), DisallowMultipleComponent]
-    public class FlatEdges : MonoBehaviour
+    [Serializable]
+    public class FlatEdges
     {
         [SerializeField, HideInInspector] private List<SerializableEdge> _serializableEdges = new List<SerializableEdge>();
         private readonly HashSet<EdgeId> _edges = new HashSet<EdgeId>();

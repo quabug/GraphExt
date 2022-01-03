@@ -11,7 +11,7 @@ namespace GraphExt
         public PortId OutputPort { get; }
     }
 
-    [ExecuteAlways, DisallowMultipleComponent]
+    [DisallowMultipleComponent]
     public abstract class TreeNodeComponent<TNode, TComponent> : MonoBehaviour, INodeComponent<TNode, TComponent>, ITreeNodeComponent
         where TNode : ITreeNode<GraphRuntime<TNode>>
         where TComponent : TreeNodeComponent<TNode, TComponent>
@@ -24,21 +24,21 @@ namespace GraphExt
 
         [field: SerializeField, HideInInspector] public Vector2 Position { get; set; }
 
-        private readonly HashSet<EdgeId> _edges = new HashSet<EdgeId>();
-
         public PortId InputPort => new PortId(Id, Node.InputPortName);
         public PortId OutputPort => new PortId(Id, Node.OutputPortName);
 
         public INodeComponent.NodeComponentConnect OnNodeComponentConnect { get; set; }
         public INodeComponent.NodeComponentDisconnect OnNodeComponentDisconnect { get; set; }
 
+        [SerializeField, HideInInspector] private FlatEdges _flatEdges = new FlatEdges();
         private TreeEdge _TreeEdge => GetComponent<TreeEdge>() ?? gameObject.AddComponent<TreeEdge>();
-        private FlatEdges _FlatEdges => GetComponent<FlatEdges>() ?? gameObject.AddComponent<FlatEdges>();
+
+        private readonly HashSet<EdgeId> _edges = new HashSet<EdgeId>();
 
         IReadOnlySet<EdgeId> INodeComponent<TNode, TComponent>.GetEdges(GraphRuntime<TNode> graph)
         {
             _edges.Clear();
-            _edges.UnionWith(_FlatEdges.GetEdges(graph));
+            _edges.UnionWith(_flatEdges.GetEdges(graph));
             var treeEdge = _TreeEdge.Edge;
             if (treeEdge.HasValue) _edges.Add(treeEdge.Value);
             return _edges;
@@ -66,8 +66,17 @@ namespace GraphExt
 
         bool INodeComponent<TNode, TComponent>.IsPortCompatible(GameObjectNodes<TNode, TComponent> graph, in PortId input, in PortId output)
         {
+            // free to connect each other if they are not tree ports
+            var isInputTreePort = graph.Graph.IsTreePort(input);
+            var isOutputTreePort = graph.Graph.IsTreePort(output);
+            if (!isInputTreePort && !isOutputTreePort) return true;
+
             if (input.NodeId == Id && output.NodeId == Id) return false; // same node
-            return _TreeEdge.IsPortCompatible(input, output, graph[input.NodeId].InputPort);
+            if (input.NodeId == Id) return true; // only check compatible on output/start node
+            // tree port must connect to another tree port
+            if (!isInputTreePort || !isOutputTreePort) return false;
+            // cannot connect to input/end node which is parent of output/start node to avoid circle dependency
+            return !_TreeEdge.IsParentInputPort(input);
         }
 
         void INodeComponent<TNode, TComponent>.OnConnected(GameObjectNodes<TNode, TComponent> graph, in EdgeId edge)
@@ -78,7 +87,7 @@ namespace GraphExt
             // set parent for tree edges
             _TreeEdge.ConnectParent(edge, graph[output.NodeId].transform);
             // save non-tree output edges
-            if (input != InputPort && output != OutputPort) _FlatEdges.Connect(Id, edge, graph.Graph);
+            if (input != InputPort && output != OutputPort) _flatEdges.Connect(Id, edge, graph.Graph);
         }
 
         void INodeComponent<TNode, TComponent>.OnDisconnected(GameObjectNodes<TNode, TComponent> graph, in EdgeId edge)
@@ -86,7 +95,7 @@ namespace GraphExt
             if (!_edges.Contains(edge)) return;
             var (input, output) = edge;
             // delete non-tree output edges
-            if (input != InputPort && output != OutputPort) _FlatEdges.Disconnect(Id, edge);
+            if (input != InputPort && output != OutputPort) _flatEdges.Disconnect(Id, edge);
             // reset parent for tree edges
             _TreeEdge.DisconnectParent(edge);
             _edges.Remove(edge);

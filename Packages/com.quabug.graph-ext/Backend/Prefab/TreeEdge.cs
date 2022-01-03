@@ -22,19 +22,9 @@ namespace GraphExt
             }
         }
 
-        public bool IsPortCompatible(in PortId input, in PortId output, in PortId remoteInput)
-        {
-            if (input.NodeId == _Node.Id) return true; // only check compatible on output/start node
-
-            // tree port must connect to another tree port
-            if (output == _Node.OutputPort && remoteInput != input) return false;
-            if (output != _Node.OutputPort && remoteInput == input) return false;
-
-            // cannot connect to input/end node which is parent of output/start node to avoid circle dependency
-            var inputPort = input;
-            var isParentConnection = GetComponentsInParent<ITreeNodeComponent>().Any(node => node.InputPort == inputPort);
-            return !isParentConnection;
-        }
+        public bool IsParentInputPort(PortId port) => GetComponentsInParent<ITreeNodeComponent>().Any(node => node.InputPort == port);
+        public bool IsParentOutputPort(PortId port) => GetComponentsInParent<ITreeNodeComponent>().Any(node => node.OutputPort == port);
+        public bool IsParentTreePort(PortId port) => GetComponentsInParent<ITreeNodeComponent>().Any(node => node.InputPort == port || node.OutputPort == port);
 
         public void ConnectParent(in EdgeId edge, Transform parent)
         {

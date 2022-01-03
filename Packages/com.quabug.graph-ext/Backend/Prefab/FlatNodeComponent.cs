@@ -20,13 +20,7 @@ namespace GraphExt
         public INodeComponent.NodeComponentConnect OnNodeComponentConnect { get; set; }
         public INodeComponent.NodeComponentDisconnect OnNodeComponentDisconnect { get; set; }
 
-        private FlatEdges _edges;
-
-        private void Awake()
-        {
-            _edges = GetComponent<FlatEdges>();
-            if (_edges == null) _edges = gameObject.AddComponent<FlatEdges>();
-        }
+        [SerializeField] private FlatEdges _edges = new FlatEdges();
 
         public IReadOnlySet<EdgeId> GetEdges(GraphRuntime<TNode> graph)
         {
