@@ -80,8 +80,8 @@ namespace GraphExt.Editor
                 return valueProperty == null ? null : new LabelValuePortProperty(
                     labelProperty: attribute.HideLabel ? null : new LabelProperty(attribute.Name ?? mi.Name),
                     valueProperty: attribute.HideValue ? null : valueProperty,
-                    leftPort: attribute.InputPort == null ? null : new PortContainerProperty(new PortId(nodeId, attribute.InputPort)),
-                    rightPort: attribute.OutputPort == null ? null : new PortContainerProperty(new PortId(nodeId, attribute.OutputPort))
+                    leftPort: attribute.InputPort == null ? null : new PortContainerProperty(attribute.InputPort),
+                    rightPort: attribute.OutputPort == null ? null : new PortContainerProperty(attribute.OutputPort)
                 );
             }
 
@@ -92,7 +92,7 @@ namespace GraphExt.Editor
                 if (attribute.Hide) return null;
                 if (!ports.TryGetValue(mi.Name, out var port)) return null;
 
-                var portContainer = new PortContainerProperty(new PortId(nodeId, port.Name));
+                var portContainer = new PortContainerProperty(port.Name);
                 if (port.Orientation == PortOrientation.Horizontal)
                 {
                     return new LabelValuePortProperty(
