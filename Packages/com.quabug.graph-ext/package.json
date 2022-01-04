@@ -1,7 +1,10 @@
 {
   "name": "com.quabug.graph-ext",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "unity": "2020.3",
   "displayName": "Graph Ext",
-  "type": "tool"
+  "type": "tool",
+  "dependencies": {
+    "com.unity.modules.uielements": "1.0.0"
+  }
 }
