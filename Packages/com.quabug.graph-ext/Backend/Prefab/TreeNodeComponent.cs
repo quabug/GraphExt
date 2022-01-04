@@ -11,7 +11,7 @@ namespace GraphExt
         public PortId OutputPort { get; }
     }
 
-    [DisallowMultipleComponent]
+    [DisallowMultipleComponent, ExecuteAlways]
     public abstract class TreeNodeComponent<TNode, TComponent> : MonoBehaviour, INodeComponent<TNode, TComponent>, ITreeNodeComponent
         where TNode : ITreeNode<GraphRuntime<TNode>>
         where TComponent : TreeNodeComponent<TNode, TComponent>
@@ -31,15 +31,20 @@ namespace GraphExt
         public INodeComponent.NodeComponentDisconnect OnNodeComponentDisconnect { get; set; }
 
         [SerializeField, HideInInspector] private FlatEdges _flatEdges = new FlatEdges();
-        private TreeEdge _TreeEdge => GetComponent<TreeEdge>() ?? gameObject.AddComponent<TreeEdge>();
+        private readonly TreeEdge _treeEdge;
 
         private readonly HashSet<EdgeId> _edges = new HashSet<EdgeId>();
+
+        protected TreeNodeComponent()
+        {
+            _treeEdge = new TreeEdge(this);
+        }
 
         IReadOnlySet<EdgeId> INodeComponent<TNode, TComponent>.GetEdges(GraphRuntime<TNode> graph)
         {
             _edges.Clear();
             _edges.UnionWith(_flatEdges.GetEdges(graph));
-            var treeEdge = _TreeEdge.Edge;
+            var treeEdge = _treeEdge.Edge;
             if (treeEdge.HasValue) _edges.Add(treeEdge.Value);
             return _edges;
         }
@@ -76,7 +81,7 @@ namespace GraphExt
             // tree port must connect to another tree port
             if (!isInputTreePort || !isOutputTreePort) return false;
             // cannot connect to input/end node which is parent of output/start node to avoid circle dependency
-            return !_TreeEdge.IsParentInputPort(input);
+            return !_treeEdge.IsParentInputPort(input);
         }
 
         void INodeComponent<TNode, TComponent>.OnConnected(GameObjectNodes<TNode, TComponent> graph, in EdgeId edge)
@@ -85,7 +90,7 @@ namespace GraphExt
             _edges.Add(edge);
             var (input, output) = edge;
             // set parent for tree edges
-            _TreeEdge.ConnectParent(edge, graph[output.NodeId].transform);
+            _treeEdge.ConnectParent(edge, graph[output.NodeId].transform);
             // save non-tree output edges
             if (input != InputPort && output != OutputPort) _flatEdges.Connect(Id, edge, graph.Graph);
         }
@@ -97,8 +102,18 @@ namespace GraphExt
             // delete non-tree output edges
             if (input != InputPort && output != OutputPort) _flatEdges.Disconnect(Id, edge);
             // reset parent for tree edges
-            _TreeEdge.DisconnectParent(edge);
+            _treeEdge.DisconnectParent(edge);
             _edges.Remove(edge);
+        }
+
+        private void OnBeforeTransformParentChanged()
+        {
+            _treeEdge.OnBeforeTransformParentChanged();
+        }
+
+        private void OnTransformParentChanged()
+        {
+            _treeEdge.OnTransformParentChanged();
         }
     }
 }
