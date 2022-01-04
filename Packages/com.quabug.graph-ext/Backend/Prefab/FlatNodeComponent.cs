@@ -41,7 +41,7 @@ namespace GraphExt
 #if UNITY_EDITOR
             return Editor.NodePortUtility.FindPorts(Node);
 #else
-            return Enumerable.Empty<PortData>();
+            return System.Linq.Enumerable.Empty<PortData>();
 #endif
         }
 
