@@ -93,8 +93,9 @@ namespace GraphExt.Editor
             var outputPort = _PortData[output];
             return inputPort.Direction != outputPort.Direction &&
                    inputPort.Orientation == outputPort.Orientation &&
-                   FindConnections(input).Count() < inputPort.Capacity &&
-                   FindConnections(output).Count() < outputPort.Capacity &&
+                   // single port could be handled by Unity Graph
+                   (inputPort.Capacity == 1 || FindConnections(input).Count() < inputPort.Capacity) &&
+                   (outputPort.Capacity == 1 || FindConnections(output).Count() < outputPort.Capacity) &&
                    Runtime.GetNodeByPort(input).IsPortCompatible(Runtime, input, output) &&
                    Runtime.GetNodeByPort(output).IsPortCompatible(Runtime, input, output)
             ;
