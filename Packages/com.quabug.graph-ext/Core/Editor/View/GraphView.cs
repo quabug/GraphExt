@@ -154,8 +154,8 @@ namespace GraphExt.Editor
 
         public void Tick()
         {
-            _nodes.UpdateElements(Module.NodeMap.Select(t => (t.id, t.data)));
-            _ports.UpdateElements(Module.PortMap.Select(t => (t.id, t.data)));
+            _nodes.UpdateElements(Module.Nodes.Select(t => (t.id, t.data)));
+            _ports.UpdateElements(Module.Ports.Select(t => (t.id, t.data)));
             _edges.UpdateElements(Module.Edges.Select(edge => (edge, edge)));
             SendNodeSelection();
         }
@@ -179,9 +179,13 @@ namespace GraphExt.Editor
             }
         }
 
-        [CanBeNull] private PortContainer FindPortContainer(PortId portId)
+        [CanBeNull] private PortContainer FindPortContainer(in PortId portId)
         {
-            return _nodes.Elements.TryGetValue(portId.NodeId, out var node) ? node.Q<PortContainer>(name: portId.Name) : null;
+            var portName = portId.Name;
+            return _nodes.Elements.TryGetValue(portId.NodeId, out var node) ?
+                node.Query<PortContainer>().Where(portContainer => portContainer.PortName == portName).First() :
+                null
+            ;
         }
 
         private Node CreateNodeView(NodeId id, NodeData data)

@@ -14,19 +14,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _node:
     id: 0
-  _serializedConnections:
+  _serializableEdges:
   - InputNode: 1225f22c-99cf-4b4f-8936-8240854ecf06
-    InputPort: _In
+    InputPort: _Input
+    InputPortId: in
     OutputNode: 73acb154-c939-4fd2-9aaf-f560e3511b04
-    OutputPort: _Out
-  - InputNode: 37e8f5ff-6d7f-4a55-8080-c5d73ea4733c
-    InputPort: _In
-    OutputNode: 73acb154-c939-4fd2-9aaf-f560e3511b04
-    OutputPort: _Out
+    OutputPort: _Output
+    OutputPortId: out
   - InputNode: 73acb154-c939-4fd2-9aaf-f560e3511b04
-    InputPort: _In
+    InputPort: _input1
+    InputPortId: in1
     OutputNode: 13f23759-e5a9-49c5-9e8b-bd496c5e5e5c
-    OutputPort: _Out
+    OutputPort: _Output
+    OutputPortId: out
+  - InputNode: 7dcd33de-c901-4ceb-b8c5-3261347b886b
+    InputPort: _Input
+    InputPortId: in
+    OutputNode: 73acb154-c939-4fd2-9aaf-f560e3511b04
+    OutputPort: _Output
+    OutputPortId: out
   _nodeId: 73acb154-c939-4fd2-9aaf-f560e3511b04
   <Position>k__BackingField: {x: 454, y: 117}
   references:
@@ -47,11 +53,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _node:
     id: 0
-  _serializedConnections:
+  _serializableEdges:
   - InputNode: 1225f22c-99cf-4b4f-8936-8240854ecf06
-    InputPort: _In
+    InputPort: _Input
+    InputPortId: in
     OutputNode: 73acb154-c939-4fd2-9aaf-f560e3511b04
-    OutputPort: _Out
+    OutputPort: _Output
+    OutputPortId: out
+  - InputNode: 37e8f5ff-6d7f-4a55-8080-c5d73ea4733c
+    InputPort: _Input
+    InputPortId: in
+    OutputNode: 1225f22c-99cf-4b4f-8936-8240854ecf06
+    OutputPort: _output1
+    OutputPortId: out1
   _nodeId: 1225f22c-99cf-4b4f-8936-8240854ecf06
   <Position>k__BackingField: {x: 627.5, y: 77.5}
   references:
@@ -92,15 +106,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _node:
     id: 0
-  _serializedConnections:
+  _serializableEdges:
   - InputNode: 73acb154-c939-4fd2-9aaf-f560e3511b04
-    InputPort: _In
+    InputPort: _input1
+    InputPortId: in1
     OutputNode: 13f23759-e5a9-49c5-9e8b-bd496c5e5e5c
-    OutputPort: _Out
-  - InputNode: 7dcd33de-c901-4ceb-b8c5-3261347b886b
-    InputPort: _In
-    OutputNode: 13f23759-e5a9-49c5-9e8b-bd496c5e5e5c
-    OutputPort: _Out
+    OutputPort: _Output
+    OutputPortId: out
   _nodeId: 13f23759-e5a9-49c5-9e8b-bd496c5e5e5c
   <Position>k__BackingField: {x: 287, y: 181.5}
   references:
@@ -121,11 +133,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _node:
     id: 0
-  _serializedConnections:
+  _serializableEdges:
   - InputNode: 7dcd33de-c901-4ceb-b8c5-3261347b886b
-    InputPort: _In
-    OutputNode: 13f23759-e5a9-49c5-9e8b-bd496c5e5e5c
-    OutputPort: _Out
+    InputPort: _Input
+    InputPortId: in
+    OutputNode: 73acb154-c939-4fd2-9aaf-f560e3511b04
+    OutputPort: _Output
+    OutputPortId: out
   _nodeId: 7dcd33de-c901-4ceb-b8c5-3261347b886b
   <Position>k__BackingField: {x: 627.5, y: 219.5}
   references:
@@ -148,11 +162,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _node:
     id: 0
-  _serializedConnections:
+  _serializableEdges:
   - InputNode: 37e8f5ff-6d7f-4a55-8080-c5d73ea4733c
-    InputPort: _In
-    OutputNode: 73acb154-c939-4fd2-9aaf-f560e3511b04
-    OutputPort: _Out
+    InputPort: _Input
+    InputPortId: in
+    OutputNode: 1225f22c-99cf-4b4f-8936-8240854ecf06
+    OutputPort: _output1
+    OutputPortId: out1
   _nodeId: 37e8f5ff-6d7f-4a55-8080-c5d73ea4733c
   <Position>k__BackingField: {x: 619.5, y: 148}
   references:

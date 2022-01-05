@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace GraphExt
@@ -22,6 +23,19 @@ namespace GraphExt
 
         [SerializeField] private FlatEdges _edges = new FlatEdges();
 
+        private readonly Lazy<IReadOnlyDictionary<string, PortData>> _portsCache;
+
+        public FlatNodeComponent()
+        {
+#if UNITY_EDITOR
+            _portsCache = new Lazy<IReadOnlyDictionary<string, PortData>>(() =>
+                Editor.NodePortUtility.FindPorts(Node).ToDictionary(port => port.Name, port => port)
+            );
+#else
+            _portsCache = new Lazy<IReadOnlyDictionary<string, PortData>>(() => new Dictionary<string, PortData>());
+#endif
+        }
+
         public IReadOnlySet<EdgeId> GetEdges(GraphRuntime<TNode> graph)
         {
             return _edges.GetEdges(graph);
@@ -36,13 +50,9 @@ namespace GraphExt
 #endif
         }
 
-        public IEnumerable<PortData> FindNodePorts(GameObjectNodes<TNode, TComponent> data)
+        public IReadOnlyDictionary<string, PortData> FindNodePorts(GameObjectNodes<TNode, TComponent> data)
         {
-#if UNITY_EDITOR
-            return Editor.NodePortUtility.FindPorts(Node);
-#else
-            return System.Linq.Enumerable.Empty<PortData>();
-#endif
+            return _portsCache.Value;
         }
 
         public bool IsPortCompatible(GameObjectNodes<TNode, TComponent> data, in PortId input, in PortId output)

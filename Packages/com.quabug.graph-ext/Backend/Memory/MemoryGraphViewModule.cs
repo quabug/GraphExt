@@ -14,6 +14,9 @@ namespace GraphExt.Editor
         public IEnumerable<(NodeId id, Vector2 position)> NodePositions => _nodePositions.Select(pair => (pair.Key, pair.Value));
         private readonly Dictionary<NodeId, Vector2> _nodePositions = new Dictionary<NodeId, Vector2>();
 
+        private readonly Dictionary<NodeId, IReadOnlyDictionary<string, PortData>> _portsCache =
+            new Dictionary<NodeId, IReadOnlyDictionary<string, PortData>>();
+
         public MemoryGraphViewModule() {}
 
         public MemoryGraphViewModule([NotNull] GraphRuntime<TNode> runtime, [NotNull] IReadOnlyDictionary<NodeId, Vector2> positions)
@@ -38,9 +41,14 @@ namespace GraphExt.Editor
             base.DeleteNode(nodeId);
         }
 
-        protected override IEnumerable<PortData> FindNodePorts(in NodeId nodeId)
+        protected override IReadOnlyDictionary<string, PortData> FindNodePorts(in NodeId nodeId)
         {
-            return Runtime[nodeId].FindPorts();
+            if (!_portsCache.TryGetValue(nodeId, out var ports))
+            {
+                ports = Runtime[nodeId].FindPorts().ToDictionary(port => port.Name, port => port);
+                _portsCache[nodeId] = ports;
+            }
+            return ports;
         }
 
         protected override NodeData ToNodeData(in NodeId id)

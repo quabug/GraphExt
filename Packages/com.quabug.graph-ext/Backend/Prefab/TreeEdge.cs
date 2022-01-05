@@ -6,81 +6,76 @@ namespace GraphExt
 {
     public class TreeEdge
     {
-        private GameObject _TreeNodeObject => ((Component)_treeNode).gameObject;
-        private readonly ITreeNodeComponent _treeNode;
         public bool IsTransforming { get; private set; } = false;
 
-        public EdgeId? Edge
+        public EdgeId? Edge(GameObject node)
         {
-            get
-            {
-                var transform = _TreeNodeObject.transform;
-                if (transform.parent == null) return null;
-                var selfNode = _TreeNodeObject.GetComponent<ITreeNodeComponent>();
-                var parentNode = transform.parent.GetComponent<ITreeNodeComponent>();
-                if (parentNode == null) return null;
-                return new EdgeId(selfNode.InputPort, parentNode.OutputPort);
-            }
+            var transform = node.transform;
+            if (transform.parent == null) return null;
+            var selfNode = node.GetComponent<ITreeNodeComponent>();
+            var parentNode = transform.parent.GetComponent<ITreeNodeComponent>();
+            if (parentNode == null) return null;
+            return new EdgeId(selfNode.InputPort, parentNode.OutputPort);
         }
 
-        public TreeEdge([NotNull] ITreeNodeComponent treeNode)
+        public bool IsParentInputPort(GameObject node, PortId port) => node.GetComponentsInParent<ITreeNodeComponent>().Any(node => node.InputPort == port);
+        public bool IsParentOutputPort(GameObject node, PortId port) => node.GetComponentsInParent<ITreeNodeComponent>().Any(node => node.OutputPort == port);
+        public bool IsParentTreePort(GameObject node, PortId port) => node.GetComponentsInParent<ITreeNodeComponent>().Any(node => node.InputPort == port || node.OutputPort == port);
+
+        public void ConnectParent<TComponent>(TComponent treeNode, in EdgeId edge, Transform parent)
+            where TComponent : MonoBehaviour, ITreeNodeComponent
         {
-            _treeNode = treeNode;
+            if (edge.Input == treeNode.InputPort) SetParent(parent: parent, self: treeNode.transform);
         }
 
-        public bool IsParentInputPort(PortId port) => _TreeNodeObject.GetComponentsInParent<ITreeNodeComponent>().Any(node => node.InputPort == port);
-        public bool IsParentOutputPort(PortId port) => _TreeNodeObject.GetComponentsInParent<ITreeNodeComponent>().Any(node => node.OutputPort == port);
-        public bool IsParentTreePort(PortId port) => _TreeNodeObject.GetComponentsInParent<ITreeNodeComponent>().Any(node => node.InputPort == port || node.OutputPort == port);
-
-        public void ConnectParent(in EdgeId edge, Transform parent)
+        public void DisconnectParent<TComponent>(TComponent treeNode, in EdgeId edge)
+            where TComponent : MonoBehaviour, ITreeNodeComponent
         {
-            if (edge.Input == _treeNode.InputPort) SetParent(parent);
+            if (edge.Input == treeNode.InputPort)
+                SetParent(parent: FindStageRoot(treeNode.transform), self: treeNode.transform);
         }
 
-        public void DisconnectParent(in EdgeId edge)
-        {
-            if (edge.Input == _treeNode.InputPort) SetParent(FindStageRoot());
-        }
-
-        public void OnBeforeTransformParentChanged()
+        public void OnBeforeTransformParentChanged<TComponent>(TComponent treeNode)
+            where TComponent : MonoBehaviour, ITreeNodeComponent
         {
             if (IsTransforming) return;
 
-            var edge = Edge;
+            var edge = Edge(treeNode.gameObject);
             if (edge.HasValue)
             {
                 IsTransforming = true;
-                _treeNode.OnNodeComponentDisconnect?.Invoke(_treeNode.Id, edge.Value);
+                treeNode.OnNodeComponentDisconnect?.Invoke(treeNode.Id, edge.Value);
                 IsTransforming = false;
             }
         }
 
-        public void OnTransformParentChanged()
+        public void OnTransformParentChanged<TComponent>(TComponent treeNode)
+            where TComponent : MonoBehaviour, ITreeNodeComponent
         {
             if (IsTransforming) return;
 
-            var edge = Edge;
+            var edge = Edge(treeNode.gameObject);
             if (edge.HasValue)
             {
                 IsTransforming = true;
-                _treeNode.OnNodeComponentConnect?.Invoke(_treeNode.Id, edge.Value);
+                treeNode.OnNodeComponentConnect?.Invoke(treeNode.Id, edge.Value);
                 IsTransforming = false;
             }
         }
 
-        private Transform FindStageRoot()
+        private Transform FindStageRoot(Transform transform)
         {
-            var self = _TreeNodeObject.transform;
+            var self = transform;
             while (self.parent != null) self = self.parent;
             return self;
         }
 
-        private void SetParent(Transform parent)
+        private void SetParent(Transform self, Transform parent)
         {
             if (!IsTransforming)
             {
                 IsTransforming = true;
-                _TreeNodeObject.transform.SetParent(parent);
+                self.SetParent(parent);
                 IsTransforming = false;
             }
         }
