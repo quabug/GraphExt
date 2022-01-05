@@ -10,7 +10,11 @@ namespace GraphExt.Editor
         public string PortName { get; }
         private Port _port = null;
 
-        public PortContainer(string portName) => PortName = portName;
+        public PortContainer(string portName)
+        {
+            name = portName;
+            PortName = portName;
+        }
 
         public void AddPort([NotNull] Port port)
         {

@@ -8,7 +8,7 @@ namespace GraphExt.Editor
 {
     public interface INodeViewFactory
     {
-        [CanBeNull] Node Create(NodeData nodeData);
+        [NotNull] Node Create(NodeData nodeData);
     }
 
     public class DefaultNodeViewFactory : INodeViewFactory
