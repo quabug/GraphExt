@@ -181,7 +181,7 @@ namespace GraphExt.Editor
 
         [CanBeNull] private PortContainer FindPortContainer(PortId portId)
         {
-            return _nodes.Elements.TryGetValue(portId.NodeId, out var node) ? node.Query<PortContainer>().Where(p => p.PortName == portId.Name).First() : null;
+            return _nodes.Elements.TryGetValue(portId.NodeId, out var node) ? node.Q<PortContainer>(name: portId.Name) : null;
         }
 
         private Node CreateNodeView(NodeId id, NodeData data)
@@ -189,6 +189,7 @@ namespace GraphExt.Editor
             if (!_nodes.Elements.ContainsKey(id))
             {
                 var node = Config.NodeViewFactory.Create(data);
+                node.name = id.ToString();
                 AddElement(node);
                 OnNodeCreated?.Invoke(id, node);
                 return node;
