@@ -26,6 +26,7 @@ MonoBehaviour:
     id: 6
   EdgeViewFactory:
     id: 7
+  WindowStyleSheet: {fileID: 0}
   references:
     version: 1
     00000000:

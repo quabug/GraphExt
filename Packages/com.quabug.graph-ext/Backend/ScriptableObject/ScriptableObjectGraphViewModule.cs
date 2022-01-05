@@ -15,13 +15,16 @@ namespace GraphExt.Editor
         [NotNull] public GraphScriptableObject<TNode, TNodeScriptableObject> Graph { get; }
         [NotNull] public override GraphRuntime<TNode> Runtime => Graph.Runtime;
 
+        private readonly Dictionary<NodeId, IReadOnlyDictionary<string, PortData>> _portsCache =
+            new Dictionary<NodeId, IReadOnlyDictionary<string, PortData>>();
+
         public ScriptableObjectGraphViewModule(GraphScriptableObject<TNode, TNodeScriptableObject> graph)
         {
             Graph = graph;
             graph.Initialize();
             foreach (var nodeId in Runtime.NodeMap.Keys)
             {
-                foreach (var port in FindNodePorts(nodeId)) _PortData[new PortId(nodeId, port.Name)] = port;
+                _PortData[nodeId] = FindNodePorts(nodeId);
                 _NodeData[nodeId] = ToNodeData(nodeId);
             }
         }
@@ -62,9 +65,14 @@ namespace GraphExt.Editor
             AssetDatabase.Refresh();
         }
 
-        protected override IEnumerable<PortData> FindNodePorts(in NodeId nodeId)
+        protected override IReadOnlyDictionary<string, PortData> FindNodePorts(in NodeId nodeId)
         {
-            return Runtime[nodeId].FindPorts();
+            if (!_portsCache.TryGetValue(nodeId, out var ports))
+            {
+                ports = Runtime[nodeId].FindPorts().ToDictionary(port => port.Name, port => port);
+                _portsCache[nodeId] = ports;
+            }
+            return ports;
         }
 
         protected override NodeData ToNodeData(in NodeId id)

@@ -28,6 +28,6 @@ namespace GraphExt
         void OnDisconnected(GameObjectNodes<TNode, TComponent> data, in EdgeId edge);
 
         NodeData FindNodeProperties(GameObjectNodes<TNode, TComponent> data);
-        IEnumerable<PortData> FindNodePorts(GameObjectNodes<TNode, TComponent> data);
+        IReadOnlyDictionary<string, PortData> FindNodePorts(GameObjectNodes<TNode, TComponent> data);
     }
 }

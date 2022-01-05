@@ -26,8 +26,7 @@ namespace GraphExt.Editor
             GameObjectNodes = new GameObjectNodes<TNode, TComponent>(root);
             foreach (var nodeId in Runtime.NodeMap.Keys)
             {
-                var ports = FindNodePorts(nodeId);
-                foreach (var port in ports) _PortData[new PortId(nodeId, port.Name)] = port;
+                _PortData[nodeId] = FindNodePorts(nodeId);
                 _NodeData[nodeId] = ToNodeData(nodeId);
             }
             Utility.SavePrefabStage();
@@ -80,7 +79,7 @@ namespace GraphExt.Editor
             Utility.SavePrefabStage();
         }
 
-        protected override IEnumerable<PortData> FindNodePorts(in NodeId nodeId)
+        protected override IReadOnlyDictionary<string, PortData> FindNodePorts(in NodeId nodeId)
         {
             return GameObjectNodes[nodeId].GetComponent<TComponent>().FindNodePorts(GameObjectNodes);
         }
