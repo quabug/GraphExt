@@ -50,26 +50,9 @@ namespace GraphExt.Editor
             Utility.SavePrefabStage();
         }
 
-        public override bool IsCompatible(in PortId input, in PortId output)
-        {
-            return base.IsCompatible(in input, in output) && GameObjectNodes.IsPortCompatible(input, output);
-        }
-
         public override void DeleteNode(in NodeId nodeId)
         {
             base.DeleteNode(in nodeId);
-            Utility.SavePrefabStage();
-        }
-
-        public override void Connect(in PortId input, in PortId output)
-        {
-            base.Connect(in input, in output);
-            Utility.SavePrefabStage();
-        }
-
-        public override void Disconnect(in PortId input, in PortId output)
-        {
-            base.Disconnect(in input, in output);
             Utility.SavePrefabStage();
         }
 

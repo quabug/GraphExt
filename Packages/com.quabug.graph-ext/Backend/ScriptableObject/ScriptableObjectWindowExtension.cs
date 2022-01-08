@@ -14,7 +14,7 @@ namespace GraphExt.Editor
         public void OnInitialized(GraphWindow window, GraphConfig config, GraphView view)
         {
             _view = view;
-            _view.Module = new EmptyGraphViewModule();
+            // _view.Module = new EmptyGraphViewModule();
             Selection.selectionChanged += OnSelectionChanged;
         }
 
@@ -23,7 +23,7 @@ namespace GraphExt.Editor
             Selection.selectionChanged -= OnSelectionChanged;
             if (_view != null)
             {
-                _view.Module = new EmptyGraphViewModule();
+                // _view.Module = new EmptyGraphViewModule();
                 _view = null;
             }
         }
@@ -33,11 +33,11 @@ namespace GraphExt.Editor
             if (Selection.activeObject is GraphScriptableObject<TNode, TNodeScriptableObject> graph)
             {
                 _viewModule = new ScriptableObjectGraphViewModule<TNode, TNodeScriptableObject>(graph);
-                _view.Module = _viewModule;
+                // _view.Module = _viewModule;
             }
             else
             {
-                _view.Module = new EmptyGraphViewModule();
+                // _view.Module = new EmptyGraphViewModule();
             }
         }
     }

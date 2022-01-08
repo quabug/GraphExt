@@ -12,7 +12,7 @@ namespace GraphExt.Editor
     {
         public void MakeEntry(GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
         {
-            if (!(graph.Module is MemoryGraphViewModule<TNode> module)) return;
+            // if (!(graph.Module is MemoryGraphViewModule<TNode> module)) return;
 
             var menuPosition = graph.viewTransform.matrix.inverse.MultiplyPoint(evt.localMousePosition);
             var memoryNodes = TypeCache.GetTypesDerivedFrom<TNode>();
@@ -26,7 +26,7 @@ namespace GraphExt.Editor
             void CreateNode(Type nodeType)
             {
                 var node = (TNode)Activator.CreateInstance(nodeType);
-                module.AddMemoryNode(Guid.NewGuid(), node, menuPosition);
+                // module.AddMemoryNode(Guid.NewGuid(), node, menuPosition);
             }
         }
     }

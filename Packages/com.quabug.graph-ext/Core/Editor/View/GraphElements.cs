@@ -1,51 +1,21 @@
 ﻿using System.Collections.Generic;
-using JetBrains.Annotations;
-using UnityEngine.UIElements;
+using UnityEditor.Experimental.GraphView;
 
 namespace GraphExt.Editor
 {
-    [CanBeNull] internal delegate TView CreateView<in TId, in TData, out TView>(TId id, TData data);
-    internal delegate void RemoveView<in TId>(TId data);
-
-    internal class GraphElements<TId, TData, TView>
-        where TId : struct
-        where TView : VisualElement
+    public class GraphElements<TId, TView>
+        where TId: struct
+        where TView : GraphElement
     {
-        [NotNull] private readonly CreateView<TId, TData, TView> _createView;
-        [NotNull] private readonly RemoveView<TId> _removeView;
-
-        public BiDictionary<TId, TView> Elements { get; } = new BiDictionary<TId, TView>();
-        private readonly HashSet<TId> _cache = new HashSet<TId>();
-
-        public GraphElements([NotNull] CreateView<TId, TData, TView> createView, [NotNull] RemoveView<TId> removeView)
-        {
-            _createView = createView;
-            _removeView = removeView;
-        }
-
-        public void UpdateElements(IEnumerable<(TId id, TData data)> newElements)
-        {
-            _cache.Clear();
-            foreach (var old in Elements.Keys) _cache.Add(old);
-
-            foreach (var (newId, newData) in newElements)
-            {
-                if (Elements.ContainsKey(newId))
-                {
-                    _cache.Remove(newId);
-                }
-                else
-                {
-                    var element = _createView(newId, newData);
-                    if (element != null) Elements.Add(newId, element);
-                }
-            }
-
-            foreach (var removed in _cache)
-            {
-                _removeView(removed);
-                Elements.Remove(removed);
-            }
-        }
+        private BiDictionary<TId, TView> Elements { get; } = new BiDictionary<TId, TView>();
+        public TView this[in TId id] => Elements[id];
+        public TId this[TView view] => Elements.GetKey(view);
+        public bool Has(TId id) => Elements.ContainsKey(id);
+        public bool Has(TView view) => Elements.ContainsValue(view);
+        public void Add(TId id, TView view) => Elements.Add(id, view);
+        public void Remove(TId id) => Elements.Remove(id);
+        public void Remove(TView view) => Elements.RemoveValue(view);
+        public ICollection<TId> Ids => Elements.Keys;
+        public ICollection<TView> Views => Elements.Values;
     }
 }

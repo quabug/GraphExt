@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 
 namespace GraphExt.Editor
 {
-    public class GraphWindow : EditorWindow
+    public abstract class GraphWindow : EditorWindow
     {
         public GraphConfig Config;
         public GroupWindowExtension WindowExtension = new GroupWindowExtension();
@@ -47,7 +47,7 @@ namespace GraphExt.Editor
             var graph = graphRoot.Q<GraphView>();
             if (graph == null)
             {
-                graph = new GraphView(config) { name = "graph" };
+                graph = CreateGraphView();
                 graphRoot.Q<VisualElement>("graph-content").Add(graph);
             }
             var miniMap = graphRoot.Q<MiniMap>();
@@ -77,5 +77,7 @@ namespace GraphExt.Editor
         {
             WindowExtension.OnClosed(this, Config, rootVisualElement.Q<GraphView>());
         }
+
+        protected abstract GraphView CreateGraphView();
     }
 }

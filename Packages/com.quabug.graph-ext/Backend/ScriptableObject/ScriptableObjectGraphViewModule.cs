@@ -41,18 +41,6 @@ namespace GraphExt.Editor
             Save();
         }
 
-        public override void Connect(in PortId input, in PortId output)
-        {
-            base.Connect(in input, in output);
-            Save();
-        }
-
-        public override void Disconnect(in PortId input, in PortId output)
-        {
-            base.Disconnect(in input, in output);
-            Save();
-        }
-
         public override void SetNodePosition(in NodeId nodeId, float x, float y)
         {
             Graph.SetPosition(nodeId, new Vector2(x, y));

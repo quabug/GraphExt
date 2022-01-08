@@ -39,16 +39,16 @@ namespace GraphExt.Editor
 
         private void OnPrefabSelectionChanged()
         {
-            var selected = Selection.activeGameObject == null ? null : Selection.activeGameObject.GetComponent<TComponent>();
-            if (selected != null && _viewModule.GameObjectNodes.ObjectNodeMap.TryGetValue(selected, out var nodeId))
-            {
-                var node = _view[nodeId];
-                if (!_view.selection.Contains(node))
-                {
-                    node.Select(_view, additive: false);
-                    _view.FrameSelection();
-                }
-            }
+            // var selected = Selection.activeGameObject == null ? null : Selection.activeGameObject.GetComponent<TComponent>();
+            // if (selected != null && _viewModule.GameObjectNodes.ObjectNodeMap.TryGetValue(selected, out var nodeId))
+            // {
+            //     var node = _view[nodeId];
+            //     if (!_view.selection.Contains(node))
+            //     {
+            //         node.Select(_view, additive: false);
+            //         _view.FrameSelection();
+            //     }
+            // }
         }
 
         private void ClearEditorView(PrefabStage closingStage)
@@ -64,8 +64,8 @@ namespace GraphExt.Editor
                 new GameObjectHierarchyGraphViewModule<TNode, TComponent>() :
                 new GameObjectHierarchyGraphViewModule<TNode, TComponent>(prefabStage.prefabContentsRoot)
             ;
-            if (_view.Module is IDisposable disposable) disposable.Dispose();
-            _view.Module = _viewModule;
+            // if (_view.Module is IDisposable disposable) disposable.Dispose();
+            // _view.Module = _viewModule;
             _view.OnNodeSelected += OnNodeViewSelected;
             _view.OnNodeUnselected += OnNodeViewUnselected;
             _selectedNodes.Clear();

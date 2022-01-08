@@ -15,7 +15,7 @@ namespace GraphExt.Editor
     {
         public void MakeEntry(GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
         {
-            if (!(graph.Module is GameObjectHierarchyGraphViewModule<TNode, TComponent> viewModule && PrefabStageUtility.GetCurrentPrefabStage() != null)) return;
+            // if (!(graph.Module is GameObjectHierarchyGraphViewModule<TNode, TComponent> viewModule && PrefabStageUtility.GetCurrentPrefabStage() != null)) return;
 
             var menuPosition = graph.viewTransform.matrix.inverse.MultiplyPoint(evt.localMousePosition);
             var nodes = TypeCache.GetTypesDerivedFrom<TNode>();
@@ -35,7 +35,7 @@ namespace GraphExt.Editor
                     Debug.LogWarning("must open a prefab to create a node.");
                     return;
                 }
-                viewModule.AddGameObjectNode(Guid.NewGuid(), (TNode)Activator.CreateInstance(nodeType), menuPosition);
+                // viewModule.AddGameObjectNode(Guid.NewGuid(), (TNode)Activator.CreateInstance(nodeType), menuPosition);
                 stage.scene.SaveScene();
             }
         }

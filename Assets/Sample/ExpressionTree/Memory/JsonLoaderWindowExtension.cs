@@ -11,7 +11,7 @@ public class JsonLoaderWindowExtension : IWindowExtension
 
     public void OnInitialized(GraphWindow window, GraphConfig config, GraphView view)
     {
-        view.Module = JsonFile == null ? new MemoryGraphViewModule<IVisualNode>() : JsonEditorUtility.Deserialize<IVisualNode>(JsonFile.text);
+        // view.Module = JsonFile == null ? new MemoryGraphViewModule<IVisualNode>() : JsonEditorUtility.Deserialize<IVisualNode>(JsonFile.text);
     }
 
     public void OnClosed(GraphWindow window, GraphConfig config, GraphView view) {}

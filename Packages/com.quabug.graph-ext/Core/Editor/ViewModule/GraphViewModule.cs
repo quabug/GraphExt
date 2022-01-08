@@ -12,9 +12,6 @@ namespace GraphExt.Editor
 
         void DeleteNode(in NodeId nodeId);
         void SetNodePosition(in NodeId nodeId, float x, float y);
-        bool IsCompatible(in PortId input, in PortId output);
-        void Connect(in PortId input, in PortId output);
-        void Disconnect(in PortId input, in PortId output);
     }
 
     public class EmptyGraphViewModule : IGraphViewModule
@@ -24,9 +21,6 @@ namespace GraphExt.Editor
         public IEnumerable<EdgeId> Edges => Enumerable.Empty<EdgeId>();
         public void DeleteNode(in NodeId nodeId) {}
         public void SetNodePosition(in NodeId nodeId, float x, float y) {}
-        public bool IsCompatible(in PortId input, in PortId output) => true;
-        public void Connect(in PortId input, in PortId output) {}
-        public void Disconnect(in PortId input, in PortId output) {}
     }
 
     public abstract class GraphViewModule<TNode> : IGraphViewModule where TNode : INode<GraphRuntime<TNode>>
@@ -105,35 +99,6 @@ namespace GraphExt.Editor
         }
 
         public virtual void SetNodePosition(in NodeId nodeId, float x, float y) {}
-
-        public virtual bool IsCompatible(in PortId input, in PortId output)
-        {
-            var inputPort = _PortData[input.NodeId][input.Name];
-            var outputPort = _PortData[output.NodeId][output.Name];
-            return inputPort.Direction != outputPort.Direction &&
-                   inputPort.Orientation == outputPort.Orientation &&
-                   // single port could be handled by Unity Graph
-                   (inputPort.Capacity == 1 || FindConnections(input).Count() < inputPort.Capacity) &&
-                   (outputPort.Capacity == 1 || FindConnections(output).Count() < outputPort.Capacity) &&
-                   Runtime.GetNodeByPort(input).IsPortCompatible(Runtime, input, output) &&
-                   Runtime.GetNodeByPort(output).IsPortCompatible(Runtime, input, output)
-            ;
-        }
-
-        protected IEnumerable<EdgeId> FindConnections(PortId portId)
-        {
-            return Runtime.Edges.Where(edge => edge.Contains(portId));
-        }
-
-        public virtual void Connect(in PortId input, in PortId output)
-        {
-            Runtime.Connect(input, output);
-        }
-
-        public virtual void Disconnect(in PortId input, in PortId output)
-        {
-            Runtime.Disconnect(input, output);
-        }
 
         [NotNull] protected abstract IReadOnlyDictionary<string/*portName*/, PortData> FindNodePorts(in NodeId nodeId);
         protected abstract NodeData ToNodeData(in NodeId nodeId);
