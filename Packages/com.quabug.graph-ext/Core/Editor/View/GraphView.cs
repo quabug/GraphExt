@@ -8,7 +8,7 @@ namespace GraphExt.Editor
 {
     public class GraphView : UnityEditor.Experimental.GraphView.GraphView
     {
-        [NotNull] private readonly IEdgesViewModule _edgesViewModule;
+        [NotNull] private readonly IEdgeConnectionViewModule _edgeConnectionViewModule;
         [NotNull] private readonly GraphElements<PortId, Port> _ports;
         [NotNull] private readonly MenuBuilder _menuBuilder;
 
@@ -18,12 +18,12 @@ namespace GraphExt.Editor
         public event NodeEvent OnNodeUnselected;
 
         public GraphView(
-            [NotNull] IEdgesViewModule edgesViewModule,
+            [NotNull] IEdgeConnectionViewModule edgeConnectionViewModule,
             [NotNull] GraphElements<PortId, Port> ports,
             [NotNull] MenuBuilder menuBuilder
         )
         {
-            _edgesViewModule = edgesViewModule;
+            _edgeConnectionViewModule = edgeConnectionViewModule;
             _ports = ports;
             _menuBuilder = menuBuilder;
 
@@ -50,7 +50,7 @@ namespace GraphExt.Editor
                 if (startPort.orientation != endPort.orientation || startPort.direction == endPort.direction) return;
                 var startPortId = _ports[startPort];
                 var endPortId = _ports[endPort];
-                if (!_edgesViewModule.IsCompatible(input: endPortId, output: startPortId)) return;
+                if (!_edgeConnectionViewModule.IsCompatible(input: endPortId, output: startPortId)) return;
                 compatiblePorts.Add(endPort);
             });
             return compatiblePorts;

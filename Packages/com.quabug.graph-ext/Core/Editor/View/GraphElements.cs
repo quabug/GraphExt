@@ -3,7 +3,19 @@ using UnityEditor.Experimental.GraphView;
 
 namespace GraphExt.Editor
 {
-    public class GraphElements<TId, TView>
+    public interface IReadOnlyGraphElements<TId, TView>
+        where TId: struct
+        where TView : GraphElement
+    {
+        public TView this[in TId id] { get; }
+        public TId this[TView view] { get; }
+        public bool Has(TId id);
+        public bool Has(TView view);
+        public IEnumerable<TId> Ids { get; }
+        public IEnumerable<TView> Views { get; }
+    }
+
+    public class GraphElements<TId, TView> : IReadOnlyGraphElements<TId, TView>
         where TId: struct
         where TView : GraphElement
     {
@@ -15,7 +27,7 @@ namespace GraphExt.Editor
         public void Add(TId id, TView view) => Elements.Add(id, view);
         public void Remove(TId id) => Elements.Remove(id);
         public void Remove(TView view) => Elements.RemoveValue(view);
-        public ICollection<TId> Ids => Elements.Keys;
-        public ICollection<TView> Views => Elements.Values;
+        public IEnumerable<TId> Ids => Elements.Keys;
+        public IEnumerable<TView> Views => Elements.Values;
     }
 }

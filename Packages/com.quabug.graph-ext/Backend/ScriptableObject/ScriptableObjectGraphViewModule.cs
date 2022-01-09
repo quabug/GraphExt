@@ -65,15 +65,16 @@ namespace GraphExt.Editor
 
         protected override NodeData ToNodeData(in NodeId id)
         {
-            var nodeObject = Graph[id];
-            var node = nodeObject.Node;
-            var nodeSerializedProperty = new SerializedObject(nodeObject).FindProperty(nodeObject.NodeSerializedPropertyName);
-            var position = nodeObject.Position;
-            return new NodeData(new NodePositionProperty(position.x, position.y).Yield()
-                .Append(NodeTitleAttribute.CreateTitleProperty(node))
-                .Concat(node.CreateProperties(id, nodeSerializedProperty))
-                .ToArray()
-            );
+            return new NodeData();
+            // var nodeObject = Graph[id];
+            // var node = nodeObject.Node;
+            // var nodeSerializedProperty = new SerializedObject(nodeObject).FindProperty(nodeObject.NodeSerializedPropertyName);
+            // var position = nodeObject.Position;
+            // return new NodeData(new NodePositionProperty(position.x, position.y).Yield()
+            //     .Append(NodeTitleAttribute.CreateTitleProperty(node))
+            //     .Concat(node.CreateProperties(id, nodeSerializedProperty))
+            //     .ToArray()
+            // );
         }
     }
 }

@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEditor.Experimental.GraphView;
@@ -6,20 +8,23 @@ namespace GraphExt.Editor
 {
     public class EdgeViewPresenter : IViewPresenter
     {
-        [NotNull] private readonly IEdgesViewModule _viewModule;
+        [NotNull] private readonly IEdgesViewModule _edgesViewModule;
+        [NotNull] private readonly IEdgeConnectionViewModule _edgeConnectionViewModule;
         [NotNull] private readonly UnityEditor.Experimental.GraphView.GraphView _view;
         [NotNull] private readonly GraphElements<EdgeId, Edge> _edges;
-        [NotNull] private readonly GraphElements<PortId, Port> _ports;
+        [NotNull] private readonly IReadOnlyGraphElements<PortId, Port> _ports;
 
         public EdgeViewPresenter(
             [NotNull] UnityEditor.Experimental.GraphView.GraphView view,
-            [NotNull] IEdgesViewModule viewModule,
+            [NotNull] IEdgeConnectionViewModule edgeConnectionViewModule,
+            [NotNull] IEdgesViewModule edgesViewModule,
             [NotNull] GraphElements<EdgeId, Edge> edges,
-            [NotNull] GraphElements<PortId, Port> ports
+            [NotNull] IReadOnlyGraphElements<PortId, Port> ports
         )
         {
             _view = view;
-            _viewModule = viewModule;
+            _edgeConnectionViewModule = edgeConnectionViewModule;
+            _edgesViewModule = edgesViewModule;
             _edges = edges;
             _ports = ports;
             _view.graphViewChanged += OnGraphChanged;
@@ -27,7 +32,7 @@ namespace GraphExt.Editor
 
         public void Tick()
         {
-            var (added, removed) = _edges.Ids.Diff(_viewModule.Edges);
+            var (added, removed) = _edges.Ids.Diff(_edgesViewModule.GetEdges());
 
             foreach (var edge in added)
             {
@@ -64,7 +69,7 @@ namespace GraphExt.Editor
                     if (_edges.Has(edgeId))
                     {
                         _edges.Remove(edgeId);
-                        _viewModule.Disconnect(input: input, output: output);
+                        _edgeConnectionViewModule.Disconnect(input: input, output: output);
                     }
                 }
             }
@@ -79,7 +84,7 @@ namespace GraphExt.Editor
                         var output = _ports[edge.output];
                         var edgeId = new EdgeId(input: input, output: output);
                         _edges.Add(edgeId, edge);
-                        _viewModule.Connect(input: input, output: output);
+                        _edgeConnectionViewModule.Connect(input: input, output: output);
                     }
                 }
             }

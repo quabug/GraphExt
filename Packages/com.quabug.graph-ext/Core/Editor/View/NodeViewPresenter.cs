@@ -3,46 +3,48 @@ using UnityEditor.Experimental.GraphView;
 
 namespace GraphExt.Editor
 {
-    public class NodeViewPresenter
+    public class NodeViewPresenter : IViewPresenter
     {
-        [NotNull] private readonly IEdgesViewModule _viewModule;
         [NotNull] private readonly UnityEditor.Experimental.GraphView.GraphView _view;
-        [NotNull] private readonly GraphElements<EdgeId, Edge> _edges;
+        [NotNull] private readonly INodesViewModule _nodesViewModule;
+        [NotNull] private readonly GraphElements<NodeId, Node> _nodes;
         [NotNull] private readonly GraphElements<PortId, Port> _ports;
 
         public NodeViewPresenter(
             [NotNull] UnityEditor.Experimental.GraphView.GraphView view,
-            [NotNull] IEdgesViewModule viewModule,
-            [NotNull] GraphElements<EdgeId, Edge> edges,
+            [NotNull] INodesViewModule nodesViewModule,
+            [NotNull] GraphElements<NodeId, Node> nodes,
             [NotNull] GraphElements<PortId, Port> ports
         )
         {
             _view = view;
-            _viewModule = viewModule;
-            _edges = edges;
+            _nodesViewModule = nodesViewModule;
+            _nodes = nodes;
             _ports = ports;
         }
 
         public void Tick()
         {
-            var (added, removed) = _edges.Ids.Diff(_viewModule.Edges);
+            var newNodes = _nodesViewModule.GetNodes();
+            var (added, removed) = _nodes.Ids.Diff(newNodes.Keys);
 
-            foreach (var edge in added)
+            foreach (var node in added)
             {
-                var (input, output) = edge;
-                if (!_ports.Has(input) || !_ports.Has(output)) continue;
-                var edgeView = _ports[output].ConnectTo(_ports[input]);
-                _edges.Add(edge, edgeView);
-                _view.AddElement(edgeView);
+                var nodeView = new Node();
+                _nodes.Add(node, nodeView);
+                _view.AddElement(nodeView);
             }
 
-            foreach (var edge in removed)
+            foreach (var node in removed)
             {
-                var edgeView = _edges[edge];
-                _ports[edge.Input].Disconnect(edgeView);
-                _ports[edge.Output].Disconnect(edgeView);
-                _view.RemoveElement(edgeView);
+                var nodeView = _nodes[node];
+                _view.RemoveElement(nodeView);
+                _nodes.Remove(node);
             }
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

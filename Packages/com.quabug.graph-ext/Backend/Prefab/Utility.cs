@@ -25,12 +25,13 @@ namespace GraphExt.Editor
             where TNode : INode<GraphRuntime<TNode>>
             where TComponent : MonoBehaviour, INodeComponent<TNode, TComponent>
         {
-            var nodeSerializedProperty = new UnityEditor.SerializedObject(nodeComponent).FindProperty(nodePropertyName);
-            return new NodeData(new NodePositionProperty(position.x, position.y).Yield()
-                .Append<INodeProperty>(nodeComponent.CreateDynamicTitleProperty<TNode, TComponent>())
-                .Concat(nodeComponent.Node.CreateProperties(nodeComponent.Id, nodeSerializedProperty))
-                .ToArray()
-            );
+            return new NodeData();
+            // var nodeSerializedProperty = new UnityEditor.SerializedObject(nodeComponent).FindProperty(nodePropertyName);
+            // return new NodeData(new NodePositionProperty(position.x, position.y).Yield()
+            //     .Append<INodeProperty>(nodeComponent.CreateDynamicTitleProperty<TNode, TComponent>())
+            //     .Concat(nodeComponent.Node.CreateProperties(nodeComponent.Id, nodeSerializedProperty))
+            //     .ToArray()
+            // );
         }
 
         public static DynamicTitleProperty CreateDynamicTitleProperty<TNode, TComponent>([NotNull] this TComponent nodeComponent)

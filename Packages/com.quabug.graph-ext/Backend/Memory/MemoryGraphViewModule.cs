@@ -53,13 +53,14 @@ namespace GraphExt.Editor
 
         protected override NodeData ToNodeData(in NodeId id)
         {
-            var node = Runtime[id];
-            var position = _nodePositions[id];
-            return new NodeData(new NodePositionProperty(position.x, position.y).Yield()
-                    .Append(NodeTitleAttribute.CreateTitleProperty(node))
-                    .Concat(node.CreateProperties(id))
-                    .ToArray()
-            );
+            return new NodeData();
+            // var node = Runtime[id];
+            // var position = _nodePositions[id];
+            // return new NodeData(new NodePositionProperty(position.x, position.y).Yield()
+            //         .Append(NodeTitleAttribute.CreateTitleProperty(node))
+            //         .Concat(node.CreateProperties(id))
+            //         .ToArray()
+            // );
         }
     }
 }
