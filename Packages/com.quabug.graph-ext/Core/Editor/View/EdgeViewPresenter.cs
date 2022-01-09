@@ -4,7 +4,7 @@ using UnityEditor.Experimental.GraphView;
 
 namespace GraphExt.Editor
 {
-    public class EdgeViewPresenter
+    public class EdgeViewPresenter : IViewPresenter
     {
         [NotNull] private readonly IEdgesViewModule _viewModule;
         [NotNull] private readonly UnityEditor.Experimental.GraphView.GraphView _view;
@@ -45,6 +45,11 @@ namespace GraphExt.Editor
                 _ports[edge.Output].Disconnect(edgeView);
                 _view.RemoveElement(edgeView);
             }
+        }
+
+        public void Dispose()
+        {
+            _view.graphViewChanged -= OnGraphChanged;
         }
 
         private GraphViewChange OnGraphChanged(GraphViewChange @event)
