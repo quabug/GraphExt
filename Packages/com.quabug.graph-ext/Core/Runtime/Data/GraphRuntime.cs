@@ -31,8 +31,8 @@ namespace GraphExt
         public event IReadOnlyGraphRuntime<TNode>.OnEdgeConnectedFunc OnEdgeConnected;
         public event IReadOnlyGraphRuntime<TNode>.OnEdgeWillDisconnectFunc OnEdgeWillDisconnect;
 
-        private readonly BiDictionary<NodeId, TNode> _nodeMap = new BiDictionary<NodeId, TNode>();
-        private readonly HashSet<EdgeId> _edges = new HashSet<EdgeId>();
+        private readonly BiDictionary<NodeId, TNode> _nodeMap;
+        private readonly HashSet<EdgeId> _edges;
 
         public IReadOnlySet<EdgeId> Edges => _edges;
         public IReadOnlyDictionary<NodeId, TNode> NodeMap => _nodeMap.Forward;
@@ -40,6 +40,18 @@ namespace GraphExt
 
         public TNode this[in NodeId id] => _nodeMap[id];
         public NodeId this[TNode node] => _nodeMap.GetKey(node);
+
+        public GraphRuntime()
+        {
+            _edges = new HashSet<EdgeId>();
+            _nodeMap = new BiDictionary<NodeId, TNode>();
+        }
+
+        public GraphRuntime(IReadOnlyGraphRuntime<TNode> graphRuntime)
+        {
+            _edges = graphRuntime.Edges.ToHashSet();
+            _nodeMap = new BiDictionary<NodeId, TNode>(graphRuntime.NodeMap);
+        }
 
         public void AddNode(in NodeId id, [NotNull] TNode node)
         {

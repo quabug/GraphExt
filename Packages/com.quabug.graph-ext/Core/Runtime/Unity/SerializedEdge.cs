@@ -66,7 +66,7 @@ namespace GraphExt
             return new SerializableEdge(edge, "", "");
         }
 
-        public static SerializableEdge ToSerializable<TNode>(this in EdgeId edge, GraphRuntime<TNode> graph)
+        public static SerializableEdge ToSerializable<TNode>(this in EdgeId edge, IReadOnlyGraphRuntime<TNode> graph)
             where TNode : INode<GraphRuntime<TNode>>
         {
             var inputPortId = graph[edge.Input.NodeId].FindSerializedId(edge.Input.Name);

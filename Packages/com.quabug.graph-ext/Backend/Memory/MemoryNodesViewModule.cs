@@ -7,14 +7,14 @@ namespace GraphExt.Editor
 {
     public class MemoryNodesViewModule<TNode> : INodesViewModule where TNode : INode<GraphRuntime<TNode>>
     {
-        [NotNull] private readonly IReadOnlyViewModuleElements<NodeId, Vector2> _nodePositions;
+        [NotNull] private readonly ViewModuleElements<NodeId, Vector2> _nodePositions;
         [NotNull] private readonly ViewModuleElements<NodeId, NodeData> _nodes;
         [NotNull] private readonly ViewModuleElements<PortId, PortData> _ports;
         [NotNull] private readonly IReadOnlyGraphRuntime<TNode> _graphRuntime;
 
         public MemoryNodesViewModule(
             [NotNull] IReadOnlyGraphRuntime<TNode> graphRuntime,
-            [NotNull] IReadOnlyViewModuleElements<NodeId, Vector2> nodePositions,
+            [NotNull] ViewModuleElements<NodeId, Vector2> nodePositions,
             [NotNull] ViewModuleElements<NodeId, NodeData> nodes,
             [NotNull] ViewModuleElements<PortId, PortData> ports
         )
@@ -43,6 +43,7 @@ namespace GraphExt.Editor
 
             foreach (var node in added)
             {
+                if (!_nodePositions.Value.ContainsKey(node)) _nodePositions.Value[node] = Vector2.zero;
                 var nodeData = ToNodeData(node);
                 _nodes.Value.Add(node, ToNodeData(node));
                 foreach (var port in nodeData.Ports.Values) _ports.Value.Add(new PortId(node, port.Name), port);
@@ -53,6 +54,7 @@ namespace GraphExt.Editor
                 var nodeData = _nodes[node];
                 foreach (var port in nodeData.Ports.Values) _ports.Value.Remove(new PortId(node, port.Name));
                 _nodes.Value.Remove(node);
+                _nodePositions.Value.Remove(node);
             }
 
             return _nodes.Value;

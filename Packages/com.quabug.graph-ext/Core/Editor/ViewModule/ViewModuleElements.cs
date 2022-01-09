@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GraphExt.Editor
 {
@@ -13,8 +14,11 @@ namespace GraphExt.Editor
     /// <typeparam name="TData">Data of element. <see cref="INode{TGraph}"/>, <see cref="EdgeId"/> etc.</typeparam>
     public class ViewModuleElements<TData> : IReadOnlyViewModuleElements<TData>
     {
-        public readonly HashSet<TData> Value = new HashSet<TData>();
+        public readonly HashSet<TData> Value;
         IReadOnlySet<TData> IReadOnlyViewModuleElements<TData>.Value => Value;
+
+        public ViewModuleElements() => Value = new HashSet<TData>();
+        public ViewModuleElements(IEnumerable<TData> elements) => Value = elements.ToHashSet();
     }
 
     public interface IReadOnlyViewModuleElements<TId, TData>
@@ -30,12 +34,15 @@ namespace GraphExt.Editor
     /// <typeparam name="TData">Data of element. <see cref="INode{TGraph}"/>, <see cref="EdgeId"/> etc.</typeparam>
     public class ViewModuleElements<TId, TData> : IReadOnlyViewModuleElements<TId, TData>
     {
-        public readonly Dictionary<TId, TData> Value = new Dictionary<TId, TData>();
+        public readonly Dictionary<TId, TData> Value;
         public TData this[in TId id]
         {
             get => Value[id];
             set => Value[id] = value;
         }
         IReadOnlyDictionary<TId, TData> IReadOnlyViewModuleElements<TId, TData>.Value => Value;
+
+        public ViewModuleElements() => Value = new Dictionary<TId, TData>();
+        public ViewModuleElements(IReadOnlyDictionary<TId, TData> elements) => Value = elements.ToDictionary(e => e.Key, e => e.Value);
     }
 }

@@ -8,11 +8,10 @@ namespace GraphExt.Editor
 {
     public abstract class BaseGraphWindow : EditorWindow
     {
-        public GroupWindowExtension WindowExtension { get; } = new GroupWindowExtension();
         private readonly Lazy<VisualElement> _graphRoot;
         protected abstract UnityEditor.Experimental.GraphView.GraphView _GraphView { get; }
 
-        public BaseGraphWindow()
+        protected BaseGraphWindow()
         {
             _graphRoot = new Lazy<VisualElement>(LoadVisualTree);
         }
@@ -21,6 +20,7 @@ namespace GraphExt.Editor
         {
             var window = Window.GetOrCreate<TGraphWindow>(windowName);
             window.titleContent.text = windowName;
+            window.Show(immediateDisplay: true);
             window.Focus();
         }
 
@@ -28,13 +28,11 @@ namespace GraphExt.Editor
         {
             var graphRoot = _graphRoot.Value;
             var graph = graphRoot.Q<UnityEditor.Experimental.GraphView.GraphView>();
-            if (graph != null) graphRoot.Remove(graph);
+            graph?.parent.Remove(graph);
             graph = _GraphView;
             graphRoot.Q<VisualElement>("graph-content").Add(graph);
             var miniMap = graphRoot.Q<MiniMap>();
             if (miniMap != null) miniMap.graphView = graph;
-
-            // WindowExtension.OnInitialized(this, Config, graph);
         }
 
         private VisualElement LoadVisualTree()
@@ -52,10 +50,6 @@ namespace GraphExt.Editor
         }
 
         protected virtual void Update() {}
-
-        protected virtual void OnDestroy()
-        {
-            // WindowExtension.OnClosed(this, Config, rootVisualElement.Q<GraphView>());
-        }
+        protected virtual void OnDestroy() {}
     }
 }

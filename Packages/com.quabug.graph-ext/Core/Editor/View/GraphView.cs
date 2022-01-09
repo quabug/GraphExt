@@ -49,7 +49,7 @@ namespace GraphExt.Editor
 
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
-            evt.StopImmediatePropagation();
+            evt.StopPropagation();
         }
     }
 }

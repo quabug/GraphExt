@@ -1,0 +1,98 @@
+{
+  "Nodes": {
+    "b704b668-dd29-42a8-87b2-e2d83e5a64f7": {
+      "$type": "AddNode, GraphExt.Sample.ExpressionTree",
+      "InputPortName": "_Input",
+      "OutputPortName": "_Output"
+    },
+    "693955b3-e17f-462f-8085-12d8dd76d864": {
+      "$type": "ValueNode, GraphExt.Sample.ExpressionTree",
+      "Value": 3.0,
+      "InputPortName": "_Input",
+      "OutputPortName": "_Output"
+    },
+    "7b308084-e26f-4198-be35-0295b45c2d31": {
+      "$type": "AddNode, GraphExt.Sample.ExpressionTree",
+      "InputPortName": "_Input",
+      "OutputPortName": "_Output"
+    },
+    "edcc16c1-d583-4a1e-a5b0-cb90d5bbd5d9": {
+      "$type": "ValueNode, GraphExt.Sample.ExpressionTree",
+      "Value": 1.0,
+      "InputPortName": "_Input",
+      "OutputPortName": "_Output"
+    },
+    "2bfd8f19-563d-4265-94a9-02f181923782": {
+      "$type": "ValueNode, GraphExt.Sample.ExpressionTree",
+      "Value": 2.0,
+      "InputPortName": "_Input",
+      "OutputPortName": "_Output"
+    }
+  },
+  "Edges": [
+    {
+      "InputNode": "693955b3-e17f-462f-8085-12d8dd76d864",
+      "InputPort": "_Input",
+      "InputPortId": "in",
+      "OutputNode": "b704b668-dd29-42a8-87b2-e2d83e5a64f7",
+      "OutputPort": "_Output",
+      "OutputPortId": "out"
+    },
+    {
+      "InputNode": "7b308084-e26f-4198-be35-0295b45c2d31",
+      "InputPort": "_input1",
+      "InputPortId": "in1",
+      "OutputNode": "693955b3-e17f-462f-8085-12d8dd76d864",
+      "OutputPort": "_output1",
+      "OutputPortId": "out1"
+    },
+    {
+      "InputNode": "7b308084-e26f-4198-be35-0295b45c2d31",
+      "InputPort": "_Input",
+      "InputPortId": "in",
+      "OutputNode": "b704b668-dd29-42a8-87b2-e2d83e5a64f7",
+      "OutputPort": "_Output",
+      "OutputPortId": "out"
+    },
+    {
+      "InputNode": "edcc16c1-d583-4a1e-a5b0-cb90d5bbd5d9",
+      "InputPort": "_Input",
+      "InputPortId": "in",
+      "OutputNode": "7b308084-e26f-4198-be35-0295b45c2d31",
+      "OutputPort": "_Output",
+      "OutputPortId": "out"
+    },
+    {
+      "InputNode": "2bfd8f19-563d-4265-94a9-02f181923782",
+      "InputPort": "_Input",
+      "InputPortId": "in",
+      "OutputNode": "7b308084-e26f-4198-be35-0295b45c2d31",
+      "OutputPort": "_Output",
+      "OutputPortId": "out"
+    }
+  ]
+}
+{
+  "Positions": {
+    "b704b668-dd29-42a8-87b2-e2d83e5a64f7": {
+      "Item1": 441.0,
+      "Item2": 135.0
+    },
+    "693955b3-e17f-462f-8085-12d8dd76d864": {
+      "Item1": 631.0,
+      "Item2": 193.0
+    },
+    "7b308084-e26f-4198-be35-0295b45c2d31": {
+      "Item1": 823.0,
+      "Item2": 217.0
+    },
+    "edcc16c1-d583-4a1e-a5b0-cb90d5bbd5d9": {
+      "Item1": 896.0,
+      "Item2": 179.5
+    },
+    "2bfd8f19-563d-4265-94a9-02f181923782": {
+      "Item1": 997.0,
+      "Item2": 282.5
+    }
+  }
+}

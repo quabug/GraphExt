@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using GraphExt;
 using GraphExt.Editor;
 using UnityEditor.Experimental.GraphView;
@@ -20,31 +21,25 @@ public class MemoryGraphSetup<TNode> : IGraphSetup, IDisposable where TNode : IN
     public IPortViewFactory PortViewFactory { get; } = new DefaultPortViewFactory();
 
     public GraphRuntime<TNode> GraphRuntime { get; } = new GraphRuntime<TNode>();
-    public GraphView GraphView { get; }
+    public GraphView GraphView { get; private set; }
 
-    public IEdgesViewModule EdgesViewModule { get; }
-    public IEdgeConnectionViewModule EdgeConnectionViewModule { get; }
-    public INodesViewModule NodesViewModule { get; }
+    public IEdgesViewModule EdgesViewModule { get; private set; }
+    public IEdgeConnectionViewModule EdgeConnectionViewModule { get; private set; }
+    public INodesViewModule NodesViewModule { get; private set; }
 
-    public NodeViewPresenter NodeViewPresenter { get; }
-    public EdgeViewPresenter EdgeViewPresenter { get; }
-    public MenuBuilder MenuBuilder { get; }
+    public NodeViewPresenter NodeViewPresenter { get; private set; }
+    public EdgeViewPresenter EdgeViewPresenter { get; private set; }
 
     public MemoryGraphSetup()
     {
-        EdgesViewModule = new EdgesViewModule<TNode>(GraphRuntime);
-        EdgeConnectionViewModule = new EdgeConnectionViewModule<TNode>(GraphRuntime, Ports);
-        NodesViewModule = new MemoryNodesViewModule<TNode>(GraphRuntime, NodePositions, Nodes, Ports);
+        Setup();
+    }
 
-        GraphView = new GraphExt.Editor.GraphView(EdgeConnectionViewModule, PortViews);
-
-        NodeViewPresenter = new NodeViewPresenter(GraphView, NodeViewFactory, PortViewFactory, NodesViewModule, NodeViews, PortViews);
-        EdgeViewPresenter = new EdgeViewPresenter(GraphView, EdgeViewFactory, EdgeConnectionViewModule, EdgesViewModule, EdgeViews, PortViews);
-        MenuBuilder = new MenuBuilder(GraphView, new IMenuEntry[]
-        {
-            new SelectionEntry(),
-            new MemoryNodeMenuEntry<TNode>(GraphRuntime, NodePositions),
-        });
+    public MemoryGraphSetup(IReadOnlyGraphRuntime<TNode> graphRuntime, IReadOnlyDictionary<NodeId, Vector2> positions)
+    {
+        GraphRuntime = new GraphRuntime<TNode>(graphRuntime);
+        NodePositions = new ViewModuleElements<NodeId, Vector2>(positions);
+        Setup();
     }
 
     public void Tick()
@@ -56,5 +51,17 @@ public class MemoryGraphSetup<TNode> : IGraphSetup, IDisposable where TNode : IN
     public void Dispose()
     {
         EdgeViewPresenter?.Dispose();
+    }
+
+    private void Setup()
+    {
+        EdgesViewModule = new EdgesViewModule<TNode>(GraphRuntime);
+        EdgeConnectionViewModule = new EdgeConnectionViewModule<TNode>(GraphRuntime, Ports);
+        NodesViewModule = new MemoryNodesViewModule<TNode>(GraphRuntime, NodePositions, Nodes, Ports);
+
+        GraphView = new GraphExt.Editor.GraphView(EdgeConnectionViewModule, PortViews);
+
+        NodeViewPresenter = new NodeViewPresenter(GraphView, NodeViewFactory, PortViewFactory, NodesViewModule, NodeViews, PortViews);
+        EdgeViewPresenter = new EdgeViewPresenter(GraphView, EdgeViewFactory, EdgeConnectionViewModule, EdgesViewModule, EdgeViews, PortViews);
     }
 }

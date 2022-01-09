@@ -10,7 +10,6 @@ namespace GraphExt.Editor
     public abstract class GraphWindow : EditorWindow
     {
         public GraphConfig Config;
-        public GroupWindowExtension WindowExtension = new GroupWindowExtension();
 
         private Lazy<VisualElement> _graphRoot;
 
@@ -52,13 +51,6 @@ namespace GraphExt.Editor
             }
             var miniMap = graphRoot.Q<MiniMap>();
             if (miniMap != null) miniMap.graphView = graph;
-
-            foreach (var extension in config.WindowExtensions)
-            {
-                WindowExtension.AddIfNotExist(extension);
-                SaveChanges();
-            }
-            WindowExtension.OnInitialized(this, Config, graph);
         }
 
         // TODO: optimize
@@ -75,7 +67,6 @@ namespace GraphExt.Editor
 
         private void OnDestroy()
         {
-            WindowExtension.OnClosed(this, Config, rootVisualElement.Q<GraphView>());
         }
 
         protected abstract GraphView CreateGraphView();

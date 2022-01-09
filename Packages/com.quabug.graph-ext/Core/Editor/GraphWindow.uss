@@ -37,6 +37,6 @@
     bottom: auto;
 }
 
-#graph {
+GraphView {
     flex-grow: 1;
 }
