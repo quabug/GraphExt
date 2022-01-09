@@ -31,7 +31,11 @@ namespace GraphExt.Editor
     public class ViewModuleElements<TId, TData> : IReadOnlyViewModuleElements<TId, TData>
     {
         public readonly Dictionary<TId, TData> Value = new Dictionary<TId, TData>();
-        public TData this[in TId id] => Value[id];
+        public TData this[in TId id]
+        {
+            get => Value[id];
+            set => Value[id] = value;
+        }
         IReadOnlyDictionary<TId, TData> IReadOnlyViewModuleElements<TId, TData>.Value => Value;
     }
 }

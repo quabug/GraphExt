@@ -88,9 +88,5 @@ namespace GraphExt.Editor
                 ;
             }
         }
-
-        public void Dispose()
-        {
-        }
     }
 }

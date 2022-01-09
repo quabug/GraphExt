@@ -1,10 +1,11 @@
+using System;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEditor.Experimental.GraphView;
 
 namespace GraphExt.Editor
 {
-    public class EdgeViewPresenter : IViewPresenter
+    public class EdgeViewPresenter : IViewPresenter, IDisposable
     {
         [NotNull] private readonly IEdgesViewModule _edgesViewModule;
         [NotNull] private readonly IEdgeConnectionViewModule _edgeConnectionViewModule;

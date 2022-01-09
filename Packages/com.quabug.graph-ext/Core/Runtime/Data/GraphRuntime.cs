@@ -38,8 +38,8 @@ namespace GraphExt
         public IReadOnlyDictionary<NodeId, TNode> NodeMap => _nodeMap.Forward;
         public IReadOnlyDictionary<TNode, NodeId> NodeIdMap => _nodeMap.Reverse;
 
-        [NotNull] public TNode this[in NodeId id] => _nodeMap[id];
-        public NodeId this[[NotNull] TNode node] => _nodeMap.GetKey(node);
+        public TNode this[in NodeId id] => _nodeMap[id];
+        public NodeId this[TNode node] => _nodeMap.GetKey(node);
 
         public void AddNode(in NodeId id, [NotNull] TNode node)
         {

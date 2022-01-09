@@ -6,6 +6,10 @@ namespace GraphExt.Editor
 {
     public interface IMenuEntry
     {
-        void MakeEntry([NotNull] GraphView graph, [NotNull] ContextualMenuPopulateEvent evt, [NotNull] GenericMenu menu);
+        void MakeEntry(
+            [NotNull] UnityEditor.Experimental.GraphView.GraphView graph,
+            [NotNull] ContextualMenuPopulateEvent evt,
+            [NotNull] GenericMenu menu
+        );
     }
 }

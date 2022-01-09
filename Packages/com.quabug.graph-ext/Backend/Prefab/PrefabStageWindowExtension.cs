@@ -66,8 +66,8 @@ namespace GraphExt.Editor
             ;
             // if (_view.Module is IDisposable disposable) disposable.Dispose();
             // _view.Module = _viewModule;
-            _view.OnNodeSelected += OnNodeViewSelected;
-            _view.OnNodeUnselected += OnNodeViewUnselected;
+            // _view.OnNodeSelected += OnNodeViewSelected;
+            // _view.OnNodeUnselected += OnNodeViewUnselected;
             _selectedNodes.Clear();
         }
 

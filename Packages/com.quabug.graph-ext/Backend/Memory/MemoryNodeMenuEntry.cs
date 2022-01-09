@@ -2,6 +2,7 @@
 
 using System;
 using System.Linq;
+using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -10,10 +11,20 @@ namespace GraphExt.Editor
 {
     public class MemoryNodeMenuEntry<TNode> : IMenuEntry where TNode : INode<GraphRuntime<TNode>>
     {
-        public void MakeEntry(GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
-        {
-            // if (!(graph.Module is MemoryGraphViewModule<TNode> module)) return;
+        [NotNull] private readonly GraphRuntime<TNode> _graphRuntime;
+        [NotNull] private readonly ViewModuleElements<NodeId, Vector2> _positions;
 
+        public MemoryNodeMenuEntry(
+            [NotNull] GraphRuntime<TNode> graphRuntime,
+            [NotNull] ViewModuleElements<NodeId, Vector2> positions
+        )
+        {
+            _graphRuntime = graphRuntime;
+            _positions = positions;
+        }
+
+        public void MakeEntry(UnityEditor.Experimental.GraphView.GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
+        {
             var menuPosition = graph.viewTransform.matrix.inverse.MultiplyPoint(evt.localMousePosition);
             var memoryNodes = TypeCache.GetTypesDerivedFrom<TNode>();
             foreach (var nodeType in memoryNodes
@@ -26,7 +37,9 @@ namespace GraphExt.Editor
             void CreateNode(Type nodeType)
             {
                 var node = (TNode)Activator.CreateInstance(nodeType);
-                // module.AddMemoryNode(Guid.NewGuid(), node, menuPosition);
+                var nodeId = Guid.NewGuid();
+                _graphRuntime.AddNode(nodeId, node);
+                _positions[nodeId] = menuPosition;
             }
         }
     }

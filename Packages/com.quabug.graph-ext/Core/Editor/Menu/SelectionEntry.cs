@@ -7,7 +7,7 @@ namespace GraphExt.Editor
 {
     public class SelectionEntry : IMenuEntry
     {
-        public void MakeEntry(GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
+        public void MakeEntry(UnityEditor.Experimental.GraphView.GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
         {
             if (graph.selection != null && graph.selection.Any())
             {

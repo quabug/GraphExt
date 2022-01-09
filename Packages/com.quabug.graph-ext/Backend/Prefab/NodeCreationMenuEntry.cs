@@ -13,7 +13,7 @@ namespace GraphExt.Editor
         where TNode : INode<GraphRuntime<TNode>>
         where TComponent : MonoBehaviour, INodeComponent<TNode, TComponent>
     {
-        public void MakeEntry(GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
+        public void MakeEntry(UnityEditor.Experimental.GraphView.GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
         {
             // if (!(graph.Module is GameObjectHierarchyGraphViewModule<TNode, TComponent> viewModule && PrefabStageUtility.GetCurrentPrefabStage() != null)) return;
 

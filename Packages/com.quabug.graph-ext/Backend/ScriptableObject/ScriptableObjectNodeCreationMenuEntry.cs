@@ -12,7 +12,7 @@ namespace GraphExt.Editor
         where TNode : INode<GraphRuntime<TNode>>
         where TNodeScriptableObject : NodeScriptableObject<TNode>
     {
-        public void MakeEntry(GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
+        public void MakeEntry(UnityEditor.Experimental.GraphView.GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
         {
             // if (!(graph.Module is ScriptableObjectGraphViewModule<TNode, TNodeScriptableObject> _)) return;
             //

@@ -2,30 +2,21 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
-using Node = UnityEditor.Experimental.GraphView.Node;
 
 namespace GraphExt.Editor
 {
     public class GraphView : UnityEditor.Experimental.GraphView.GraphView
     {
         [NotNull] private readonly IEdgeConnectionViewModule _edgeConnectionViewModule;
-        [NotNull] private readonly GraphElements<PortId, Port> _ports;
-        [NotNull] private readonly MenuBuilder _menuBuilder;
-
-        public delegate void NodeEvent(in NodeId nodeId, Node node);
-
-        public event NodeEvent OnNodeSelected;
-        public event NodeEvent OnNodeUnselected;
+        [NotNull] private readonly IReadOnlyGraphElements<PortId, Port> _ports;
 
         public GraphView(
             [NotNull] IEdgeConnectionViewModule edgeConnectionViewModule,
-            [NotNull] GraphElements<PortId, Port> ports,
-            [NotNull] MenuBuilder menuBuilder
+            [NotNull] IReadOnlyGraphElements<PortId, Port> ports
         )
         {
             _edgeConnectionViewModule = edgeConnectionViewModule;
             _ports = ports;
-            _menuBuilder = menuBuilder;
 
             Insert(0, new GridBackground { name = "grid" });
 
@@ -58,8 +49,7 @@ namespace GraphExt.Editor
 
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
-            evt.StopPropagation();
-            _menuBuilder.Build(this, evt);
+            evt.StopImmediatePropagation();
         }
     }
 }
