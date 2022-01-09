@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEditor.Experimental.GraphView;
@@ -11,11 +9,13 @@ namespace GraphExt.Editor
         [NotNull] private readonly IEdgesViewModule _edgesViewModule;
         [NotNull] private readonly IEdgeConnectionViewModule _edgeConnectionViewModule;
         [NotNull] private readonly UnityEditor.Experimental.GraphView.GraphView _view;
+        [NotNull] private readonly IEdgeViewFactory _edgeViewFactory;
         [NotNull] private readonly GraphElements<EdgeId, Edge> _edges;
         [NotNull] private readonly IReadOnlyGraphElements<PortId, Port> _ports;
 
         public EdgeViewPresenter(
             [NotNull] UnityEditor.Experimental.GraphView.GraphView view,
+            [NotNull] IEdgeViewFactory edgeViewFactory,
             [NotNull] IEdgeConnectionViewModule edgeConnectionViewModule,
             [NotNull] IEdgesViewModule edgesViewModule,
             [NotNull] GraphElements<EdgeId, Edge> edges,
@@ -23,6 +23,7 @@ namespace GraphExt.Editor
         )
         {
             _view = view;
+            _edgeViewFactory = edgeViewFactory;
             _edgeConnectionViewModule = edgeConnectionViewModule;
             _edgesViewModule = edgesViewModule;
             _edges = edges;
@@ -38,7 +39,7 @@ namespace GraphExt.Editor
             {
                 var (input, output) = edge;
                 if (!_ports.Has(input) || !_ports.Has(output)) continue;
-                var edgeView = _ports[output].ConnectTo(_ports[input]);
+                var edgeView = _edgeViewFactory.CreateEdge(_ports[output], _ports[input]);
                 _edges.Add(edge, edgeView);
                 _view.AddElement(edgeView);
             }
@@ -85,6 +86,7 @@ namespace GraphExt.Editor
                         var edgeId = new EdgeId(input: input, output: output);
                         _edges.Add(edgeId, edge);
                         _edgeConnectionViewModule.Connect(input: input, output: output);
+                        _edgeViewFactory.AfterCreated(edge);
                     }
                 }
             }
