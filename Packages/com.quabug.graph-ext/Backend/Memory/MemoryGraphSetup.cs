@@ -29,6 +29,7 @@ public class MemoryGraphSetup<TNode> : IGraphSetup, IDisposable where TNode : IN
 
     public NodeViewPresenter NodeViewPresenter { get; private set; }
     public EdgeViewPresenter EdgeViewPresenter { get; private set; }
+    public SyncNodePositionPresenter SyncNodePositionPresenter { get; private set; }
 
     public MemoryGraphSetup()
     {
@@ -63,5 +64,6 @@ public class MemoryGraphSetup<TNode> : IGraphSetup, IDisposable where TNode : IN
 
         NodeViewPresenter = new NodeViewPresenter(GraphView, NodeViewFactory, PortViewFactory, NodesViewModule, NodeViews, PortViews);
         EdgeViewPresenter = new EdgeViewPresenter(GraphView, EdgeViewFactory, EdgeConnectionViewModule, EdgesViewModule, EdgeViews, PortViews);
+        SyncNodePositionPresenter = new SyncNodePositionPresenter(GraphView, NodeViews, NodePositions);
     }
 }
