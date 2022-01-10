@@ -33,7 +33,7 @@ namespace GraphExt.Editor
     public interface IReadOnlyViewModuleElements<TId, TData>
     {
         TData this[in TId id] { get; }
-        bool Has(TId id);
+        bool Has(in TId id);
         bool Has(TData data);
         IEnumerable<TId> Ids { get; }
         IEnumerable<TData> Datas { get; }
@@ -69,7 +69,7 @@ namespace GraphExt.Editor
         public void Add(in TId id, TData data) => Value.Add(id, data);
         public void Remove(in TId id) => Value.Remove(id);
 
-        public bool Has(TId id) => Value.ContainsKey(id);
+        public bool Has(in TId id) => Value.ContainsKey(id);
         public bool Has(TData data) => Value.ContainsValue(data);
         public IEnumerable<TId> Ids => Value.Keys;
         public IEnumerable<TData> Datas => Value.Values;
