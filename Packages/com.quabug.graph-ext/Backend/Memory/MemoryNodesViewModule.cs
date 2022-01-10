@@ -7,16 +7,16 @@ namespace GraphExt.Editor
 {
     public class MemoryNodesViewModule<TNode> : INodesViewModule where TNode : INode<GraphRuntime<TNode>>
     {
-        [NotNull] private readonly ViewModuleElements<NodeId, Vector2> _nodePositions;
-        [NotNull] private readonly ViewModuleElements<NodeId, NodeData> _nodes;
-        [NotNull] private readonly ViewModuleElements<PortId, PortData> _ports;
+        [NotNull] private readonly IViewModuleElements<NodeId, Vector2> _nodePositions;
+        [NotNull] private readonly IViewModuleElements<NodeId, NodeData> _nodes;
+        [NotNull] private readonly IViewModuleElements<PortId, PortData> _ports;
         [NotNull] private readonly IReadOnlyGraphRuntime<TNode> _graphRuntime;
 
         public MemoryNodesViewModule(
             [NotNull] IReadOnlyGraphRuntime<TNode> graphRuntime,
-            [NotNull] ViewModuleElements<NodeId, Vector2> nodePositions,
-            [NotNull] ViewModuleElements<NodeId, NodeData> nodes,
-            [NotNull] ViewModuleElements<PortId, PortData> ports
+            [NotNull] IViewModuleElements<NodeId, Vector2> nodePositions,
+            [NotNull] IViewModuleElements<NodeId, NodeData> nodes,
+            [NotNull] IViewModuleElements<PortId, PortData> ports
         )
         {
             _graphRuntime = graphRuntime;
@@ -37,27 +37,27 @@ namespace GraphExt.Editor
             return new NodeData(properties, ports);
         }
 
-        public IReadOnlyDictionary<NodeId, NodeData> GetNodes()
+        public IEnumerable<(NodeId id, NodeData data)> GetNodes()
         {
-            var (added, removed) = _nodes.Value.Keys.Diff(_graphRuntime.NodeMap.Keys);
+            var (added, removed) = _nodes.Ids.Diff(_graphRuntime.NodeMap.Keys);
 
             foreach (var node in added)
             {
-                if (!_nodePositions.Value.ContainsKey(node)) _nodePositions.Value[node] = Vector2.zero;
+                if (!_nodePositions.Has(node)) _nodePositions[node] = Vector2.zero;
                 var nodeData = ToNodeData(node);
-                _nodes.Value.Add(node, ToNodeData(node));
-                foreach (var port in nodeData.Ports.Values) _ports.Value.Add(new PortId(node, port.Name), port);
+                _nodes.Add(node, ToNodeData(node));
+                foreach (var port in nodeData.Ports.Values) _ports.Add(new PortId(node, port.Name), port);
             }
 
             foreach (var node in removed)
             {
                 var nodeData = _nodes[node];
-                foreach (var port in nodeData.Ports.Values) _ports.Value.Remove(new PortId(node, port.Name));
-                _nodes.Value.Remove(node);
-                _nodePositions.Value.Remove(node);
+                foreach (var port in nodeData.Ports.Values) _ports.Remove(new PortId(node, port.Name));
+                _nodes.Remove(node);
+                _nodePositions.Remove(node);
             }
 
-            return _nodes.Value;
+            return _nodes.Elements;
         }
     }
 }

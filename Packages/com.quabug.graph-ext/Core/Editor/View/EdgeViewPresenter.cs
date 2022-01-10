@@ -11,7 +11,7 @@ namespace GraphExt.Editor
         [NotNull] private readonly IEdgeConnectionViewModule _edgeConnectionViewModule;
         [NotNull] private readonly UnityEditor.Experimental.GraphView.GraphView _view;
         [NotNull] private readonly IEdgeViewFactory _edgeViewFactory;
-        [NotNull] private readonly GraphElements<EdgeId, Edge> _edges;
+        [NotNull] private readonly IGraphElements<EdgeId, Edge> _edges;
         [NotNull] private readonly IReadOnlyGraphElements<PortId, Port> _ports;
 
         public EdgeViewPresenter(
@@ -19,7 +19,7 @@ namespace GraphExt.Editor
             [NotNull] IEdgeViewFactory edgeViewFactory,
             [NotNull] IEdgeConnectionViewModule edgeConnectionViewModule,
             [NotNull] IEdgesViewModule edgesViewModule,
-            [NotNull] GraphElements<EdgeId, Edge> edges,
+            [NotNull] IGraphElements<EdgeId, Edge> edges,
             [NotNull] IReadOnlyGraphElements<PortId, Port> ports
         )
         {

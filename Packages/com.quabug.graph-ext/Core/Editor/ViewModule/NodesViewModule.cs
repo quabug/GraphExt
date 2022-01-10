@@ -5,6 +5,6 @@ namespace GraphExt.Editor
 {
     public interface INodesViewModule
     {
-        [NotNull] IReadOnlyDictionary<NodeId, NodeData> GetNodes();
+        [NotNull] IEnumerable<(NodeId id, NodeData data)> GetNodes();
     }
 }

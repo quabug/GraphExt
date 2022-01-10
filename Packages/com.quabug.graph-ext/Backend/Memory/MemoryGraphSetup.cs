@@ -4,9 +4,8 @@ using GraphExt;
 using GraphExt.Editor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using GraphView = UnityEditor.Experimental.GraphView.GraphView;
 
-public class MemoryGraphSetup<TNode> : IGraphSetup, IDisposable where TNode : INode<GraphRuntime<TNode>>
+public class MemoryGraphSetup<TNode> : IDisposable where TNode : INode<GraphRuntime<TNode>>
 {
     public GraphElements<NodeId, Node> NodeViews { get; } = new GraphElements<NodeId, Node>();
     public GraphElements<PortId, Port> PortViews { get; } = new GraphElements<PortId, Port>();
@@ -16,16 +15,16 @@ public class MemoryGraphSetup<TNode> : IGraphSetup, IDisposable where TNode : IN
     public ViewModuleElements<NodeId, NodeData> Nodes { get; } = new ViewModuleElements<NodeId, NodeData>();
     public ViewModuleElements<NodeId, Vector2> NodePositions { get; } = new ViewModuleElements<NodeId, Vector2>();
 
-    public INodeViewFactory NodeViewFactory { get; } = new DefaultNodeViewFactory();
-    public IEdgeViewFactory EdgeViewFactory { get; } = new DefaultEdgeViewFactory();
-    public IPortViewFactory PortViewFactory { get; } = new DefaultPortViewFactory();
+    public DefaultNodeViewFactory NodeViewFactory { get; } = new DefaultNodeViewFactory();
+    public DefaultEdgeViewFactory EdgeViewFactory { get; } = new DefaultEdgeViewFactory();
+    public DefaultPortViewFactory PortViewFactory { get; } = new DefaultPortViewFactory();
 
     public GraphRuntime<TNode> GraphRuntime { get; } = new GraphRuntime<TNode>();
-    public GraphView GraphView { get; private set; }
+    public GraphExt.Editor.GraphView GraphView { get; private set; }
 
-    public IEdgesViewModule EdgesViewModule { get; private set; }
-    public IEdgeConnectionViewModule EdgeConnectionViewModule { get; private set; }
-    public INodesViewModule NodesViewModule { get; private set; }
+    public EdgesViewModule<TNode> EdgesViewModule { get; private set; }
+    public EdgeConnectionViewModule<TNode> EdgeConnectionViewModule { get; private set; }
+    public MemoryNodesViewModule<TNode> NodesViewModule { get; private set; }
 
     public NodeViewPresenter NodeViewPresenter { get; private set; }
     public EdgeViewPresenter EdgeViewPresenter { get; private set; }

@@ -15,11 +15,21 @@ namespace GraphExt.Editor
         public IEnumerable<TView> Views { get; }
     }
 
-    public class GraphElements<TId, TView> : IReadOnlyGraphElements<TId, TView>
+    public interface IGraphElements<TId, TView> : IReadOnlyGraphElements<TId, TView>
+        where TId: struct
+        where TView : GraphElement
+    {
+        public void Add(TId id, TView view);
+        public void Remove(TId id);
+        public void Remove(TView view);
+    }
+
+    public class GraphElements<TId, TView> : IGraphElements<TId, TView>
         where TId: struct
         where TView : GraphElement
     {
         private BiDictionary<TId, TView> Elements { get; } = new BiDictionary<TId, TView>();
+
         public TView this[in TId id] => Elements[id];
         public TId this[TView view] => Elements.GetKey(view);
         public bool Has(TId id) => Elements.ContainsKey(id);

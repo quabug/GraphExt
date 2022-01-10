@@ -11,16 +11,16 @@ namespace GraphExt.Editor
         [NotNull] private readonly INodeViewFactory _nodeViewFactory;
         [NotNull] private readonly IPortViewFactory _portViewFactory;
         [NotNull] private readonly INodesViewModule _nodesViewModule;
-        [NotNull] private readonly GraphElements<NodeId, Node> _nodes;
-        [NotNull] private readonly GraphElements<PortId, Port> _ports;
+        [NotNull] private readonly IGraphElements<NodeId, Node> _nodes;
+        [NotNull] private readonly IGraphElements<PortId, Port> _ports;
 
         public NodeViewPresenter(
             [NotNull] UnityEditor.Experimental.GraphView.GraphView view,
             [NotNull] INodeViewFactory nodeViewFactory,
             [NotNull] IPortViewFactory portViewFactory,
             [NotNull] INodesViewModule nodesViewModule,
-            [NotNull] GraphElements<NodeId, Node> nodes,
-            [NotNull] GraphElements<PortId, Port> ports
+            [NotNull] IGraphElements<NodeId, Node> nodes,
+            [NotNull] IGraphElements<PortId, Port> ports
         )
         {
             _view = view;
@@ -33,7 +33,7 @@ namespace GraphExt.Editor
 
         public void Tick()
         {
-            var newNodes = _nodesViewModule.GetNodes();
+            var newNodes = _nodesViewModule.GetNodes().ToDictionary(t => t.id, t => t.data);
             UpdateNodes();
             UpdatePorts();
 
