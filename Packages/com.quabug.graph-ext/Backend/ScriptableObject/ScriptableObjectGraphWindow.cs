@@ -6,7 +6,7 @@ namespace GraphExt.Editor
         where TNode : INode<GraphRuntime<TNode>>
         where TNodeScriptableObject : NodeScriptableObject<TNode>
     {
-        private ScriptableObjectGraphSetup<TNode, TNodeScriptableObject> _graphSetup;
+        protected ScriptableObjectGraphSetup<TNode, TNodeScriptableObject> _GraphSetup;
 
         protected override void CreateGUI()
         {
@@ -17,12 +17,12 @@ namespace GraphExt.Editor
 
         private void Update()
         {
-            _graphSetup?.Tick();
+            _GraphSetup?.Tick();
         }
 
         private void OnDestroy()
         {
-            _graphSetup?.Dispose();
+            _GraphSetup?.Dispose();
             Selection.selectionChanged -= OnSelectionChanged;
         }
 
@@ -30,14 +30,17 @@ namespace GraphExt.Editor
         {
             if (Selection.activeObject is GraphScriptableObject<TNode, TNodeScriptableObject> graph)
             {
-                _graphSetup = new ScriptableObjectGraphSetup<TNode, TNodeScriptableObject>(graph);
-                ReplaceGraphView(_graphSetup.GraphView);
+                _GraphSetup = new ScriptableObjectGraphSetup<TNode, TNodeScriptableObject>(graph);
+                ReplaceGraphView(_GraphSetup.GraphView);
+                CreateMenu();
             }
             else
             {
                 RemoveGraphView();
-                _graphSetup = null;
+                _GraphSetup = null;
             }
         }
+
+        protected virtual void CreateMenu() {}
     }
 }

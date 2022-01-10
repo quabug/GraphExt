@@ -30,12 +30,12 @@ namespace GraphExt
 
         public void Add(in NodeId id, Vector2 data)
         {
-            this[id] = data;
+            if (Has(id)) this[id] = data;
         }
 
         public void Remove(in NodeId id)
         {
-            this[id] = Vector2.zero;
+            if (Has(id)) this[id] = Vector2.zero;
         }
     }
 }

@@ -77,8 +77,7 @@ namespace GraphExt.Editor
                     portView.DisconnectAll();
                     _ports.Remove(port);
                     var container = FindPortContainer(port);
-                    if (container == null) continue;
-                    container.RemovePort();
+                    container?.RemovePort();
                 }
             }
 

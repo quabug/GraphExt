@@ -36,6 +36,7 @@ namespace GraphExt.Editor
         public ScriptableObjectGraphSetup([NotNull] GraphScriptableObject<TNode, TNodeScriptableObject> graph)
         {
             Graph = graph;
+            graph.Initialize();
             Setup();
         }
 

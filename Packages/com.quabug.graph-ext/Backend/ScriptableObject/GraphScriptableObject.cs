@@ -60,11 +60,6 @@ namespace GraphExt
             UnInitialize();
         }
 
-        public void SetPosition(in NodeId id, Vector2 position)
-        {
-            _nodesCache[id].Position = position;
-        }
-
         private void OnNodeAdded(in NodeId id, TNode node)
         {
             var nodeInstance = CreateInstance<TNodeScriptableObject>();

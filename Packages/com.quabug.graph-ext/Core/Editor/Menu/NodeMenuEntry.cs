@@ -9,14 +9,14 @@ using UnityEngine.UIElements;
 
 namespace GraphExt.Editor
 {
-    public class MemoryNodeMenuEntry<TNode> : IMenuEntry where TNode : INode<GraphRuntime<TNode>>
+    public class NodeMenuEntry<TNode> : IMenuEntry where TNode : INode<GraphRuntime<TNode>>
     {
         [NotNull] private readonly GraphRuntime<TNode> _graphRuntime;
-        [NotNull] private readonly ViewModuleElements<NodeId, Vector2> _positions;
+        [NotNull] private readonly IViewModuleElements<NodeId, Vector2> _positions;
 
-        public MemoryNodeMenuEntry(
+        public NodeMenuEntry(
             [NotNull] GraphRuntime<TNode> graphRuntime,
-            [NotNull] ViewModuleElements<NodeId, Vector2> positions
+            [NotNull] IViewModuleElements<NodeId, Vector2> positions
         )
         {
             _graphRuntime = graphRuntime;
