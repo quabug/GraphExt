@@ -9,7 +9,6 @@ namespace GraphExt.Editor
     public abstract class BaseGraphWindow : EditorWindow
     {
         private readonly Lazy<VisualElement> _graphRoot;
-        protected abstract UnityEditor.Experimental.GraphView.GraphView _GraphView { get; }
 
         protected BaseGraphWindow()
         {
@@ -24,15 +23,26 @@ namespace GraphExt.Editor
             window.Focus();
         }
 
-        protected virtual void CreateGUI()
+        protected abstract void CreateGUI();
+
+        protected void RemoveGraphView()
+        {
+            var graph = _graphRoot.Value.Q<UnityEditor.Experimental.GraphView.GraphView>();
+            graph?.parent.Remove(graph);
+        }
+
+        protected void AddGraphView(UnityEditor.Experimental.GraphView.GraphView graphView)
         {
             var graphRoot = _graphRoot.Value;
-            var graph = graphRoot.Q<UnityEditor.Experimental.GraphView.GraphView>();
-            graph?.parent.Remove(graph);
-            graph = _GraphView;
-            graphRoot.Q<VisualElement>("graph-content").Add(graph);
+            graphRoot.Q<VisualElement>("graph-content").Add(graphView);
             var miniMap = graphRoot.Q<MiniMap>();
-            if (miniMap != null) miniMap.graphView = graph;
+            if (miniMap != null) miniMap.graphView = graphView;
+        }
+
+        protected void ReplaceGraphView(UnityEditor.Experimental.GraphView.GraphView graphView)
+        {
+            RemoveGraphView();
+            AddGraphView(graphView);
         }
 
         private VisualElement LoadVisualTree()
@@ -48,8 +58,5 @@ namespace GraphExt.Editor
             rootVisualElement.styleSheets.Add(styleSheet);
             return rootVisualElement;
         }
-
-        protected virtual void Update() {}
-        protected virtual void OnDestroy() {}
     }
 }

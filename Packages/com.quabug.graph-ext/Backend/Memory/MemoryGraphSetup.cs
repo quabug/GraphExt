@@ -24,7 +24,7 @@ namespace GraphExt.Editor
 
         public EdgesViewModule<TNode> EdgesViewModule { get; private set; }
         public EdgeConnectionViewModule<TNode> EdgeConnectionViewModule { get; private set; }
-        public MemoryNodesViewModule<TNode> NodesViewModule { get; private set; }
+        public NodesViewModule<TNode> NodesViewModule { get; private set; }
 
         public NodeViewPresenter NodeViewPresenter { get; private set; }
         public EdgeViewPresenter EdgeViewPresenter { get; private set; }
@@ -57,7 +57,7 @@ namespace GraphExt.Editor
         {
             EdgesViewModule = new EdgesViewModule<TNode>(GraphRuntime);
             EdgeConnectionViewModule = new EdgeConnectionViewModule<TNode>(GraphRuntime, Ports);
-            NodesViewModule = new MemoryNodesViewModule<TNode>(GraphRuntime, NodePositions, Nodes, Ports);
+            NodesViewModule = new NodesViewModule<TNode>(GraphRuntime, NodePositions, Nodes, Ports);
 
             GraphView = new GraphView(EdgeConnectionViewModule, PortViews);
 

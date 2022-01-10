@@ -1,40 +1,41 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using GraphExt.Editor;
 using UnityEngine;
 
 namespace GraphExt
 {
-    public class ScriptableObjectNodePositions : IViewModuleElements<NodeId, Vector2>
+    public class ScriptableObjectNodePositions<TNode, TNodeScriptableObject> : IViewModuleElements<NodeId, Vector2>
+        where TNode : INode<GraphRuntime<TNode>>
+        where TNodeScriptableObject : NodeScriptableObject<TNode>
     {
-
+        private readonly GraphScriptableObject<TNode, TNodeScriptableObject> _graph;
+        public ScriptableObjectNodePositions(GraphScriptableObject<TNode, TNodeScriptableObject> graph)
+        {
+            _graph = graph;
+        }
 
         public Vector2 this[in NodeId id]
         {
-            get => throw new System.NotImplementedException();
-            set => throw new System.NotImplementedException();
+            get => _graph[id].Position;
+            set => _graph[id].Position = value;
         }
 
         public bool Has(in NodeId id)
         {
-            throw new System.NotImplementedException();
+            return _graph.NodeObjectMap.ContainsKey(id);
         }
 
-        public bool Has(Vector2 data)
-        {
-            throw new System.NotImplementedException();
-        }
+        public IEnumerable<(NodeId id, Vector2 data)> Elements => _graph.Nodes.Select(node => (node.Id, node.Position));
 
-        public IEnumerable<NodeId> Ids { get; }
-        public IEnumerable<Vector2> Datas { get; }
-        public IEnumerable<(NodeId id, Vector2 data)> Elements { get; }
         public void Add(in NodeId id, Vector2 data)
         {
-            throw new System.NotImplementedException();
+            this[id] = data;
         }
 
         public void Remove(in NodeId id)
         {
-            throw new System.NotImplementedException();
+            this[id] = Vector2.zero;
         }
     }
 }

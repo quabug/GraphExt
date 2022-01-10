@@ -39,7 +39,7 @@ namespace GraphExt.Editor
 
             void UpdateNodes()
             {
-                var (added, removed) = _nodes.Ids.Diff(newNodes.Keys);
+                var (added, removed) = _nodes.Elements.Select(t => t.id).Diff(newNodes.Keys);
 
                 foreach (var node in added)
                 {
@@ -59,7 +59,7 @@ namespace GraphExt.Editor
             void UpdatePorts()
             {
                 var newPorts = newNodes.SelectMany(node => node.Value.Ports.Select(port => new PortId(node.Key, port.Key)));
-                var (added, removed) = _ports.Ids.Diff(newPorts);
+                var (added, removed) = _ports.Elements.Select(t => t.id).Diff(newPorts);
 
                 foreach (var port in added)
                 {
@@ -73,15 +73,18 @@ namespace GraphExt.Editor
 
                 foreach (var port in removed)
                 {
+                    var portView = _ports[port];
+                    portView.DisconnectAll();
+                    _ports.Remove(port);
                     var container = FindPortContainer(port);
                     if (container == null) continue;
                     container.RemovePort();
-                    _ports.Remove(port);
                 }
             }
 
             PortContainer FindPortContainer(PortId portId)
             {
+                if (!_nodes.Has(portId.NodeId)) return null;
                 return _nodes[portId.NodeId].Query<PortContainer>()
                     .Where(container => container.PortName == portId.Name)
                     .First()

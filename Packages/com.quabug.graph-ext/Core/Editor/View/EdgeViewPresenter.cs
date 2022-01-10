@@ -34,7 +34,7 @@ namespace GraphExt.Editor
 
         public void Tick()
         {
-            var (added, removed) = _edges.Ids.Diff(_edgesViewModule.GetEdges());
+            var (added, removed) = _edges.Elements.Select(t => t.id).Diff(_edgesViewModule.GetEdges());
 
             foreach (var edge in added)
             {
@@ -48,9 +48,9 @@ namespace GraphExt.Editor
             foreach (var edge in removed)
             {
                 var edgeView = _edges[edge];
-                _ports[edge.Input].Disconnect(edgeView);
-                _ports[edge.Output].Disconnect(edgeView);
                 _view.RemoveElement(edgeView);
+                if (_ports.Has(edge.Input)) _ports[edge.Input].Disconnect(edgeView);
+                if (_ports.Has(edge.Output)) _ports[edge.Output].Disconnect(edgeView);
             }
         }
 

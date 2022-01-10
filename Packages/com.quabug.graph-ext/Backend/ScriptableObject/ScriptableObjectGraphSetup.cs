@@ -1,10 +1,10 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using JetBrains.Annotations;
 using UnityEditor.Experimental.GraphView;
-using UnityEngine;
 
 namespace GraphExt.Editor
 {
-    public class ScriptableObjectGraphSetup<TNode, TNodeScriptableObject>
+    public class ScriptableObjectGraphSetup<TNode, TNodeScriptableObject> : IDisposable
         where TNode : INode<GraphRuntime<TNode>>
         where TNodeScriptableObject : NodeScriptableObject<TNode>
     {
@@ -16,7 +16,7 @@ namespace GraphExt.Editor
 
         public ViewModuleElements<PortId, PortData> Ports { get; } = new ViewModuleElements<PortId, PortData>();
         public ViewModuleElements<NodeId, NodeData> Nodes { get; } = new ViewModuleElements<NodeId, NodeData>();
-        public ViewModuleElements<NodeId, Vector2> NodePositions { get; } = new ViewModuleElements<NodeId, Vector2>();
+        public ScriptableObjectNodePositions<TNode, TNodeScriptableObject> NodePositions { get; private set; }
 
         public DefaultNodeViewFactory NodeViewFactory { get; } = new DefaultNodeViewFactory();
         public DefaultEdgeViewFactory EdgeViewFactory { get; } = new DefaultEdgeViewFactory();
@@ -27,6 +27,7 @@ namespace GraphExt.Editor
 
         public EdgesViewModule<TNode> EdgesViewModule { get; private set; }
         public EdgeConnectionViewModule<TNode> EdgeConnectionViewModule { get; private set; }
+        public NodesViewModule<TNode> NodesViewModule { get; private set; }
 
         public NodeViewPresenter NodeViewPresenter { get; private set; }
         public EdgeViewPresenter EdgeViewPresenter { get; private set; }
@@ -35,6 +36,34 @@ namespace GraphExt.Editor
         public ScriptableObjectGraphSetup([NotNull] GraphScriptableObject<TNode, TNodeScriptableObject> graph)
         {
             Graph = graph;
+            Setup();
+        }
+
+        private void Setup()
+        {
+            NodePositions = new ScriptableObjectNodePositions<TNode, TNodeScriptableObject>(Graph);
+
+            EdgesViewModule = new EdgesViewModule<TNode>(GraphRuntime);
+            EdgeConnectionViewModule = new EdgeConnectionViewModule<TNode>(GraphRuntime, Ports);
+            NodesViewModule = new NodesViewModule<TNode>(GraphRuntime, NodePositions, Nodes, Ports);
+
+            GraphView = new GraphView(EdgeConnectionViewModule, PortViews);
+
+            NodeViewPresenter = new NodeViewPresenter(GraphView, NodeViewFactory, PortViewFactory, NodesViewModule, NodeViews, PortViews);
+            EdgeViewPresenter = new EdgeViewPresenter(GraphView, EdgeViewFactory, EdgeConnectionViewModule, EdgesViewModule, EdgeViews, PortViews);
+            SyncNodePositionPresenter = new SyncNodePositionPresenter(GraphView, NodeViews, NodePositions);
+        }
+
+        public void Tick()
+        {
+            NodeViewPresenter.Tick();
+            EdgeViewPresenter.Tick();
+        }
+
+        public void Dispose()
+        {
+            EdgeViewPresenter?.Dispose();
+            SyncNodePositionPresenter?.Dispose();
         }
     }
 }

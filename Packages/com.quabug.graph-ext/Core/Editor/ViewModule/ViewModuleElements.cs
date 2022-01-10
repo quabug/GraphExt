@@ -34,9 +34,6 @@ namespace GraphExt.Editor
     {
         TData this[in TId id] { get; }
         bool Has(in TId id);
-        bool Has(TData data);
-        IEnumerable<TId> Ids { get; }
-        IEnumerable<TData> Datas { get; }
         IEnumerable<(TId id, TData data)> Elements { get; }
 
     }
@@ -70,9 +67,6 @@ namespace GraphExt.Editor
         public void Remove(in TId id) => Value.Remove(id);
 
         public bool Has(in TId id) => Value.ContainsKey(id);
-        public bool Has(TData data) => Value.ContainsValue(data);
-        public IEnumerable<TId> Ids => Value.Keys;
-        public IEnumerable<TData> Datas => Value.Values;
         public IEnumerable<(TId id, TData data)> Elements => Value.Select(pair => (pair.Key, pair.Value));
     }
 }

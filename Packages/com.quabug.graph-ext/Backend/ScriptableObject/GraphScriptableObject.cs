@@ -10,10 +10,13 @@ namespace GraphExt
         where TNodeScriptableObject : NodeScriptableObject<TNode>
     {
         public GraphRuntime<TNode> Runtime { get; private set; } = new GraphRuntime<TNode>();
-        private BiDictionary<NodeId, TNodeScriptableObject> _nodeObjectMap = new BiDictionary<NodeId, TNodeScriptableObject>();
-        [NotNull] public TNodeScriptableObject this[in NodeId nodeId] => _nodeObjectMap[nodeId];
+        private BiDictionary<NodeId, TNodeScriptableObject> _nodesCache = new BiDictionary<NodeId, TNodeScriptableObject>();
+        [NotNull] public TNodeScriptableObject this[in NodeId nodeId] => _nodesCache[nodeId];
 
         [SerializeField, HideInInspector] private List<TNodeScriptableObject> _nodes = new List<TNodeScriptableObject>();
+
+        public IReadOnlyList<TNodeScriptableObject> Nodes => _nodes;
+        public IReadOnlyDictionary<NodeId, TNodeScriptableObject> NodeObjectMap => _nodesCache.Forward;
 
         private void Awake()
         {
@@ -24,11 +27,11 @@ namespace GraphExt
         {
             UnInitialize();
             Runtime = new GraphRuntime<TNode>();
-            _nodeObjectMap = new BiDictionary<NodeId, TNodeScriptableObject>();
+            _nodesCache = new BiDictionary<NodeId, TNodeScriptableObject>();
             foreach (var node in _nodes)
             {
                 Runtime.AddNode(node.Id, node.Node);
-                _nodeObjectMap[node.Id] = node;
+                _nodesCache[node.Id] = node;
             }
 
             foreach (var (input, output) in _nodes
@@ -59,7 +62,7 @@ namespace GraphExt
 
         public void SetPosition(in NodeId id, Vector2 position)
         {
-            _nodeObjectMap[id].Position = position;
+            _nodesCache[id].Position = position;
         }
 
         private void OnNodeAdded(in NodeId id, TNode node)
@@ -69,7 +72,7 @@ namespace GraphExt
             nodeInstance.Id = id;
             nodeInstance.Node = node;
             _nodes.Add(nodeInstance);
-            _nodeObjectMap[id] = nodeInstance;
+            _nodesCache[id] = nodeInstance;
 #if UNITY_EDITOR
             UnityEditor.AssetDatabase.AddObjectToAsset(nodeInstance, this);
 #endif
@@ -77,9 +80,9 @@ namespace GraphExt
 
         private void OnNodeWillDelete(in NodeId id, TNode node)
         {
-            if (_nodeObjectMap.TryGetValue(id, out var nodeObject))
+            if (_nodesCache.TryGetValue(id, out var nodeObject))
             {
-                _nodeObjectMap.Remove(id);
+                _nodesCache.Remove(id);
                 _nodes.Remove(nodeObject);
 #if UNITY_EDITOR
                 UnityEditor.AssetDatabase.RemoveObjectFromAsset(nodeObject);
@@ -89,16 +92,16 @@ namespace GraphExt
 
         private void OnConnected(in EdgeId edge)
         {
-            var inputComponent = _nodeObjectMap[edge.Input.NodeId];
-            var outputComponent = _nodeObjectMap[edge.Output.NodeId];
+            var inputComponent = _nodesCache[edge.Input.NodeId];
+            var outputComponent = _nodesCache[edge.Output.NodeId];
             inputComponent.OnConnected(Runtime, edge);
             outputComponent.OnConnected(Runtime, edge);
         }
 
         private void OnWillDisconnect(in EdgeId edge)
         {
-            var inputComponent = _nodeObjectMap[edge.Input.NodeId];
-            var outputComponent = _nodeObjectMap[edge.Output.NodeId];
+            var inputComponent = _nodesCache[edge.Input.NodeId];
+            var outputComponent = _nodesCache[edge.Output.NodeId];
             inputComponent.OnDisconnected(Runtime, edge);
             outputComponent.OnDisconnected(Runtime, edge);
         }

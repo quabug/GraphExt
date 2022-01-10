@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEditor.Experimental.GraphView;
 
 namespace GraphExt.Editor
@@ -11,8 +12,7 @@ namespace GraphExt.Editor
         public TId this[TView view] { get; }
         public bool Has(TId id);
         public bool Has(TView view);
-        public IEnumerable<TId> Ids { get; }
-        public IEnumerable<TView> Views { get; }
+        public IEnumerable<(TId id, TView view)> Elements { get; }
     }
 
     public interface IGraphElements<TId, TView> : IReadOnlyGraphElements<TId, TView>
@@ -28,16 +28,14 @@ namespace GraphExt.Editor
         where TId: struct
         where TView : GraphElement
     {
-        private BiDictionary<TId, TView> Elements { get; } = new BiDictionary<TId, TView>();
-
-        public TView this[in TId id] => Elements[id];
-        public TId this[TView view] => Elements.GetKey(view);
-        public bool Has(TId id) => Elements.ContainsKey(id);
-        public bool Has(TView view) => Elements.ContainsValue(view);
-        public void Add(TId id, TView view) => Elements.Add(id, view);
-        public void Remove(TId id) => Elements.Remove(id);
-        public void Remove(TView view) => Elements.RemoveValue(view);
-        public IEnumerable<TId> Ids => Elements.Keys;
-        public IEnumerable<TView> Views => Elements.Values;
+        private readonly BiDictionary<TId, TView> _elements = new BiDictionary<TId, TView>();
+        public TView this[in TId id] => _elements[id];
+        public TId this[TView view] => _elements.GetKey(view);
+        public bool Has(TId id) => _elements.ContainsKey(id);
+        public bool Has(TView view) => _elements.ContainsValue(view);
+        public void Add(TId id, TView view) => _elements.Add(id, view);
+        public void Remove(TId id) => _elements.Remove(id);
+        public void Remove(TView view) => _elements.RemoveValue(view);
+        public IEnumerable<(TId id, TView view)> Elements => _elements.Select(pair => (pair.Key, pair.Value));
     }
 }
