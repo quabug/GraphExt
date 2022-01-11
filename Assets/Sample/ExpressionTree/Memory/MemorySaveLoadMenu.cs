@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using GraphExt;
@@ -13,9 +14,12 @@ using PopupWindow = UnityEditor.PopupWindow;
 public class MemorySaveLoadMenu<TNode> : IMenuEntry where TNode : INode<GraphRuntime<TNode>>
 {
     [NotNull] private readonly GraphRuntime<TNode> _graphRuntime;
-    [NotNull] private readonly ViewModuleElements<NodeId, Vector2> _nodePositions;
+    [NotNull] private readonly IReadOnlyDictionary<NodeId, Vector2> _nodePositions;
 
-    public MemorySaveLoadMenu([NotNull] GraphRuntime<TNode> graphRuntime, [NotNull] ViewModuleElements<NodeId, Vector2> nodePositions)
+    public MemorySaveLoadMenu(
+        [NotNull] GraphRuntime<TNode> graphRuntime,
+        [NotNull] IReadOnlyDictionary<NodeId, Vector2> nodePositions
+    )
     {
         _graphRuntime = graphRuntime;
         _nodePositions = nodePositions;
@@ -36,7 +40,7 @@ public class MemorySaveLoadMenu<TNode> : IMenuEntry where TNode : INode<GraphRun
             }
             File.WriteAllText(path, JsonSaveLoad.Serialize(
                 new JsonUtility.GraphRuntimeData<TNode>(_graphRuntime),
-                new JsonEditorUtility.GraphViewData<TNode>(_nodePositions.Value)
+                new JsonEditorUtility.GraphViewData<TNode>(_nodePositions)
             ));
             ChangeWindowFilePath(jsonAsset);
         });

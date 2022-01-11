@@ -35,8 +35,8 @@ public class MemoryExpressionTreeWindow : BaseGraphWindow
 
         _menuBuilder = new MenuBuilder(_graphSetup.GraphView, new IMenuEntry[]
         {
-            new PrintValueMenu(_graphSetup.GraphRuntime, _graphSetup.NodeViews),
-            new SelectionEntry<IVisualNode>(_graphSetup.GraphRuntime, _graphSetup.NodeViews, _graphSetup.EdgeViews),
+            new PrintValueMenu(_graphSetup.GraphRuntime, _graphSetup.NodeViews.Reverse),
+            new SelectionEntry<IVisualNode>(_graphSetup.GraphRuntime, _graphSetup.NodeViews.Reverse, _graphSetup.EdgeViews.Reverse),
             new NodeMenuEntry<IVisualNode>(_graphSetup.GraphRuntime, _graphSetup.NodePositions),
             new MemorySaveLoadMenu<IVisualNode>(_graphSetup.GraphRuntime, _graphSetup.NodePositions)
         });

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
@@ -7,13 +8,12 @@ namespace GraphExt.Editor
 {
     public class MemoryGraphSetup<TNode> : IDisposable where TNode : INode<GraphRuntime<TNode>>
     {
-        public GraphElements<NodeId, Node> NodeViews { get; } = new GraphElements<NodeId, Node>();
-        public GraphElements<PortId, Port> PortViews { get; } = new GraphElements<PortId, Port>();
-        public GraphElements<EdgeId, Edge> EdgeViews { get; } = new GraphElements<EdgeId, Edge>();
+        public BiDictionary<NodeId, Node> NodeViews { get; } = new BiDictionary<NodeId, Node>();
+        public BiDictionary<PortId, Port> PortViews { get; } = new BiDictionary<PortId, Port>();
+        public BiDictionary<EdgeId, Edge> EdgeViews { get; } = new BiDictionary<EdgeId, Edge>();
 
-        public ViewModuleElements<PortId, PortData> Ports { get; } = new ViewModuleElements<PortId, PortData>();
-        public ViewModuleElements<NodeId, NodeData> Nodes { get; } = new ViewModuleElements<NodeId, NodeData>();
-        public ViewModuleElements<NodeId, Vector2> NodePositions { get; } = new ViewModuleElements<NodeId, Vector2>();
+        public Dictionary<PortId, PortData> Ports { get; } = new Dictionary<PortId, PortData>();
+        public Dictionary<NodeId, Vector2> NodePositions { get; } = new Dictionary<NodeId, Vector2>();
 
         public DefaultNodeViewFactory NodeViewFactory { get; } = new DefaultNodeViewFactory();
         public DefaultEdgeViewFactory EdgeViewFactory { get; } = new DefaultEdgeViewFactory();
@@ -21,10 +21,6 @@ namespace GraphExt.Editor
 
         public GraphRuntime<TNode> GraphRuntime { get; } = new GraphRuntime<TNode>();
         public GraphView GraphView { get; private set; }
-
-        public EdgesViewModule<TNode> EdgesViewModule { get; private set; }
-        public EdgeConnectionViewModule<TNode> EdgeConnectionViewModule { get; private set; }
-        public NodesViewModule<TNode> NodesViewModule { get; private set; }
 
         public NodeViewPresenter NodeViewPresenter { get; private set; }
         public EdgeViewPresenter EdgeViewPresenter { get; private set; }
@@ -38,7 +34,7 @@ namespace GraphExt.Editor
         public MemoryGraphSetup(IReadOnlyGraphRuntime<TNode> graphRuntime, IReadOnlyDictionary<NodeId, Vector2> positions)
         {
             GraphRuntime = new GraphRuntime<TNode>(graphRuntime);
-            NodePositions = new ViewModuleElements<NodeId, Vector2>(positions);
+            NodePositions = positions.ToDictionary(t => t.Key, t => t.Value);
             Setup();
         }
 
@@ -55,15 +51,34 @@ namespace GraphExt.Editor
 
         private void Setup()
         {
-            EdgesViewModule = new EdgesViewModule<TNode>(GraphRuntime);
-            EdgeConnectionViewModule = new EdgeConnectionViewModule<TNode>(GraphRuntime, Ports);
-            NodesViewModule = new NodesViewModule<TNode>(GraphRuntime, NodePositions, Nodes, Ports);
+            GraphView = new GraphView(EdgeConnection.IsCompatible(GraphRuntime, Ports), PortViews.Reverse);
 
-            GraphView = new GraphView(EdgeConnectionViewModule, PortViews);
+            NodeViewPresenter = new NodeViewPresenter(
+                GraphView,
+                NodeViewFactory,
+                PortViewFactory,
+                NodeDataConvertor.ToNodeData(GraphRuntime.NodeMap, NodePositions),
+                () => GraphRuntime.Nodes.Select(t => t.Item1),
+                NodeViews,
+                PortViews,
+                Ports
+            );
 
-            NodeViewPresenter = new NodeViewPresenter(GraphView, NodeViewFactory, PortViewFactory, NodesViewModule, NodeViews, PortViews);
-            EdgeViewPresenter = new EdgeViewPresenter(GraphView, EdgeViewFactory, EdgeConnectionViewModule, EdgesViewModule, EdgeViews, PortViews);
-            SyncNodePositionPresenter = new SyncNodePositionPresenter(GraphView, NodeViews, NodePositions);
+            EdgeViewPresenter = new EdgeViewPresenter(
+                GraphView,
+                EdgeViewFactory,
+                () => GraphRuntime.Edges,
+                EdgeViews,
+                PortViews,
+                EdgeConnection.Connect(GraphRuntime),
+                EdgeConnection.Disconnect(GraphRuntime)
+            );
+
+            SyncNodePositionPresenter = new SyncNodePositionPresenter(
+                GraphView,
+                NodeViews.Reverse,
+                NodePositions
+            );
         }
     }
 }

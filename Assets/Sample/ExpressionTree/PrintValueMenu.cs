@@ -1,5 +1,6 @@
 ﻿#if UNITY_EDITOR
 
+using System.Collections.Generic;
 using System.Linq;
 using GraphExt;
 using GraphExt.Editor;
@@ -12,11 +13,11 @@ using UnityEngine.UIElements;
 public class PrintValueMenu : IMenuEntry
 {
     [NotNull] private readonly GraphRuntime<IVisualNode> _graphRuntime;
-    [NotNull] private readonly GraphElements<NodeId, Node> _nodeViews;
+    [NotNull] private readonly IReadOnlyDictionary<Node, NodeId> _nodeViews;
 
     public PrintValueMenu(
         [NotNull] GraphRuntime<IVisualNode> graphRuntime,
-        [NotNull] GraphElements<NodeId, Node> nodeViews
+        [NotNull] IReadOnlyDictionary<Node, NodeId> nodeViews
     )
     {
         _graphRuntime = graphRuntime;

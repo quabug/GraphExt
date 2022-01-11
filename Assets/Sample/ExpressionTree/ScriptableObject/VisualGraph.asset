@@ -92,6 +92,28 @@ MonoBehaviour:
   - {fileID: 5310088223604226288}
   - {fileID: 6022804531112513676}
   - {fileID: 5851633608622220951}
+  - {fileID: 798542830653296984}
+--- !u!114 &798542830653296984
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daff2ae279b345d29db328108eed3faf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _node:
+    id: 0
+  _serializableEdges: []
+  _nodeId: 3e8fd1f9-28e6-4abe-9633-dcac20b30350
+  <Position>k__BackingField: {x: 787.54877, y: 350.4625}
+  references:
+    version: 1
+    00000000:
+      type: {class: AddNode, ns: , asm: GraphExt.Sample.ExpressionTree}
 --- !u!114 &5310088223604226288
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -170,7 +192,7 @@ MonoBehaviour:
     OutputPort: _output1
     OutputPortId: out1
   _nodeId: 37e8f5ff-6d7f-4a55-8080-c5d73ea4733c
-  <Position>k__BackingField: {x: 619.5, y: 148}
+  <Position>k__BackingField: {x: 799.5, y: 108}
   references:
     version: 1
     00000000:

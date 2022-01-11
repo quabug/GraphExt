@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEditor.Experimental.GraphView;
@@ -9,13 +10,13 @@ namespace GraphExt.Editor
     public class SyncNodePositionPresenter : IViewPresenter, IDisposable
     {
         [NotNull] private readonly UnityEditor.Experimental.GraphView.GraphView _graphView;
-        [NotNull] private readonly IReadOnlyGraphElements<NodeId, Node> _nodeViews;
-        [NotNull] private readonly IViewModuleElements<NodeId, Vector2> _nodePositions;
+        [NotNull] private readonly IReadOnlyDictionary<Node, NodeId> _nodeViews;
+        [NotNull] private readonly IDictionary<NodeId, Vector2> _nodePositions;
 
         public SyncNodePositionPresenter(
             [NotNull] UnityEditor.Experimental.GraphView.GraphView graphView,
-            [NotNull] IReadOnlyGraphElements<NodeId, Node> nodeViews,
-            [NotNull] IViewModuleElements<NodeId, Vector2> nodePositions
+            [NotNull] IReadOnlyDictionary<Node, NodeId> nodeViews,
+            [NotNull] IDictionary<NodeId, Vector2> nodePositions
         )
         {
             _graphView = graphView;

@@ -41,6 +41,8 @@ namespace GraphExt
         public TNode this[in NodeId id] => _nodeMap[id];
         public NodeId this[TNode node] => _nodeMap.GetKey(node);
 
+        public IEnumerable<(NodeId, TNode)> Nodes => _nodeMap.Forward.Select(t => (t.Key, t.Value));
+
         public GraphRuntime()
         {
             _edges = new HashSet<EdgeId>();

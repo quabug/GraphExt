@@ -7,15 +7,15 @@ namespace GraphExt.Editor
 {
     public class GraphView : UnityEditor.Experimental.GraphView.GraphView
     {
-        [NotNull] private readonly IEdgeConnectionViewModule _edgeConnectionViewModule;
-        [NotNull] private readonly IReadOnlyGraphElements<PortId, Port> _ports;
+        [NotNull] private readonly IsEdgeCompatibleFunc _isEdgeCompatible;
+        [NotNull] private readonly IReadOnlyDictionary<Port, PortId> _ports;
 
         public GraphView(
-            [NotNull] IEdgeConnectionViewModule edgeConnectionViewModule,
-            [NotNull] IReadOnlyGraphElements<PortId, Port> ports
+            [NotNull] IsEdgeCompatibleFunc isEdgeCompatible,
+            [NotNull] IReadOnlyDictionary<Port, PortId> ports
         )
         {
-            _edgeConnectionViewModule = edgeConnectionViewModule;
+            _isEdgeCompatible = isEdgeCompatible;
             _ports = ports;
 
             Insert(0, new GridBackground { name = "grid" });
@@ -41,7 +41,7 @@ namespace GraphExt.Editor
                 if (startPort.orientation != endPort.orientation || startPort.direction == endPort.direction) return;
                 var startPortId = _ports[startPort];
                 var endPortId = _ports[endPort];
-                if (!_edgeConnectionViewModule.IsCompatible(input: endPortId, output: startPortId)) return;
+                if (!_isEdgeCompatible(input: endPortId, output: startPortId)) return;
                 compatiblePorts.Add(endPort);
             });
             return compatiblePorts;

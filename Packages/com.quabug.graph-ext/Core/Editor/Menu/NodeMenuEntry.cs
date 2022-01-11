@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEditor;
@@ -12,11 +13,11 @@ namespace GraphExt.Editor
     public class NodeMenuEntry<TNode> : IMenuEntry where TNode : INode<GraphRuntime<TNode>>
     {
         [NotNull] private readonly GraphRuntime<TNode> _graphRuntime;
-        [NotNull] private readonly IViewModuleElements<NodeId, Vector2> _positions;
+        [NotNull] private readonly IDictionary<NodeId, Vector2> _positions;
 
         public NodeMenuEntry(
             [NotNull] GraphRuntime<TNode> graphRuntime,
-            [NotNull] IViewModuleElements<NodeId, Vector2> positions
+            [NotNull] IDictionary<NodeId, Vector2> positions
         )
         {
             _graphRuntime = graphRuntime;

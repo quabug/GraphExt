@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEditor.Experimental.GraphView;
@@ -7,50 +8,53 @@ namespace GraphExt.Editor
 {
     public class EdgeViewPresenter : IViewPresenter, IDisposable
     {
-        [NotNull] private readonly IEdgesViewModule _edgesViewModule;
-        [NotNull] private readonly IEdgeConnectionViewModule _edgeConnectionViewModule;
+        [NotNull] private readonly Func<IEnumerable<EdgeId>> _getEdges;
         [NotNull] private readonly UnityEditor.Experimental.GraphView.GraphView _view;
         [NotNull] private readonly IEdgeViewFactory _edgeViewFactory;
-        [NotNull] private readonly IGraphElements<EdgeId, Edge> _edges;
-        [NotNull] private readonly IReadOnlyGraphElements<PortId, Port> _ports;
+        [NotNull] private readonly IBiDictionary<EdgeId, Edge> _currentEdgeViews;
+        [NotNull] private readonly IReadOnlyBiDictionary<PortId, Port> _currentPortViews;
+        [NotNull] private readonly EdgeConnectFunc _connectFunc;
+        [NotNull] private readonly EdgeDisconnectFunc _disconnectFunc;
 
         public EdgeViewPresenter(
             [NotNull] UnityEditor.Experimental.GraphView.GraphView view,
             [NotNull] IEdgeViewFactory edgeViewFactory,
-            [NotNull] IEdgeConnectionViewModule edgeConnectionViewModule,
-            [NotNull] IEdgesViewModule edgesViewModule,
-            [NotNull] IGraphElements<EdgeId, Edge> edges,
-            [NotNull] IReadOnlyGraphElements<PortId, Port> ports
+            [NotNull] Func<IEnumerable<EdgeId>> getEdges,
+            [NotNull] IBiDictionary<EdgeId, Edge> currentEdgeViews,
+            [NotNull] IReadOnlyBiDictionary<PortId, Port> currentPortViews,
+            [NotNull] EdgeConnectFunc connectFunc,
+            [NotNull] EdgeDisconnectFunc disconnectFunc
         )
         {
             _view = view;
             _edgeViewFactory = edgeViewFactory;
-            _edgeConnectionViewModule = edgeConnectionViewModule;
-            _edgesViewModule = edgesViewModule;
-            _edges = edges;
-            _ports = ports;
+            _getEdges = getEdges;
+            _currentEdgeViews = currentEdgeViews;
+            _currentPortViews = currentPortViews;
+            _connectFunc = connectFunc;
+            _disconnectFunc = disconnectFunc;
             _view.graphViewChanged += OnGraphChanged;
         }
 
         public void Tick()
         {
-            var (added, removed) = _edges.Elements.Select(t => t.id).Diff(_edgesViewModule.GetEdges());
+            var (added, removed) = _currentEdgeViews.Keys.Diff(_getEdges());
 
             foreach (var edge in added)
             {
                 var (input, output) = edge;
-                if (!_ports.Has(input) || !_ports.Has(output)) continue;
-                var edgeView = _edgeViewFactory.CreateEdge(_ports[output], _ports[input]);
-                _edges.Add(edge, edgeView);
+                if (!_currentPortViews.ContainsKey(input) || !_currentPortViews.ContainsKey(output)) continue;
+                var edgeView = _edgeViewFactory.CreateEdge(_currentPortViews[output], _currentPortViews[input]);
+                _currentEdgeViews.Add(edge, edgeView);
                 _view.AddElement(edgeView);
             }
 
             foreach (var edge in removed)
             {
-                var edgeView = _edges[edge];
+                var edgeView = _currentEdgeViews[edge];
                 _view.RemoveElement(edgeView);
-                if (_ports.Has(edge.Input)) _ports[edge.Input].Disconnect(edgeView);
-                if (_ports.Has(edge.Output)) _ports[edge.Output].Disconnect(edgeView);
+                if (_currentPortViews.ContainsKey(edge.Input)) _currentPortViews[edge.Input].Disconnect(edgeView);
+                if (_currentPortViews.ContainsKey(edge.Output)) _currentPortViews[edge.Output].Disconnect(edgeView);
             }
         }
 
@@ -65,13 +69,13 @@ namespace GraphExt.Editor
             {
                 foreach (var edge in @event.elementsToRemove.OfType<Edge>())
                 {
-                    var input = _ports[edge.input];
-                    var output = _ports[edge.output];
+                    var input = _currentPortViews.GetKey(edge.input);
+                    var output = _currentPortViews.GetKey(edge.output);
                     var edgeId = new EdgeId(input, output);
-                    if (_edges.Has(edgeId))
+                    if (_currentEdgeViews.ContainsKey(edgeId))
                     {
-                        _edges.Remove(edgeId);
-                        _edgeConnectionViewModule.Disconnect(input: input, output: output);
+                        _currentEdgeViews.Remove(edgeId);
+                        _disconnectFunc(input: input, output: output);
                     }
                 }
             }
@@ -80,13 +84,13 @@ namespace GraphExt.Editor
             {
                 foreach (var edge in @event.edgesToCreate)
                 {
-                    if (!_edges.Has(edge))
+                    if (!_currentEdgeViews.ContainsValue(edge))
                     {
-                        var input = _ports[edge.input];
-                        var output = _ports[edge.output];
+                        var input = _currentPortViews.GetKey(edge.input);
+                        var output = _currentPortViews.GetKey(edge.output);
                         var edgeId = new EdgeId(input: input, output: output);
-                        _edges.Add(edgeId, edge);
-                        _edgeConnectionViewModule.Connect(input: input, output: output);
+                        _currentEdgeViews.Add(edgeId, edge);
+                        _connectFunc(input: input, output: output);
                         _edgeViewFactory.AfterCreated(edge);
                     }
                 }

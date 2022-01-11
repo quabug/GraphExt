@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEditor;
@@ -10,13 +11,13 @@ namespace GraphExt.Editor
     public class SelectionEntry<TNode> : IMenuEntry where TNode : INode<GraphRuntime<TNode>>
     {
         [NotNull] private readonly GraphRuntime<TNode> _graph;
-        [NotNull] private readonly IGraphElements<NodeId, Node> _nodes;
-        [NotNull] private readonly IGraphElements<EdgeId, Edge> _edges;
+        [NotNull] private readonly IReadOnlyDictionary<Node, NodeId> _nodes;
+        [NotNull] private readonly IReadOnlyDictionary<Edge, EdgeId> _edges;
 
         public SelectionEntry(
             [NotNull] GraphRuntime<TNode> graph,
-            [NotNull] IGraphElements<NodeId, Node> nodes,
-            [NotNull] IGraphElements<EdgeId, Edge> edges
+            [NotNull] IReadOnlyDictionary<Node, NodeId> nodes,
+            [NotNull] IReadOnlyDictionary<Edge, EdgeId> edges
         )
         {
             _graph = graph;
