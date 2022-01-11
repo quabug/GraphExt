@@ -51,7 +51,7 @@ namespace GraphExt.Editor
 
         private void Setup()
         {
-            GraphView = new GraphView(EdgeConnection.IsCompatible(GraphRuntime, Ports), PortViews.Reverse);
+            GraphView = new GraphView(EdgeFunctions.IsCompatible(GraphRuntime, Ports), PortViews.Reverse);
 
             NodeViewPresenter = new NodeViewPresenter(
                 GraphView,
@@ -70,8 +70,8 @@ namespace GraphExt.Editor
                 () => GraphRuntime.Edges,
                 EdgeViews,
                 PortViews,
-                EdgeConnection.Connect(GraphRuntime),
-                EdgeConnection.Disconnect(GraphRuntime)
+                EdgeFunctions.Connect(GraphRuntime),
+                EdgeFunctions.Disconnect(GraphRuntime)
             );
 
             SyncNodePositionPresenter = new SyncNodePositionPresenter(

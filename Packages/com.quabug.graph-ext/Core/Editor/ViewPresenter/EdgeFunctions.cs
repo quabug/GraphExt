@@ -8,7 +8,7 @@ namespace GraphExt.Editor
     public delegate void EdgeConnectFunc(in PortId input, in PortId output);
     public delegate void EdgeDisconnectFunc(in PortId input, in PortId output);
 
-    public static class EdgeConnection
+    public static class EdgeFunctions
     {
         public static EdgeConnectFunc Connect<TNode>([NotNull] GraphRuntime<TNode> graph)
             where TNode : INode<GraphRuntime<TNode>>
