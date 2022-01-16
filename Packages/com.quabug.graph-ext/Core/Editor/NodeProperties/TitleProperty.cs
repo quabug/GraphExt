@@ -1,3 +1,7 @@
+using System;
+using System.Reflection;
+using JetBrains.Annotations;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -10,9 +14,18 @@ namespace GraphExt.Editor
         public string Value;
         public TitleProperty(string value) => Value = value;
 
-        private class Factory : NodePropertyViewFactory<TitleProperty>
+        public class Factory : INodePropertyFactory
         {
-            protected override VisualElement Create(Node node, TitleProperty property, INodePropertyViewFactory _)
+            public INodeProperty Create(MemberInfo memberInfo, object nodeObj, NodeId nodeId, SerializedProperty fieldProperty = null, SerializedProperty nodeProperty = null)
+            {
+                return new TitleProperty(memberInfo.GetValue<string>(nodeObj));
+            }
+        }
+
+        [UsedImplicitly]
+        private class ViewFactory : SingleNodePropertyViewFactory<TitleProperty>
+        {
+            protected override VisualElement CreateView(Node node, TitleProperty property, INodePropertyViewFactory _)
             {
                 var titleLabel = new Label(property.Value);
                 titleLabel.name = "title-property";

@@ -11,9 +11,9 @@ namespace GraphExt.Editor
         public List<INodeProperty> Ports { get; } = new List<INodeProperty>();
         public string Name { get; set; }
 
-        public class Factory : NodePropertyViewFactory<VerticalPortsProperty>
+        public class Factory : SingleNodePropertyViewFactory<VerticalPortsProperty>
         {
-            protected override VisualElement Create(Node node, VerticalPortsProperty property, INodePropertyViewFactory factory)
+            protected override VisualElement CreateView(Node node, VerticalPortsProperty property, INodePropertyViewFactory factory)
             {
                 if (!property.Ports.Any()) return null;
                 var container = new VisualElement
@@ -27,7 +27,7 @@ namespace GraphExt.Editor
                 };
                 if (!string.IsNullOrEmpty(property.Name)) container.name = property.Name;
                 container.AddToClassList("vertical-ports");
-                foreach (var port in property.Ports.Select(port => factory.Create(node, port, factory))) container.Add(port);
+                foreach (var port in property.Ports.SelectMany(port => factory.Create(node, port, factory))) container.Add(port);
                 return container;
             }
         }

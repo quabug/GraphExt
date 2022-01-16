@@ -8,9 +8,9 @@ namespace GraphExt.Editor
         public string PortName { get; }
         public PortContainerProperty(string portName) => PortName = portName;
 
-        public class Factory : NodePropertyViewFactory<PortContainerProperty>
+        public class Factory : SingleNodePropertyViewFactory<PortContainerProperty>
         {
-            protected override VisualElement Create(UnityEditor.Experimental.GraphView.Node node, PortContainerProperty property, Editor.INodePropertyViewFactory _)
+            protected override VisualElement CreateView(UnityEditor.Experimental.GraphView.Node node, PortContainerProperty property, Editor.INodePropertyViewFactory _)
             {
                 return new PortContainer(property.PortName);
             }

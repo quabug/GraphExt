@@ -9,7 +9,7 @@ namespace GraphExt.Editor
 {
     public static class NodePortUtility
     {
-        public static IEnumerable<PortData> FindPorts<TGraph>(this INode<TGraph> node)
+        public static IEnumerable<PortData> FindPorts(object node)
         {
             var nodeType = node.GetType();
             var propertyInputPorts = new HashSet<string>();

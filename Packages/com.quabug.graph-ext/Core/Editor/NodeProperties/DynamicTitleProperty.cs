@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -39,9 +40,9 @@ namespace GraphExt.Editor
             }
         }
 
-        private class Factory : NodePropertyViewFactory<DynamicTitleProperty>
+        private class Factory : SingleNodePropertyViewFactory<DynamicTitleProperty>
         {
-            protected override VisualElement Create(UnityEditor.Experimental.GraphView.Node node, DynamicTitleProperty property, Editor.INodePropertyViewFactory _)
+            protected override VisualElement CreateView(UnityEditor.Experimental.GraphView.Node node, DynamicTitleProperty property, Editor.INodePropertyViewFactory _)
             {
                 return new View(property.GetName);
             }

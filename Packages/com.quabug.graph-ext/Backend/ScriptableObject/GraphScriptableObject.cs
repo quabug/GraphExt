@@ -28,10 +28,19 @@ namespace GraphExt
             UnInitialize();
             Runtime = new GraphRuntime<TNode>();
             _nodesCache = new BiDictionary<NodeId, TNodeScriptableObject>();
-            foreach (var node in _nodes)
+            for (var i = _nodes.Count - 1; i >= 0; i--)
             {
-                Runtime.AddNode(node.Id, node.Node);
-                _nodesCache[node.Id] = node;
+                var node = _nodes[i];
+                if (node.Node == null)
+                {
+                    // TODO: log
+                    _nodes.RemoveAt(i);
+                }
+                else
+                {
+                    Runtime.AddNode(node.Id, node.Node);
+                    _nodesCache[node.Id] = node;
+                }
             }
 
             foreach (var (input, output) in _nodes

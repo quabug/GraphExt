@@ -94,10 +94,10 @@ namespace GraphExt.Editor
         }
     }
 
-    public class ValuePropertyFactory<TValue, TField> : NodePropertyViewFactory<IValueProperty<TValue>>
+    public class ValuePropertyFactory<TValue, TField> : SingleNodePropertyViewFactory<IValueProperty<TValue>>
         where TField : TextValueField<TValue>, new()
     {
-        protected override VisualElement Create(Node node, IValueProperty<TValue> property, INodePropertyViewFactory _)
+        protected override VisualElement CreateView(Node node, IValueProperty<TValue> property, INodePropertyViewFactory _)
         {
             return new ValuePropertyView<TValue, TField>(property);
         }
@@ -108,10 +108,10 @@ namespace GraphExt.Editor
     public class FloatPropertyFactory : ValuePropertyFactory<float, FloatField> {}
     public class DoublePropertyFactory : ValuePropertyFactory<double, DoubleField> {}
 
-    public class ReadOnlyValuePropertyFactory<TValue, TField> : NodePropertyViewFactory<IReadOnlyValueProperty<TValue>>
+    public class ReadOnlyValuePropertyFactory<TValue, TField> : SingleNodePropertyViewFactory<IReadOnlyValueProperty<TValue>>
         where TField : TextValueField<TValue>, new()
     {
-        protected override VisualElement Create(Node node, IReadOnlyValueProperty<TValue> property, INodePropertyViewFactory _)
+        protected override VisualElement CreateView(Node node, IReadOnlyValueProperty<TValue> property, INodePropertyViewFactory _)
         {
             return new ReadOnlyValuePropertyView<TValue, TField>(property);
         }

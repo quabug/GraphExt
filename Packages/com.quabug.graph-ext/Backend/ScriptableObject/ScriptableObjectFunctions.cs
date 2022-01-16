@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using GraphExt.Editor;
 using JetBrains.Annotations;
 
@@ -16,12 +15,8 @@ namespace GraphExt
             return (in NodeId nodeId) =>
             {
                 var node = nodes[nodeId];
-                var position = nodePositions[nodeId];
-                var properties = new NodePositionProperty(position.x, position.y).Yield()
-                    .Append(NodeTitleAttribute.CreateTitleProperty(node))
-                    .Concat(node.CreateProperties(nodeId))
-                ;
-                var ports = nodes[nodeId].FindPorts();
+                var properties = NodePropertyUtility.CreateProperties(node, nodeId);
+                var ports = NodePortUtility.FindPorts(nodes[nodeId]);
                 return new NodeData(properties, ports);
             };
         }

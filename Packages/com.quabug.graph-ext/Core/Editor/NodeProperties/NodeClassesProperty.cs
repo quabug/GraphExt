@@ -11,9 +11,9 @@ namespace GraphExt.Editor
         public string[] AdditionalClasses { get; }
         public NodeClassesProperty(IEnumerable<string> classes) => AdditionalClasses = classes.ToArray();
 
-        public class ViewFactory : NodePropertyViewFactory<NodeClassesProperty>
+        public class ViewFactory : SingleNodePropertyViewFactory<NodeClassesProperty>
         {
-            protected override VisualElement Create(Node node, NodeClassesProperty property, INodePropertyViewFactory factory)
+            protected override VisualElement CreateView(Node node, NodeClassesProperty property, INodePropertyViewFactory factory)
             {
                 foreach (var @class in property.AdditionalClasses) node.AddToClassList(@class);
                 return null;

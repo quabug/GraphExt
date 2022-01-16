@@ -1,4 +1,6 @@
-﻿using JetBrains.Annotations;
+﻿using System.Reflection;
+using JetBrains.Annotations;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -16,10 +18,19 @@ namespace GraphExt.Editor
             _y = y;
         }
 
-        [UsedImplicitly]
-        private class Factory : NodePropertyViewFactory<NodePositionProperty>
+        public class Factory : INodePropertyFactory
         {
-            protected override VisualElement Create(UnityEditor.Experimental.GraphView.Node node, NodePositionProperty property, INodePropertyViewFactory _)
+            public INodeProperty Create(MemberInfo memberInfo, object nodeObj, NodeId nodeId, SerializedProperty fieldProperty = null, SerializedProperty nodeProperty = null)
+            {
+                var position = memberInfo.GetValue<Vector2>(nodeObj);
+                return new NodePositionProperty(position.x, position.y);
+            }
+        }
+
+        [UsedImplicitly]
+        private class ViewFactory : SingleNodePropertyViewFactory<NodePositionProperty>
+        {
+            protected override VisualElement CreateView(UnityEditor.Experimental.GraphView.Node node, NodePositionProperty property, INodePropertyViewFactory _)
             {
                 node.SetPosition(new Rect(property._x, property._y, 0, 0));
                 return null;

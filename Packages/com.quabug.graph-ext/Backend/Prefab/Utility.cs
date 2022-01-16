@@ -48,7 +48,6 @@ namespace GraphExt.Editor
                 {
                     NodeTitle.TitleType.Hidden => null,
                     NodeTitle.TitleType.GameObjectName => nodeObject.name,
-                    NodeTitle.TitleType.NodeTitleAttribute => NodeTitleAttribute.GetTitle(nodeComponent.Node),
                     NodeTitle.TitleType.CustomTitle => titleComponent.CustomTitle,
                     _ => throw new ArgumentOutOfRangeException()
                 };

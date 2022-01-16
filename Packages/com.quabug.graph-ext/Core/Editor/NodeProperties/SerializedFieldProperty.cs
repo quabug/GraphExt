@@ -15,9 +15,9 @@ namespace GraphExt.Editor
             Value = value;
         }
 
-        private class Factory : NodePropertyViewFactory<SerializedFieldProperty>
+        private class Factory : SingleNodePropertyViewFactory<SerializedFieldProperty>
         {
-            protected override VisualElement Create(Node node, SerializedFieldProperty fieldProperty, INodePropertyViewFactory _)
+            protected override VisualElement CreateView(Node node, SerializedFieldProperty fieldProperty, INodePropertyViewFactory _)
             {
                 return new PropertyFieldWithoutLabel(fieldProperty.Value);
             }

@@ -52,6 +52,7 @@ namespace GraphExt.Editor
             foreach (var edge in removed)
             {
                 var edgeView = _currentEdgeViews[edge];
+                _currentEdgeViews.Remove(edge);
                 _view.RemoveElement(edgeView);
                 if (_currentPortViews.ContainsKey(edge.Input)) _currentPortViews[edge.Input].Disconnect(edgeView);
                 if (_currentPortViews.ContainsKey(edge.Output)) _currentPortViews[edge.Output].Disconnect(edgeView);

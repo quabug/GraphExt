@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -20,16 +22,16 @@ namespace GraphExt.Editor
             RightPort = rightPort;
         }
 
-        public class Factory : NodePropertyViewFactory<LabelValuePortProperty>
+        public class Factory : SingleNodePropertyViewFactory<LabelValuePortProperty>
         {
-            protected override VisualElement Create(Node node, LabelValuePortProperty property, INodePropertyViewFactory factory)
+            protected override VisualElement CreateView(Node node, LabelValuePortProperty property, INodePropertyViewFactory factory)
             {
                 var container = new VisualElement();
 
-                var label = factory.Create(node, property.LabelProperty, factory) ?? HiddenElement();
-                var value = factory.Create(node, property.ValueProperty, factory) ?? HiddenElement();
-                var leftPort = factory.Create(node, property.LeftPort, factory) ?? new VisualElement();
-                var rightPort = factory.Create(node, property.RightPort, factory) ?? new VisualElement();
+                var label = factory.Create(node, property.LabelProperty, factory).SingleOrDefault() ?? HiddenElement();
+                var value = factory.Create(node, property.ValueProperty, factory).SingleOrDefault() ?? HiddenElement();
+                var leftPort = factory.Create(node, property.LeftPort, factory).SingleOrDefault() ?? new VisualElement();
+                var rightPort = factory.Create(node, property.RightPort, factory).SingleOrDefault() ?? new VisualElement();
                 var labelValue = new VisualElement();
 
                 labelValue.Add(label);

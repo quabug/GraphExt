@@ -7,8 +7,8 @@ namespace GraphExt.Editor
 {
     public static class NodePropertyUtility
     {
-        public static IEnumerable<INodeProperty> CreateProperties<TGraph>(
-            this INode<TGraph> nodeObj,
+        public static IEnumerable<INodeProperty> CreateProperties(
+            object nodeObj,
             NodeId nodeId,
             UnityEditor.SerializedProperty nodeSerializedProperty = null
         )
