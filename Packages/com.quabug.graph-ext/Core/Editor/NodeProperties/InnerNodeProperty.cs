@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using JetBrains.Annotations;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
@@ -25,7 +26,8 @@ namespace GraphExt.Editor
             }
         }
 
-        public class ViewFactory : NodePropertyViewFactory<InnerNodeProperty>
+        [UsedImplicitly]
+        private class ViewFactory : NodePropertyViewFactory<InnerNodeProperty>
         {
             protected override IEnumerable<VisualElement> CreateViews(Node node, InnerNodeProperty property, INodePropertyViewFactory factory)
             {

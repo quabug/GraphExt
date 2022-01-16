@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: daff2ae279b345d29db328108eed3faf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _node:
+  Node:
     id: 0
   _serializableEdges:
   - InputNode: 1225f22c-99cf-4b4f-8936-8240854ecf06
@@ -34,7 +34,28 @@ MonoBehaviour:
     OutputPort: _Output
     OutputPortId: out
   _nodeId: 73acb154-c939-4fd2-9aaf-f560e3511b04
-  <Position>k__BackingField: {x: 454, y: 117}
+  Position: {x: 0, y: 0}
+  references:
+    version: 1
+    00000000:
+      type: {class: , ns: , asm: }
+--- !u!114 &-5282875163051095300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daff2ae279b345d29db328108eed3faf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Node:
+    id: 0
+  _serializableEdges: []
+  _nodeId: 934d29e4-e028-42b3-889f-c854af57a1e3
+  Position: {x: 610, y: 101}
   references:
     version: 1
     00000000:
@@ -51,7 +72,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: daff2ae279b345d29db328108eed3faf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _node:
+  Node:
     id: 0
   _serializableEdges:
   - InputNode: 1225f22c-99cf-4b4f-8936-8240854ecf06
@@ -67,13 +88,11 @@ MonoBehaviour:
     OutputPort: _output1
     OutputPortId: out1
   _nodeId: 1225f22c-99cf-4b4f-8936-8240854ecf06
-  <Position>k__BackingField: {x: 627.5, y: 77.5}
+  Position: {x: 0, y: 0}
   references:
     version: 1
     00000000:
-      type: {class: ValueNode, ns: , asm: GraphExt.Sample.ExpressionTree}
-      data:
-        Value: 1
+      type: {class: , ns: , asm: }
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -87,12 +106,8 @@ MonoBehaviour:
   m_Name: VisualGraph
   m_EditorClassIdentifier: 
   _nodes:
-  - {fileID: -7835047449537186396}
-  - {fileID: -982773500791597397}
-  - {fileID: 5310088223604226288}
-  - {fileID: 6022804531112513676}
-  - {fileID: 5851633608622220951}
-  - {fileID: 798542830653296984}
+  - {fileID: -5282875163051095300}
+  - {fileID: 3294767180949743261}
 --- !u!114 &798542830653296984
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -105,15 +120,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: daff2ae279b345d29db328108eed3faf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _node:
+  Node:
     id: 0
   _serializableEdges: []
   _nodeId: 3e8fd1f9-28e6-4abe-9633-dcac20b30350
-  <Position>k__BackingField: {x: 787.54877, y: 350.4625}
+  Position: {x: 0, y: 0}
   references:
     version: 1
     00000000:
-      type: {class: AddNode, ns: , asm: GraphExt.Sample.ExpressionTree}
+      type: {class: , ns: , asm: }
+--- !u!114 &3294767180949743261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daff2ae279b345d29db328108eed3faf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Node:
+    id: 0
+  _serializableEdges: []
+  _nodeId: 6d9ee3d7-9db1-4ae2-a05e-b43c9b3a1ce4
+  Position: {x: 352, y: 241.5}
+  references:
+    version: 1
+    00000000:
+      type: {class: ValueNode, ns: , asm: GraphExt.Sample.ExpressionTree}
+      data:
+        Value: 0
 --- !u!114 &5310088223604226288
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -126,7 +164,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: daff2ae279b345d29db328108eed3faf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _node:
+  Node:
     id: 0
   _serializableEdges:
   - InputNode: 73acb154-c939-4fd2-9aaf-f560e3511b04
@@ -136,11 +174,11 @@ MonoBehaviour:
     OutputPort: _Output
     OutputPortId: out
   _nodeId: 13f23759-e5a9-49c5-9e8b-bd496c5e5e5c
-  <Position>k__BackingField: {x: 287, y: 181.5}
+  Position: {x: 0, y: 0}
   references:
     version: 1
     00000000:
-      type: {class: AddNode, ns: , asm: GraphExt.Sample.ExpressionTree}
+      type: {class: , ns: , asm: }
 --- !u!114 &5851633608622220951
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -153,7 +191,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: daff2ae279b345d29db328108eed3faf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _node:
+  Node:
     id: 0
   _serializableEdges:
   - InputNode: 7dcd33de-c901-4ceb-b8c5-3261347b886b
@@ -163,13 +201,11 @@ MonoBehaviour:
     OutputPort: _Output
     OutputPortId: out
   _nodeId: 7dcd33de-c901-4ceb-b8c5-3261347b886b
-  <Position>k__BackingField: {x: 627.5, y: 219.5}
+  Position: {x: 0, y: 0}
   references:
     version: 1
     00000000:
-      type: {class: ValueNode, ns: , asm: GraphExt.Sample.ExpressionTree}
-      data:
-        Value: 3
+      type: {class: , ns: , asm: }
 --- !u!114 &6022804531112513676
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -182,7 +218,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: daff2ae279b345d29db328108eed3faf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _node:
+  Node:
     id: 0
   _serializableEdges:
   - InputNode: 37e8f5ff-6d7f-4a55-8080-c5d73ea4733c
@@ -192,10 +228,8 @@ MonoBehaviour:
     OutputPort: _output1
     OutputPortId: out1
   _nodeId: 37e8f5ff-6d7f-4a55-8080-c5d73ea4733c
-  <Position>k__BackingField: {x: 799.5, y: 108}
+  Position: {x: 0, y: 0}
   references:
     version: 1
     00000000:
-      type: {class: ValueNode, ns: , asm: GraphExt.Sample.ExpressionTree}
-      data:
-        Value: 2
+      type: {class: , ns: , asm: }

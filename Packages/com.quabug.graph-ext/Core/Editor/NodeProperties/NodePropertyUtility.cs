@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UnityEngine.Assertions;
 
 namespace GraphExt.Editor
 {
@@ -55,6 +56,7 @@ namespace GraphExt.Editor
                 var serializedProperty = nodeSerializedProperty?.FindPropertyRelative(mi.Name);
                 if (attribute.CustomFactory != null)
                 {
+                    Assert.IsTrue(typeof(INodePropertyFactory).IsAssignableFrom(attribute.CustomFactory), $"factory {attribute.CustomFactory.Name} must implement {nameof(INodePropertyFactory)}");
                     return ((INodePropertyFactory)Activator.CreateInstance(attribute.CustomFactory)).Create(mi, nodeObj, nodeId, serializedProperty, nodeSerializedProperty);
                 }
 

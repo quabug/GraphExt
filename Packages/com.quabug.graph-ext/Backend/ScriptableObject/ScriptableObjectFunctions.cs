@@ -16,7 +16,7 @@ namespace GraphExt
             {
                 var node = nodes[nodeId];
                 var properties = NodePropertyUtility.CreateProperties(node, nodeId);
-                var ports = NodePortUtility.FindPorts(nodes[nodeId]);
+                var ports = NodePortUtility.FindPorts(node.Node);
                 return new NodeData(properties, ports);
             };
         }

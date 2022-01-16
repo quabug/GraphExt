@@ -7,17 +7,17 @@ namespace GraphExt
 {
     public class NodeScriptableObject<TNode> : ScriptableObject where TNode : INode<GraphRuntime<TNode>>
     {
-        [SerializeReference, NodeProperty(CustomFactory = typeof(InnerNodeProperty))]
+        [SerializeReference, NodeProperty(CustomFactory = typeof(InnerNodeProperty.Factory))]
         public TNode Node;
 
         [SerializeField, HideInInspector] private List<SerializableEdge> _serializableEdges = new List<SerializableEdge>();
-        private HashSet<EdgeId> _edges = new HashSet<EdgeId>();
+        private readonly HashSet<EdgeId> _edges = new HashSet<EdgeId>();
 
         [SerializeField, HideInInspector] private string _nodeId;
         public NodeId Id { get => Guid.Parse(_nodeId); set => _nodeId = value.ToString(); }
 
-        [field: SerializeField, HideInInspector, NodeProperty(CustomFactory = typeof(NodePositionProperty))]
-        public Vector2 Position { get; set; }
+        [SerializeField, NodeProperty(CustomFactory = typeof(NodePositionProperty.Factory))]
+        public Vector2 Position;
 
         public IReadOnlySet<EdgeId> GetEdges(GraphRuntime<TNode> graph)
         {
