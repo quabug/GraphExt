@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using GraphExt.Editor;
 using UnityEngine;
 
 namespace GraphExt
@@ -16,13 +16,16 @@ namespace GraphExt
         where TNode : ITreeNode<GraphRuntime<TNode>>
         where TComponent : TreeNodeComponent<TNode, TComponent>
     {
-        [SerializeReference] protected TNode _node;
+        [SerializeReference, NodeProperty(CustomFactory = typeof(InnerNodeProperty.Factory))]
+        protected TNode _node;
         public TNode Node { get => _node; set => _node = value; }
 
-        [SerializeField] private string _nodeId;
+        [SerializeField, HideInInspector] private string _nodeId;
         public NodeId Id { get => Guid.Parse(_nodeId); set => _nodeId = value.ToString(); }
 
-        [field: SerializeField, HideInInspector] public Vector2 Position { get; set; }
+        [SerializeField, NodeProperty(CustomFactory = typeof(NodePositionProperty.Factory))]
+        protected Vector2 _Position;
+        public Vector2 Position { get => _Position; set => _Position = value; }
 
         public PortId InputPort => new PortId(Id, Node.InputPortName);
         public PortId OutputPort => new PortId(Id, Node.OutputPortName);
@@ -35,21 +38,6 @@ namespace GraphExt
 
         private readonly HashSet<EdgeId> _edges = new HashSet<EdgeId>();
 
-        private readonly Lazy<IReadOnlyDictionary<string, PortData>> _portsCache;
-
-        protected TreeNodeComponent()
-        {
-#if UNITY_EDITOR
-            _portsCache = new Lazy<IReadOnlyDictionary<string, PortData>>(() =>
-                Editor.NodePortUtility.FindPorts(Node)
-                    .Select(port => SetTreeClass(port))
-                    .ToDictionary(port => port.Name, port => port)
-            );
-#else
-            _portsCache = new Lazy<IReadOnlyDictionary<string, PortData>>(() => new Dictionary<string, PortData>());
-#endif
-        }
-
         IReadOnlySet<EdgeId> INodeComponent<TNode, TComponent>.GetEdges(GraphRuntime<TNode> graph)
         {
             _edges.Clear();
@@ -59,30 +47,11 @@ namespace GraphExt
             return _edges;
         }
 
-        public virtual NodeData FindNodeProperties(GameObjectNodes<TNode, TComponent> data)
-        {
-#if UNITY_EDITOR
-            return Editor.Utility.CreateDefaultNodeData<TNode, TComponent>((TComponent)this, nameof(_node), Position);
-#else
-            return new NodeData(Array.Empty<INodeProperty>());
-#endif
-        }
-
-        public virtual IReadOnlyDictionary<string, PortData> FindNodePorts(GameObjectNodes<TNode, TComponent> data)
-        {
-            return _portsCache.Value;
-        }
-
-        PortData SetTreeClass(in PortData port)
-        {
-            return port.Name == Node.InputPortName || port.Name == Node.OutputPortName ? port.AddClass("tree") : port;
-        }
-
         bool INodeComponent<TNode, TComponent>.IsPortCompatible(GameObjectNodes<TNode, TComponent> graph, in PortId input, in PortId output)
         {
             // free to connect each other if they are not tree ports
-            var isInputTreePort = graph.Graph.IsTreePort(input);
-            var isOutputTreePort = graph.Graph.IsTreePort(output);
+            var isInputTreePort = graph.Runtime.IsTreePort(input);
+            var isOutputTreePort = graph.Runtime.IsTreePort(output);
             if (!isInputTreePort && !isOutputTreePort) return true;
 
             if (input.NodeId == Id && output.NodeId == Id) return false; // same node
@@ -101,7 +70,7 @@ namespace GraphExt
             // set parent for tree edges
             _treeEdge.ConnectParent(this, edge, graph[output.NodeId].transform);
             // save non-tree output edges
-            if (input != InputPort && output != OutputPort) _flatEdges.Connect(Id, edge, graph.Graph);
+            if (input != InputPort && output != OutputPort) _flatEdges.Connect(Id, edge, graph.Runtime);
         }
 
         void INodeComponent<TNode, TComponent>.OnDisconnected(GameObjectNodes<TNode, TComponent> _, in EdgeId edge)

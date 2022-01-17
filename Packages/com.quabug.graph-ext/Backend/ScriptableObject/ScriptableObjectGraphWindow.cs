@@ -32,10 +32,12 @@ namespace GraphExt.Editor
             if (graph == null)
             {
                 RemoveGraphView();
+                _GraphSetup?.Dispose();
                 _GraphSetup = null;
             }
             else if (_GraphSetup == null || graph != _GraphSetup.Graph)
             {
+                _GraphSetup?.Dispose();
                 _GraphSetup = new ScriptableObjectGraphSetup<TNode, TNodeScriptableObject>(graph);
                 ReplaceGraphView(_GraphSetup.GraphView);
                 CreateMenu();

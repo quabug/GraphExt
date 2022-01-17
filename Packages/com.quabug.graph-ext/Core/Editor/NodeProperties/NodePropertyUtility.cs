@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using JetBrains.Annotations;
 using UnityEngine.Assertions;
 
 namespace GraphExt.Editor
@@ -9,13 +10,14 @@ namespace GraphExt.Editor
     public static class NodePropertyUtility
     {
         public static IEnumerable<INodeProperty> CreateProperties(
-            object nodeObj,
+            [NotNull] object nodeObj,
             NodeId nodeId,
-            UnityEditor.SerializedProperty nodeSerializedProperty = null
+            UnityEditor.SerializedProperty nodeSerializedProperty = null,
+            BindingFlags flags = NodePropertyAttribute.BindingFlags
         )
         {
             var nodeType = nodeObj.GetType();
-            var members = nodeType.GetMembers(NodePropertyAttribute.BindingFlags);
+            var members = nodeType.GetMembers(flags);
             var nodePropertyPorts = new HashSet<string>();
             foreach (var mi in members)
             {
@@ -43,7 +45,7 @@ namespace GraphExt.Editor
                 if (portName == null) return;
                 if (nodePropertyPorts.Contains(portName))
                     throw new Exception($"port {portName} of {nodeType.Name}.{mi.Name} have already been used in another property");
-                if (nodeType.GetField(portName, NodePortAttribute.BindingFlags) == null)
+                if (nodeType.GetField(portName, flags) == null)
                     throw new Exception($"invalid port {portName} of {nodeType.Name}.{mi.Name}");
                 nodePropertyPorts.Add(portName);
             }

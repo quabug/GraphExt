@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
@@ -34,7 +35,7 @@ namespace GraphExt.Editor
                     (outputPort.Capacity == 1 || CountConnections(output) < outputPort.Capacity) &&
                     graph.GetNodeByPort(input).IsPortCompatible(graph, input, output) &&
                     graph.GetNodeByPort(output).IsPortCompatible(graph, input, output)
-                    ;
+                ;
             };
 
             int CountConnections(PortId portId)

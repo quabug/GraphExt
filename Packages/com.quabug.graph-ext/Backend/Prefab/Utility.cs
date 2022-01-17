@@ -21,19 +21,6 @@ namespace GraphExt.Editor
             UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(scene);
         }
 
-        public static NodeData CreateDefaultNodeData<TNode, TComponent>([NotNull] this TComponent nodeComponent, string nodePropertyName, Vector2 position)
-            where TNode : INode<GraphRuntime<TNode>>
-            where TComponent : MonoBehaviour, INodeComponent<TNode, TComponent>
-        {
-            return new NodeData();
-            // var nodeSerializedProperty = new UnityEditor.SerializedObject(nodeComponent).FindProperty(nodePropertyName);
-            // return new NodeData(new NodePositionProperty(position.x, position.y).Yield()
-            //     .Append<INodeProperty>(nodeComponent.CreateDynamicTitleProperty<TNode, TComponent>())
-            //     .Concat(nodeComponent.Node.CreateProperties(nodeComponent.Id, nodeSerializedProperty))
-            //     .ToArray()
-            // );
-        }
-
         public static DynamicTitleProperty CreateDynamicTitleProperty<TNode, TComponent>([NotNull] this TComponent nodeComponent)
             where TNode : INode<GraphRuntime<TNode>>
             where TComponent : MonoBehaviour, INodeComponent<TNode, TComponent>

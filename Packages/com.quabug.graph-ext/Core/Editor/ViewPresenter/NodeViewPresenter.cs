@@ -51,7 +51,7 @@ namespace GraphExt.Editor
 
                 foreach (var node in added)
                 {
-                    var nodeView = _nodeViewFactory.Create(_nodeConvertor(node));
+                    var nodeView = _nodeViewFactory.Create(newNodes[node]);
                     _currentNodeViews.Add(node, nodeView);
                     _view.AddElement(nodeView);
                 }

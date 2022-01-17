@@ -23,36 +23,9 @@ namespace GraphExt
 
         [SerializeField] private FlatEdges _edges = new FlatEdges();
 
-        private readonly Lazy<IReadOnlyDictionary<string, PortData>> _portsCache;
-
-        public FlatNodeComponent()
-        {
-#if UNITY_EDITOR
-            _portsCache = new Lazy<IReadOnlyDictionary<string, PortData>>(() =>
-                Editor.NodePortUtility.FindPorts(Node).ToDictionary(port => port.Name, port => port)
-            );
-#else
-            _portsCache = new Lazy<IReadOnlyDictionary<string, PortData>>(() => new Dictionary<string, PortData>());
-#endif
-        }
-
         public IReadOnlySet<EdgeId> GetEdges(GraphRuntime<TNode> graph)
         {
             return _edges.GetEdges(graph);
-        }
-
-        public NodeData FindNodeProperties(GameObjectNodes<TNode, TComponent> data)
-        {
-#if UNITY_EDITOR
-            return Editor.Utility.CreateDefaultNodeData<TNode, TComponent>((TComponent)this, nameof(_node), Position);
-#else
-            return new NodeData(Array.Empty<INodeProperty>());
-#endif
-        }
-
-        public IReadOnlyDictionary<string, PortData> FindNodePorts(GameObjectNodes<TNode, TComponent> data)
-        {
-            return _portsCache.Value;
         }
 
         public bool IsPortCompatible(GameObjectNodes<TNode, TComponent> data, in PortId input, in PortId output)
@@ -62,7 +35,7 @@ namespace GraphExt
 
         public void OnConnected(GameObjectNodes<TNode, TComponent> graph, in EdgeId edge)
         {
-            _edges.Connect(Id, edge, graph.Graph);
+            _edges.Connect(Id, edge, graph.Runtime);
         }
 
         public void OnDisconnected(GameObjectNodes<TNode, TComponent> _, in EdgeId edge)
