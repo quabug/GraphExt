@@ -51,7 +51,7 @@ namespace GraphExt.Editor
                 GraphView,
                 NodeViewFactory,
                 PortViewFactory,
-                ScriptableObjectFunctions.ToNodeData<TNode, TNodeScriptableObject>(Graph.NodeObjectMap),
+                NodeDataConvertor.ToNodeData(Graph.NodeObjectMap, node => node.Node),
                 () => GraphRuntime.Nodes.Select(t => t.Item1),
                 NodeViews,
                 PortViews,

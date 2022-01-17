@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -23,6 +24,20 @@ namespace GraphExt.Editor
                     .Concat(NodePropertyUtility.CreateProperties(node, nodeId))
                 ;
                 var ports = NodePortUtility.FindPorts(nodes[nodeId]);
+                return new NodeData(properties, ports);
+            };
+        }
+
+        public static ConvertToNodeData ToNodeData<TNode, TNodeComponent>(
+            [NotNull] IReadOnlyDictionary<NodeId, TNodeComponent> nodes,
+            [NotNull] Func<TNodeComponent, TNode> getNode
+        )
+        {
+            return (in NodeId nodeId) =>
+            {
+                var node = nodes[nodeId];
+                var properties = NodePropertyUtility.CreateProperties(node, nodeId);
+                var ports = NodePortUtility.FindPorts(getNode(node));
                 return new NodeData(properties, ports);
             };
         }
