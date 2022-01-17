@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
@@ -30,6 +31,9 @@ namespace GraphExt.Editor
         public NodeViewPresenter NodeViewPresenter { get; }
         public EdgeViewPresenter EdgeViewPresenter { get; }
         public ElementMovedEventEmitter ElementMovedEventEmitter { get; }
+
+        public FocusActiveNodePresenter<TComponent> FocusActiveNodePresenter { get; }
+        public ActiveSelectedNodePresenter<TComponent> ActiveSelectedNodePresenter { get; }
 
         public PrefabGraphSetup([NotNull] GameObjectNodes<TNode, TComponent> graph)
         {
@@ -67,18 +71,35 @@ namespace GraphExt.Editor
             );
 
             ElementMovedEventEmitter = new ElementMovedEventEmitter(GraphView);
+
+            FocusActiveNodePresenter = new FocusActiveNodePresenter<TComponent>(
+                GraphView,
+                node => NodeViews[Graph[node]],
+                () => Selection.activeGameObject == null ? null : Selection.activeGameObject.GetComponent<TComponent>()
+            );
+
+            ActiveSelectedNodePresenter = new ActiveSelectedNodePresenter<TComponent>(
+                NodeViews,
+                Graph.NodeObjectMap,
+                node =>
+                {
+                    if (Selection.activeGameObject != node.gameObject) Selection.activeGameObject = node.gameObject;
+                }
+            );
         }
 
         public void Tick()
         {
             NodeViewPresenter.Tick();
             EdgeViewPresenter.Tick();
+            ActiveSelectedNodePresenter.Tick();
         }
 
         public void Dispose()
         {
             EdgeViewPresenter?.Dispose();
             ElementMovedEventEmitter?.Dispose();
+            FocusActiveNodePresenter?.Dispose();
         }
     }
 }

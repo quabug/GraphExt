@@ -77,7 +77,8 @@ namespace GraphExt.Editor
 
             FocusActiveNodePresenter = new FocusActiveNodePresenter<TNodeScriptableObject>(
                 GraphView,
-                node => NodeViews[Graph[node]]
+                node => NodeViews[Graph[node]],
+                () => Selection.activeObject as TNodeScriptableObject
             );
 
             ActiveSelectedNodePresenter = new ActiveSelectedNodePresenter<TNodeScriptableObject>(

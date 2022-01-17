@@ -11,28 +11,30 @@ namespace GraphExt.Editor
     {
         [NotNull] private readonly UnityEditor.Experimental.GraphView.GraphView _graphView;
         [NotNull] private readonly Func<TNodeComponent, Node> _getNodeView;
+        [NotNull] private readonly Func<TNodeComponent> _getSelectedNode;
 
         public FocusActiveNodePresenter(
             [NotNull] UnityEditor.Experimental.GraphView.GraphView graphView,
-            [NotNull] Func<TNodeComponent, Node> getNodeView
+            [NotNull] Func<TNodeComponent, Node> getNodeView,
+            [NotNull] Func<TNodeComponent> getSelectedNode
         )
         {
             _graphView = graphView;
             _getNodeView = getNodeView;
+            _getSelectedNode = getSelectedNode;
             Selection.selectionChanged += OnSelectionChanged;
         }
 
         void OnSelectionChanged()
         {
-            if (Selection.activeObject is TNodeComponent node)
-            {
-                var nodeView = _getNodeView(node);
-                if (!nodeView.selected)
-                {
-                    nodeView.Select(_graphView, additive: false);
-                    _graphView.FrameSelection();
-                }
-            }
+            var node = _getSelectedNode();
+            if (node == null) return;
+
+            var nodeView = _getNodeView(node);
+            if (nodeView.selected) return;
+
+            nodeView.Select(_graphView, additive: false);
+            _graphView.FrameSelection();
         }
 
         public void Dispose()
