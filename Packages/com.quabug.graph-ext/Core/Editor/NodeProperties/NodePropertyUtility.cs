@@ -44,9 +44,9 @@ namespace GraphExt.Editor
             {
                 if (portName == null) return;
                 if (nodePropertyPorts.Contains(portName))
-                    throw new Exception($"port {portName} of {nodeType.Name}.{mi.Name} have already been used in another property");
+                    throw new ArgumentException($"port {portName} of {nodeType.Name}.{mi.Name} have already been used in another property");
                 if (nodeType.GetField(portName, flags) == null)
-                    throw new Exception($"invalid port {portName} of {nodeType.Name}.{mi.Name}");
+                    throw new ArgumentException($"invalid port {portName} of {nodeType.Name}.{mi.Name}");
                 nodePropertyPorts.Add(portName);
             }
 

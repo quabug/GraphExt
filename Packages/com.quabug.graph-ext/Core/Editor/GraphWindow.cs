@@ -11,9 +11,9 @@ namespace GraphExt.Editor
     {
         public GraphConfig Config;
 
-        private Lazy<VisualElement> _graphRoot;
+        private readonly Lazy<VisualElement> _graphRoot;
 
-        public GraphWindow()
+        protected GraphWindow()
         {
             _graphRoot = new Lazy<VisualElement>(LoadVisualTree);
         }
@@ -63,10 +63,6 @@ namespace GraphExt.Editor
                 if (parent is ITickableElement tickable) tickable.Tick();
                 foreach (var child in parent.Children()) TickChildren(child);
             }
-        }
-
-        private void OnDestroy()
-        {
         }
 
         protected abstract GraphView CreateGraphView();

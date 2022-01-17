@@ -50,7 +50,10 @@ namespace GraphExt.Editor
             if (Has(item.Key)) this[item.Key] = item.Value;
         }
 
-        public void Clear() {}
+        public void Clear()
+        {
+            // will never remove any position by this instance
+        }
 
         public bool Contains(KeyValuePair<NodeId, Vector2> item)
         {
@@ -59,7 +62,7 @@ namespace GraphExt.Editor
 
         public void CopyTo(KeyValuePair<NodeId, Vector2>[] array, int arrayIndex)
         {
-            throw new System.NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public bool Remove(KeyValuePair<NodeId, Vector2> item)
