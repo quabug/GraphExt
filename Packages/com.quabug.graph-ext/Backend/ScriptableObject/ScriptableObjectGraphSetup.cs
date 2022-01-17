@@ -4,7 +4,6 @@ using System.Linq;
 using JetBrains.Annotations;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
-using UnityEngine.UIElements;
 
 namespace GraphExt.Editor
 {

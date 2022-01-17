@@ -24,6 +24,10 @@ namespace GraphExt
         public NodeId this[[NotNull] TNode node] { get; }
     }
 
+    /// <summary>
+    /// Runtime graph data including nodes and edges
+    /// </summary>
+    /// <typeparam name="TNode">type of <seealso cref="INode{TGraph}"/></typeparam>
     public sealed class GraphRuntime<TNode> : IReadOnlyGraphRuntime<TNode> where TNode : INode<GraphRuntime<TNode>>
     {
         public event IReadOnlyGraphRuntime<TNode>.OnNodeAddedFunc OnNodeAdded;

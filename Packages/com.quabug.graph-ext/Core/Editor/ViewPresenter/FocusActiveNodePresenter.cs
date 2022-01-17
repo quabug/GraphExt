@@ -6,6 +6,10 @@ using Object = UnityEngine.Object;
 
 namespace GraphExt.Editor
 {
+    /// <summary>
+    /// Make `GraphView` focus on selected object of `Selection`
+    /// </summary>
+    /// <typeparam name="TNodeComponent">type of node object</typeparam>
     public class FocusActiveNodePresenter<TNodeComponent> : IViewPresenter, IDisposable
         where TNodeComponent : Object
     {

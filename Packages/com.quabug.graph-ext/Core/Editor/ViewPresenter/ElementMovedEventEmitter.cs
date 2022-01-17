@@ -19,6 +19,9 @@ namespace GraphExt.Editor
         }
     }
 
+    /// <summary>
+    /// send moved event to moved element
+    /// </summary>
     public class ElementMovedEventEmitter : IViewPresenter, IDisposable
     {
         [NotNull] private readonly UnityEditor.Experimental.GraphView.GraphView _graphView;

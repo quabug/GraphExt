@@ -1,0 +1,70 @@
+<mxfile host="65bd71144e">
+    <diagram id="-ilOTlaAT-9ni3G5RdYs" name="Page-1">
+        <mxGraphModel dx="738" dy="527" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="20" value="Presenters" style="shape=umlFrame;whiteSpace=wrap;html=1;width=120;height=30;boundedLbl=1;verticalAlign=middle;align=left;spacingLeft=5;labelBackgroundColor=none;fontColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="180" y="190" width="610" height="220" as="geometry"/>
+                </mxCell>
+                <mxCell id="26" value="Runtime" style="shape=umlFrame;whiteSpace=wrap;html=1;width=120;height=30;boundedLbl=1;verticalAlign=middle;align=left;spacingLeft=5;labelBackgroundColor=none;fontColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="140" y="540" width="670" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" value="Editor" style="shape=umlFrame;whiteSpace=wrap;html=1;width=120;height=30;boundedLbl=1;verticalAlign=middle;align=left;spacingLeft=5;" vertex="1" parent="1">
+                    <mxGeometry x="140" y="60" width="670" height="410" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="&lt;pre style=&quot;color: rgb(252 , 252 , 250) ; font-family: &amp;#34;fira code&amp;#34; , monospace ; font-size: 9.8pt&quot;&gt;GraphView&lt;/pre&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="330" y="80" width="290" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" value="&lt;pre style=&quot;font-family: &amp;#34;fira code&amp;#34; , monospace ; font-size: 9.8pt&quot;&gt;&lt;span style=&quot;color: rgb(255 , 255 , 255) ; font-style: italic ; font-size: 9.8pt ; white-space: nowrap&quot;&gt;A minimal `GraphView` implementation&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="8">
+                    <mxGeometry y="29" width="290" height="41" as="geometry"/>
+                </mxCell>
+                <mxCell id="21" style="edgeStyle=none;html=1;fontColor=#FFFFFF;" edge="1" parent="1" source="11" target="9">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="34" style="edgeStyle=none;html=1;fontColor=#FFFFFF;" edge="1" parent="1" source="11" target="30">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="35" style="edgeStyle=none;html=1;entryX=0.25;entryY=0;entryDx=0;entryDy=0;fontColor=#FFFFFF;" edge="1" parent="1" source="11" target="23">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="11" value="&lt;pre style=&quot;color: rgb(252 , 252 , 250) ; font-family: &amp;#34;fira code&amp;#34; , monospace ; font-size: 9.8pt&quot;&gt;NodeViewPresenter&lt;/pre&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="230" y="230" width="210" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="12" value="&lt;pre style=&quot;font-family: &amp;#34;fira code&amp;#34; , monospace ; font-size: 9.8pt&quot;&gt;&lt;font color=&quot;#ffffff&quot;&gt;&lt;i&gt;synchronize nodes between&lt;br&gt;&lt;/i&gt;&lt;/font&gt;module and `GraphView`&lt;/pre&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="11">
+                    <mxGeometry y="29" width="210" height="61" as="geometry"/>
+                </mxCell>
+                <mxCell id="22" style="edgeStyle=none;html=1;fontColor=#FFFFFF;" edge="1" parent="1" source="14" target="9">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="33" style="edgeStyle=none;html=1;fontColor=#FFFFFF;" edge="1" parent="1" source="14" target="23">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="36" style="edgeStyle=none;html=1;entryX=0.75;entryY=0;entryDx=0;entryDy=0;fontColor=#FFFFFF;" edge="1" parent="1" source="14" target="30">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="14" value="&lt;pre style=&quot;color: rgb(252 , 252 , 250) ; font-family: &amp;#34;fira code&amp;#34; , monospace ; font-size: 9.8pt&quot;&gt;EdgeViewPresenter&lt;/pre&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;labelBackgroundColor=none;fontColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="470" y="230" width="290" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="15" value="&lt;pre style=&quot;font-family: &amp;#34;fira code&amp;#34; , monospace ; font-size: 9.8pt&quot;&gt;&lt;span style=&quot;font-style: italic&quot;&gt;1. Pull edge collection from module&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;font-style: italic&quot;&gt;2. Create `Edge`s into `GraphView`&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;font-style: italic&quot;&gt;3. Observe connection events&lt;br/&gt;   and send events to module&lt;/span&gt;&lt;/pre&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;labelBackgroundColor=none;fontColor=#FFFFFF;" vertex="1" parent="14">
+                    <mxGeometry y="29" width="290" height="121" as="geometry"/>
+                </mxCell>
+                <mxCell id="23" value="&lt;pre style=&quot;color: rgb(252 , 252 , 250) ; font-family: &amp;#34;fira code&amp;#34; , monospace ; font-size: 9.8pt&quot;&gt;GraphRuntime&amp;lt;TNode&amp;gt;&lt;/pre&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;labelBackgroundColor=none;fontColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="540" y="594" width="210" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="24" value="&lt;pre style=&quot;font-family: &amp;#34;fira code&amp;#34; , monospace ; font-size: 9.8pt&quot;&gt;&lt;span style=&quot;font-style: italic&quot;&gt;Runtime graph data&lt;br/&gt;including nodes and edges&lt;/span&gt;&lt;/pre&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;labelBackgroundColor=none;fontColor=#FFFFFF;" vertex="1" parent="23">
+                    <mxGeometry y="29" width="210" height="61" as="geometry"/>
+                </mxCell>
+                <mxCell id="30" value="&lt;pre style=&quot;color: rgb(252 , 252 , 250) ; font-family: &amp;#34;fira code&amp;#34; , monospace ; font-size: 9.8pt&quot;&gt;BackendGraph&lt;/pre&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;labelBackgroundColor=none;fontColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="210" y="596" width="180" height="88" as="geometry"/>
+                </mxCell>
+                <mxCell id="31" value="&lt;pre style=&quot;font-family: &amp;#34;fira code&amp;#34; , monospace ; font-size: 9.8pt&quot;&gt;&lt;pre&gt;&lt;code&gt;&lt;font color=&quot;#ffffff&quot;&gt;&lt;i&gt;Data and processing&lt;br&gt;for specifc back-end&lt;/i&gt;&lt;/font&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/pre&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;labelBackgroundColor=none;fontColor=#FFFFFF;" vertex="1" parent="30">
+                    <mxGeometry y="29" width="180" height="59" as="geometry"/>
+                </mxCell>
+                <mxCell id="32" style="edgeStyle=none;html=1;fontColor=#FFFFFF;" edge="1" parent="1" source="31" target="24">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
