@@ -15,7 +15,7 @@ namespace GraphExt.Editor
 
         public InnerNodeProperty(object nodeObj, NodeId nodeId, SerializedProperty nodeSerializedProperty)
         {
-            _properties = NodePropertyUtility.CreateProperties(nodeObj, nodeId, nodeSerializedProperty.FindPropertyRelative).ToArray();
+            _properties = NodePropertyUtility.CreateProperties(nodeObj, nodeId, name => nodeSerializedProperty?.FindPropertyRelative(name)).ToArray();
         }
 
         public class Factory : INodePropertyFactory
