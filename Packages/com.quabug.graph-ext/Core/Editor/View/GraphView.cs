@@ -17,20 +17,6 @@ namespace GraphExt.Editor
         {
             _isEdgeCompatible = isEdgeCompatible;
             _ports = ports;
-
-            Insert(0, new GridBackground { name = "grid" });
-
-            var miniMap = new MiniMap();
-            Add(miniMap);
-            // NOTE: not working... have to set `graphView` on `CreateGUI` of `BehaviorTreeEditor`
-            miniMap.graphView = this;
-            miniMap.windowed = true;
-            miniMap.name = "minimap";
-
-            this.AddManipulator(new ContentZoomer());
-            this.AddManipulator(new ContentDragger());
-            this.AddManipulator(new SelectionDragger());
-            this.AddManipulator(new RectangleSelector());
         }
 
         public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
@@ -50,6 +36,32 @@ namespace GraphExt.Editor
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
             evt.StopPropagation();
+        }
+    }
+
+    public static class GraphViewExtension
+    {
+        public static void SetupGridBackground(this UnityEditor.Experimental.GraphView.GraphView graphView)
+        {
+            graphView.Insert(0, new GridBackground { name = "grid" });
+        }
+
+        public static void SetupDefaultManipulators(this UnityEditor.Experimental.GraphView.GraphView graphView)
+        {
+            graphView.AddManipulator(new ContentZoomer());
+            graphView.AddManipulator(new ContentDragger());
+            graphView.AddManipulator(new SelectionDragger());
+            graphView.AddManipulator(new RectangleSelector());
+        }
+
+        public static void SetupMiniMap(this UnityEditor.Experimental.GraphView.GraphView graphView)
+        {
+            var miniMap = new MiniMap();
+            graphView.Add(miniMap);
+            // NOTE: not working... have to set `graphView` on `CreateGUI` of `Window`
+            miniMap.graphView = graphView;
+            miniMap.windowed = true;
+            miniMap.name = "minimap";
         }
     }
 }

@@ -52,6 +52,9 @@ namespace GraphExt.Editor
         private void Setup()
         {
             GraphView = new GraphView(EdgeFunctions.IsCompatible(GraphRuntime, Ports), PortViews.Reverse);
+            GraphView.SetupGridBackground();
+            GraphView.SetupMiniMap();
+            GraphView.SetupDefaultManipulators();
 
             NodeViewPresenter = new NodeViewPresenter(
                 GraphView,
