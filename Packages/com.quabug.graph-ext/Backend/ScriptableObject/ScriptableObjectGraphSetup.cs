@@ -17,7 +17,7 @@ namespace GraphExt.Editor
         public BiDictionary<EdgeId, Edge> EdgeViews { get; } = new BiDictionary<EdgeId, Edge>();
 
         public Dictionary<PortId, PortData> Ports { get; } = new Dictionary<PortId, PortData>();
-        public ScriptableObjectNodePositions<TNode, TNodeScriptableObject> NodePositions { get; private set; }
+        public NodePositions<TNodeScriptableObject> NodePositions { get; private set; }
 
         public DefaultNodeViewFactory NodeViewFactory { get; } = new DefaultNodeViewFactory();
         public DefaultEdgeViewFactory EdgeViewFactory { get; } = new DefaultEdgeViewFactory();
@@ -41,7 +41,11 @@ namespace GraphExt.Editor
         {
             GraphView = new GraphView(EdgeFunctions.IsCompatible(GraphRuntime, Ports), PortViews.Reverse);
 
-            NodePositions = new ScriptableObjectNodePositions<TNode, TNodeScriptableObject>(Graph);
+            NodePositions = new NodePositions<TNodeScriptableObject>(
+                Graph.NodeObjectMap,
+                node => node.Position,
+                (node, position) => node.Position = position
+            );
 
             NodeViewPresenter = new NodeViewPresenter(
                 GraphView,

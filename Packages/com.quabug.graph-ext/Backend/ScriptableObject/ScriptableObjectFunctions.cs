@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using GraphExt.Editor;
 using JetBrains.Annotations;
 
-namespace GraphExt
+namespace GraphExt.Editor
 {
     public static class ScriptableObjectFunctions
     {

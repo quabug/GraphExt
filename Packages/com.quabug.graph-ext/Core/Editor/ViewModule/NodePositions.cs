@@ -1,29 +1,38 @@
-﻿using System.Collections;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using UnityEngine;
 
-namespace GraphExt
+namespace GraphExt.Editor
 {
-    public class ScriptableObjectNodePositions<TNode, TNodeScriptableObject> : IDictionary<NodeId, Vector2>, IReadOnlyDictionary<NodeId, Vector2>
-        where TNode : INode<GraphRuntime<TNode>>
-        where TNodeScriptableObject : NodeScriptableObject<TNode>
+    public class NodePositions<TNode> : IDictionary<NodeId, Vector2>, IReadOnlyDictionary<NodeId, Vector2>
     {
-        private readonly GraphScriptableObject<TNode, TNodeScriptableObject> _graph;
-        public ScriptableObjectNodePositions(GraphScriptableObject<TNode, TNodeScriptableObject> graph)
+        [NotNull] private readonly IReadOnlyDictionary<NodeId, TNode> _nodeMap;
+        [NotNull] private readonly Func<TNode, Vector2> _getPosition;
+        [NotNull] private readonly Action<TNode, Vector2> _setPosition;
+
+        public NodePositions(
+            [NotNull] IReadOnlyDictionary<NodeId, TNode> nodeMap,
+            [NotNull] Func<TNode, Vector2> getPosition,
+            [NotNull] Action<TNode, Vector2> setPosition
+        )
         {
-            _graph = graph;
+            _nodeMap = nodeMap;
+            _getPosition = getPosition;
+            _setPosition = setPosition;
         }
 
         public Vector2 this[NodeId id]
         {
-            get => _graph[id].Position;
-            set => _graph[id].Position = value;
+            get => _getPosition(_nodeMap[id]);
+            set => _setPosition(_nodeMap[id], value);
         }
 
         private bool Has(in NodeId id)
         {
-            return _graph.NodeObjectMap.ContainsKey(id);
+            return _nodeMap.ContainsKey(id);
         }
 
         public IEnumerator<KeyValuePair<NodeId, Vector2>> GetEnumerator()
@@ -58,7 +67,7 @@ namespace GraphExt
             return Remove(item.Key);
         }
 
-        public int Count => _graph.Nodes.Count;
+        public int Count => _nodeMap.Count;
 
         public bool IsReadOnly => true;
 
@@ -88,7 +97,7 @@ namespace GraphExt
         IEnumerable<NodeId> IReadOnlyDictionary<NodeId, Vector2>.Keys => Keys;
         IEnumerable<Vector2> IReadOnlyDictionary<NodeId, Vector2>.Values => Values;
 
-        public ICollection<NodeId> Keys => _graph.Nodes.Select(node => node.Id).ToArray();
-        public ICollection<Vector2> Values => _graph.Nodes.Select(node => node.Position).ToArray();
+        public ICollection<NodeId> Keys => _nodeMap.Keys.ToArray();
+        public ICollection<Vector2> Values => _nodeMap.Values.Select(_getPosition).ToArray();
     }
 }
