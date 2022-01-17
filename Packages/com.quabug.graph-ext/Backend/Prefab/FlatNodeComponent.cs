@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using GraphExt.Editor;
 using UnityEngine;
 
 namespace GraphExt
@@ -10,18 +10,21 @@ namespace GraphExt
         where TNode : INode<GraphRuntime<TNode>>
         where TComponent : FlatNodeComponent<TNode, TComponent>
     {
-        [SerializeReference] private TNode _node;
+        [SerializeReference, NodeProperty(CustomFactory = typeof(InnerNodeProperty.Factory))]
+        private TNode _node;
         public TNode Node { get => _node; set => _node = value; }
 
         [SerializeField, HideInInspector] private string _nodeId;
         public NodeId Id { get => Guid.Parse(_nodeId); set => _nodeId = value.ToString(); }
 
-        [field: SerializeField, HideInInspector] public Vector2 Position { get; set; }
+        [SerializeField, HideInInspector, NodeProperty(CustomFactory = typeof(NodeSerializedPositionProperty.Factory))]
+        protected Vector2 _Position;
+        public Vector2 Position { get => _Position; set => _Position = value; }
 
         public INodeComponent.NodeComponentConnect OnNodeComponentConnect { get; set; }
         public INodeComponent.NodeComponentDisconnect OnNodeComponentDisconnect { get; set; }
 
-        [SerializeField] private FlatEdges _edges = new FlatEdges();
+        [SerializeField, HideInInspector] private FlatEdges _edges = new FlatEdges();
 
         public IReadOnlySet<EdgeId> GetEdges(GraphRuntime<TNode> graph)
         {

@@ -46,7 +46,7 @@ MonoBehaviour:
   _node:
     id: 0
   _nodeId: 6e04cdbe-fd44-45bf-a6c8-9ee6793d323e
-  _Position: {x: 577, y: 164}
+  _Position: {x: 582, y: 158}
   _flatEdges:
     _serializableEdges: []
   references:
@@ -195,4 +195,4 @@ MonoBehaviour:
     00000000:
       type: {class: ValueNode, ns: , asm: GraphExt.Sample.ExpressionTree}
       data:
-        Value: 0
+        Value: 222

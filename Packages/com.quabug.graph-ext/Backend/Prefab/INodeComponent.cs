@@ -20,9 +20,7 @@ namespace GraphExt
         where TComponent : MonoBehaviour, INodeComponent<TNode, TComponent>
     {
         TNode Node { get; set; }
-
         IReadOnlySet<EdgeId> GetEdges(GraphRuntime<TNode> graph);
-
         bool IsPortCompatible(GameObjectNodes<TNode, TComponent> data, in PortId input, in PortId output);
         void OnConnected(GameObjectNodes<TNode, TComponent> data, in EdgeId edge);
         void OnDisconnected(GameObjectNodes<TNode, TComponent> data, in EdgeId edge);
