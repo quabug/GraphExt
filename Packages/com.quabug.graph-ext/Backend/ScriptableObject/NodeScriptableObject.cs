@@ -16,7 +16,7 @@ namespace GraphExt
         [SerializeField, HideInInspector] private string _nodeId;
         public NodeId Id { get => Guid.Parse(_nodeId); set => _nodeId = value.ToString(); }
 
-        [SerializeField, NodeProperty(CustomFactory = typeof(NodePositionProperty.Factory))]
+        [SerializeField, HideInInspector, NodeProperty(CustomFactory = typeof(NodePositionProperty.Factory))]
         public Vector2 Position;
 
         public IReadOnlySet<EdgeId> GetEdges(GraphRuntime<TNode> graph)

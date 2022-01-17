@@ -38,7 +38,7 @@ public class ValueNode : VisualNode
     [NodeProperty(InputPort = nameof(_Input))] public float Value;
     public override float GetValue(GraphRuntime<IVisualNode> graph) => Value;
 
-    [NodePort(SerializeId = "out1")] private static readonly float _output1;
+    [NodePort(SerializeId = "out1")] private static readonly int _output1;
 }
 
 public class AddNode : VisualNode
@@ -47,5 +47,5 @@ public class AddNode : VisualNode
     private const int _ = 0;
     public override float GetValue(GraphRuntime<IVisualNode> graph) => GetConnectedValues(graph).Sum();
 
-    [NodePort(SerializeId = "in1")] private static readonly float[] _input1 = new float[3];
+    [NodePort(SerializeId = "in1")] private static readonly int[] _input1 = new int[3];
 }

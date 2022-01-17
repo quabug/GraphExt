@@ -13,7 +13,7 @@ namespace GraphExt
         private BiDictionary<NodeId, TNodeScriptableObject> _nodesCache = new BiDictionary<NodeId, TNodeScriptableObject>();
         [NotNull] public TNodeScriptableObject this[in NodeId nodeId] => _nodesCache[nodeId];
 
-        [SerializeField] private List<TNodeScriptableObject> _nodes = new List<TNodeScriptableObject>();
+        [SerializeField, HideInInspector] private List<TNodeScriptableObject> _nodes = new List<TNodeScriptableObject>();
 
         public IReadOnlyList<TNodeScriptableObject> Nodes => _nodes;
         public IReadOnlyDictionary<NodeId, TNodeScriptableObject> NodeObjectMap => _nodesCache.Forward;
@@ -79,6 +79,9 @@ namespace GraphExt
             _nodesCache[id] = nodeInstance;
 #if UNITY_EDITOR
             UnityEditor.AssetDatabase.AddObjectToAsset(nodeInstance, this);
+            nodeInstance.name = node.GetType().Name;
+            UnityEditor.AssetDatabase.SaveAssets();
+            UnityEditor.AssetDatabase.Refresh();
 #endif
         }
 
@@ -90,6 +93,8 @@ namespace GraphExt
                 _nodes.Remove(nodeObject);
 #if UNITY_EDITOR
                 UnityEditor.AssetDatabase.RemoveObjectFromAsset(nodeObject);
+                UnityEditor.AssetDatabase.SaveAssets();
+                UnityEditor.AssetDatabase.Refresh();
 #endif
             }
         }

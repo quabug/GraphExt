@@ -28,17 +28,29 @@ namespace GraphExt.Editor
 
         private void OnSelectionChanged()
         {
-            if (Selection.activeObject is GraphScriptableObject<TNode, TNodeScriptableObject> graph)
+            var graph = FindCurrentGraph();
+            if (graph == null)
+            {
+                RemoveGraphView();
+                _GraphSetup = null;
+            }
+            else if (_GraphSetup == null || graph != _GraphSetup.Graph)
             {
                 _GraphSetup = new ScriptableObjectGraphSetup<TNode, TNodeScriptableObject>(graph);
                 ReplaceGraphView(_GraphSetup.GraphView);
                 CreateMenu();
             }
-            else
+        }
+
+        GraphScriptableObject<TNode, TNodeScriptableObject> FindCurrentGraph()
+        {
+            if (Selection.activeObject is GraphScriptableObject<TNode, TNodeScriptableObject> graph) return graph;
+            if (Selection.activeObject is NodeScriptableObject<TNode> node)
             {
-                RemoveGraphView();
-                _GraphSetup = null;
+                var path = AssetDatabase.GetAssetPath(node);
+                return AssetDatabase.LoadAssetAtPath<GraphScriptableObject<TNode, TNodeScriptableObject>>(path);
             }
+            return null;
         }
 
         protected virtual void CreateMenu() {}
