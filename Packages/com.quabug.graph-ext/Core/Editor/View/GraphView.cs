@@ -5,6 +5,9 @@ using UnityEngine.UIElements;
 
 namespace GraphExt.Editor
 {
+    /// <summary>
+    /// A minimal `GraphView` implementation
+    /// </summary>
     public class GraphView : UnityEditor.Experimental.GraphView.GraphView
     {
         [NotNull] private readonly IsEdgeCompatibleFunc _isEdgeCompatible;

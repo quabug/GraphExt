@@ -5,6 +5,10 @@ using UnityEditor.Experimental.GraphView;
 
 namespace GraphExt.Editor
 {
+    /// <summary>
+    /// Make `Selection` active object of corresponding selected node on `GraphView`
+    /// </summary>
+    /// <typeparam name="TNodeComponent">type of node object</typeparam>
     public class ActiveSelectedNodePresenter<TNodeComponent> : IViewPresenter
     {
         [NotNull] private readonly IReadOnlyDictionary<NodeId, Node> _nodes;

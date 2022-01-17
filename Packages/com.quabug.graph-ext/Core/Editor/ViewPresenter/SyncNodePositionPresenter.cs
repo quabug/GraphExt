@@ -7,6 +7,9 @@ using UnityEngine;
 
 namespace GraphExt.Editor
 {
+    /// <summary>
+    /// set node position on node moved in `GraphView`
+    /// </summary>
     public class SyncNodePositionPresenter : IViewPresenter, IDisposable
     {
         [NotNull] private readonly UnityEditor.Experimental.GraphView.GraphView _graphView;

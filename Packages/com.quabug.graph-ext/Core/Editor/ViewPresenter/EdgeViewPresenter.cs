@@ -6,6 +6,11 @@ using UnityEditor.Experimental.GraphView;
 
 namespace GraphExt.Editor
 {
+    /// <summary>
+    /// 1. Pull edge collection from module
+    /// 2. Create `Edge`s into `GraphView`
+    /// 3. Observe connection events and send events to module
+    /// </summary>
     public class EdgeViewPresenter : IViewPresenter, IDisposable
     {
         [NotNull] private readonly Func<IEnumerable<EdgeId>> _getEdges;

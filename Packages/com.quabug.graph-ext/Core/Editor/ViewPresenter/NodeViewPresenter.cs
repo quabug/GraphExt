@@ -7,6 +7,9 @@ using UnityEngine.UIElements;
 
 namespace GraphExt.Editor
 {
+    /// <summary>
+    /// synchronize nodes between module and `GraphView`
+    /// </summary>
     public class NodeViewPresenter : IViewPresenter
     {
         [NotNull] private readonly UnityEditor.Experimental.GraphView.GraphView _view;
