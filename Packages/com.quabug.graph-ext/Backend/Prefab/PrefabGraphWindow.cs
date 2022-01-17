@@ -13,6 +13,7 @@ namespace GraphExt.Editor
 
         protected override void CreateGUI()
         {
+            ResetGraphBackend(PrefabStageUtility.GetCurrentPrefabStage());
             PrefabStage.prefabStageOpened += ResetGraphBackend;
             PrefabStage.prefabStageClosing += ClearEditorView;
         }

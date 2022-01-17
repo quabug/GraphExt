@@ -16,7 +16,7 @@ namespace GraphExt.Editor
 
         public class Factory : INodePropertyFactory
         {
-            public INodeProperty Create(MemberInfo memberInfo, object nodeObj, NodeId nodeId, SerializedProperty fieldProperty = null, SerializedProperty nodeProperty = null)
+            public INodeProperty Create(MemberInfo memberInfo, object nodeObj, NodeId nodeId, SerializedProperty fieldProperty = null)
             {
                 return new TitleProperty(memberInfo.GetValue<string>(nodeObj));
             }

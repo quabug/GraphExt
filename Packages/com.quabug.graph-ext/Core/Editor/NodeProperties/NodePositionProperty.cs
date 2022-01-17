@@ -20,7 +20,7 @@ namespace GraphExt.Editor
 
         public class Factory : INodePropertyFactory
         {
-            public INodeProperty Create(MemberInfo memberInfo, object nodeObj, NodeId nodeId, SerializedProperty fieldProperty = null, SerializedProperty nodeProperty = null)
+            public INodeProperty Create(MemberInfo memberInfo, object nodeObj, NodeId nodeId, SerializedProperty fieldProperty = null)
             {
                 var position = memberInfo.GetValue<Vector2>(nodeObj);
                 return new NodePositionProperty(position.x, position.y);

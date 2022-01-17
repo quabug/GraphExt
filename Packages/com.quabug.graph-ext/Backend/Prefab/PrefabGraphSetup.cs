@@ -52,7 +52,7 @@ namespace GraphExt.Editor
                 NodeViewFactory,
                 PortViewFactory,
                 () => GraphRuntime.Nodes.Select(t => t.Item1),
-                NodeDataConvertor.ToNodeData(Graph.NodeObjectMap),
+                NodeDataConvertor.ToNodeData(id => Graph.NodeObjectMap[id], id => Graph.SerializedObjects[id]),
                 PortDataConvertor.FindPorts(GraphRuntime.NodeMap),
                 NodeViews, PortViews, Ports);
 

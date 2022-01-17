@@ -46,7 +46,7 @@ MonoBehaviour:
   _node:
     id: 0
   _nodeId: 6e04cdbe-fd44-45bf-a6c8-9ee6793d323e
-  _Position: {x: 411, y: 81}
+  _Position: {x: 577, y: 164}
   _flatEdges:
     _serializableEdges: []
   references:
@@ -54,7 +54,7 @@ MonoBehaviour:
     00000000:
       type: {class: ValueNode, ns: , asm: GraphExt.Sample.ExpressionTree}
       data:
-        Value: 0
+        Value: 123
 --- !u!1 &7819111916292357362
 GameObject:
   m_ObjectHideFlags: 0
@@ -115,6 +115,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 9219878557729026630}
+  - {fileID: 6061503921830317234}
   m_Father: {fileID: 2473017825321066582}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -133,10 +134,65 @@ MonoBehaviour:
   _node:
     id: 0
   _nodeId: c5694ee8-c851-49c8-bcc0-8bcd7d63d69b
-  _Position: {x: 344, y: 133}
+  _Position: {x: 410, y: 181}
   _flatEdges:
     _serializableEdges: []
   references:
     version: 1
     00000000:
       type: {class: AddNode, ns: , asm: GraphExt.Sample.ExpressionTree}
+--- !u!1 &8574334420263979086
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6061503921830317234}
+  - component: {fileID: 2779130876229658474}
+  m_Layer: 0
+  m_Name: ValueNode
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6061503921830317234
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8574334420263979086}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 466602913752693506}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2779130876229658474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8574334420263979086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bf50d236c124e10aa6e9e039de3191f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _node:
+    id: 0
+  _nodeId: ade73fc6-b0ad-4529-974e-698f03957f1b
+  _Position: {x: 576, y: 222}
+  _flatEdges:
+    _serializableEdges: []
+  references:
+    version: 1
+    00000000:
+      type: {class: ValueNode, ns: , asm: GraphExt.Sample.ExpressionTree}
+      data:
+        Value: 0

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -19,6 +20,11 @@ namespace GraphExt
         public IReadOnlyDictionary<TComponent, NodeId> ObjectNodeMap => _nodeObjectMap.Reverse;
         [NotNull] public TComponent this[in NodeId id] => _nodeObjectMap[id];
         public NodeId this[[NotNull] TComponent obj] => _nodeObjectMap.GetKey(obj);
+
+#if UNITY_EDITOR
+        private readonly Dictionary<NodeId, UnityEditor.SerializedObject> _serializedObjects = new Dictionary<NodeId, UnityEditor.SerializedObject>();
+        public IReadOnlyDictionary<NodeId, UnityEditor.SerializedObject> SerializedObjects => _serializedObjects;
+#endif
 
         public GameObjectNodes([NotNull] GameObject root)
         {
@@ -56,6 +62,9 @@ namespace GraphExt
         private void AddNode(TComponent node)
         {
             _nodeObjectMap[node.Id] = node;
+#if UNITY_EDITOR
+            _serializedObjects[node.Id] = new UnityEditor.SerializedObject(node);
+#endif
             node.OnNodeComponentConnect += OnNodeComponentConnect;
             node.OnNodeComponentDisconnect += OnNodeComponentDisconnect;
         }
@@ -85,21 +94,26 @@ namespace GraphExt
                 nodeComponent.Id = id;
                 nodeComponent.Node = node;
                 AddNode(nodeComponent);
+                SavePrefab();
             }
         }
 
         private void OnNodeWillDelete(in NodeId id, TNode node)
         {
+#if UNITY_EDITOR
+            _serializedObjects.Remove(id);
+#endif
             if (_nodeObjectMap.TryGetValue(id, out var nodeObject))
             {
                 _nodeObjectMap.Remove(id);
                 if (nodeObject != null)
                 {
-    #if UNITY_EDITOR
+#if UNITY_EDITOR
                     GameObject.DestroyImmediate(nodeObject.gameObject);
-    #else
+                    SavePrefab();
+#else
                     GameObject.Destroy(nodeObject.gameObject);
-    #endif
+#endif
                 }
             }
         }
@@ -110,6 +124,7 @@ namespace GraphExt
             var outputComponent = _nodeObjectMap[edge.Output.NodeId];
             if (inputComponent != null) inputComponent.OnConnected(this, edge);
             if (outputComponent != null) outputComponent.OnConnected(this, edge);
+            SavePrefab();
         }
 
         private void OnWillDisconnect(in EdgeId edge)
@@ -118,7 +133,13 @@ namespace GraphExt
             var outputComponent = _nodeObjectMap[edge.Output.NodeId];
             if (inputComponent != null) inputComponent.OnDisconnected(this, edge);
             if (outputComponent != null) outputComponent.OnDisconnected(this, edge);
+            SavePrefab();
+        }
+
+        [Conditional("UNITY_EDITOR")]
+        private void SavePrefab()
+        {
+            Editor.Utility.SavePrefabStage();
         }
     }
-
 }

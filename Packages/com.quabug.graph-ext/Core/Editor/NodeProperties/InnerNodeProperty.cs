@@ -15,12 +15,12 @@ namespace GraphExt.Editor
 
         public InnerNodeProperty(object nodeObj, NodeId nodeId, SerializedProperty nodeSerializedProperty)
         {
-            _properties = NodePropertyUtility.CreateProperties(nodeObj, nodeId, nodeSerializedProperty).ToArray();
+            _properties = NodePropertyUtility.CreateProperties(nodeObj, nodeId, nodeSerializedProperty.FindPropertyRelative).ToArray();
         }
 
         public class Factory : INodePropertyFactory
         {
-            public INodeProperty Create(MemberInfo memberInfo, object nodeObj, NodeId nodeId, SerializedProperty fieldProperty = null, SerializedProperty nodeProperty = null)
+            public INodeProperty Create(MemberInfo memberInfo, object nodeObj, NodeId nodeId, SerializedProperty fieldProperty = null)
             {
                 return new InnerNodeProperty(memberInfo.GetValue(nodeObj), nodeId, fieldProperty);
             }

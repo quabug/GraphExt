@@ -3,6 +3,7 @@ using System.Reflection;
 using JetBrains.Annotations;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
+using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UIElements;
 
@@ -15,7 +16,7 @@ namespace GraphExt.Editor
 
         public class Factory : INodePropertyFactory
         {
-            public INodeProperty Create(MemberInfo memberInfo, object nodeObj, NodeId nodeId, SerializedProperty fieldProperty = null, SerializedProperty nodeProperty = null)
+            public INodeProperty Create(MemberInfo memberInfo, object nodeObj, NodeId nodeId, SerializedProperty fieldProperty = null)
             {
                 Assert.IsNotNull(fieldProperty);
                 Assert.IsTrue(fieldProperty.propertyType == SerializedPropertyType.Vector2);
@@ -30,6 +31,8 @@ namespace GraphExt.Editor
 
             public View([NotNull] Node node, [NotNull] SerializedProperty positionProperty)
             {
+                var position = positionProperty.vector2Value;
+                node.SetPosition(new Rect(position.x, position.y, 0, 0));
                 _node = node;
                 _positionProperty = positionProperty;
                 style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
@@ -45,9 +48,11 @@ namespace GraphExt.Editor
             {
                 evt.StopImmediatePropagation();
                 _positionProperty.vector2Value = evt.Position;
+                _positionProperty.serializedObject.ApplyModifiedProperties();
             }
         }
 
+        [UsedImplicitly]
         private class ViewFactory : SingleNodePropertyViewFactory<NodeSerializedPositionProperty>
         {
             protected override VisualElement CreateView(Node node, NodeSerializedPositionProperty property, INodePropertyViewFactory factory)

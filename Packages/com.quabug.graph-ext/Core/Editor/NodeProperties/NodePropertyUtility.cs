@@ -12,7 +12,7 @@ namespace GraphExt.Editor
         public static IEnumerable<INodeProperty> CreateProperties(
             [NotNull] object nodeObj,
             NodeId nodeId,
-            UnityEditor.SerializedProperty nodeSerializedProperty = null,
+            Func<string, UnityEditor.SerializedProperty> findProperty = null,
             BindingFlags flags = NodePropertyAttribute.BindingFlags
         )
         {
@@ -55,11 +55,11 @@ namespace GraphExt.Editor
                 var attribute = mi.GetCustomAttribute<NodePropertyAttribute>();
                 if (attribute == null) return null;
 
-                var serializedProperty = nodeSerializedProperty?.FindPropertyRelative(mi.Name);
+                var serializedProperty = findProperty?.Invoke(mi.Name);
                 if (attribute.CustomFactory != null)
                 {
                     Assert.IsTrue(typeof(INodePropertyFactory).IsAssignableFrom(attribute.CustomFactory), $"factory {attribute.CustomFactory.Name} must implement {nameof(INodePropertyFactory)}");
-                    return ((INodePropertyFactory)Activator.CreateInstance(attribute.CustomFactory)).Create(mi, nodeObj, nodeId, serializedProperty, nodeSerializedProperty);
+                    return ((INodePropertyFactory)Activator.CreateInstance(attribute.CustomFactory)).Create(mi, nodeObj, nodeId, serializedProperty);
                 }
 
                 INodeProperty valueProperty;

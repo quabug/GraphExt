@@ -13,7 +13,7 @@ namespace GraphExt.Editor
         public static ElementMovedEvent GetPooled(GraphElement element)
         {
             var pooled = EventBase<ElementMovedEvent>.GetPooled();
-            pooled.Position = element.GetPosition().center;
+            pooled.Position = element.GetPosition().position;
             pooled.target = element;
             return pooled;
         }
