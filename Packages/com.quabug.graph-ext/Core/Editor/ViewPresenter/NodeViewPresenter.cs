@@ -13,26 +13,27 @@ namespace GraphExt.Editor
         [NotNull] private readonly INodeViewFactory _nodeViewFactory;
         [NotNull] private readonly IPortViewFactory _portViewFactory;
         [NotNull] private readonly ConvertToNodeData _nodeConvertor;
+        [NotNull] private readonly FindPortData _findPorts;
         [NotNull] private readonly Func<IEnumerable<NodeId>> _newNodes;
         [NotNull] private readonly IBiDictionary<NodeId, Node> _currentNodeViews;
         [NotNull] private readonly IBiDictionary<PortId, Port> _currentPortViews;
         [NotNull] private readonly IDictionary<PortId, PortData> _currentPortDataMap;
 
-        public NodeViewPresenter(
-            [NotNull] UnityEditor.Experimental.GraphView.GraphView view,
+        public NodeViewPresenter([NotNull] UnityEditor.Experimental.GraphView.GraphView view,
             [NotNull] INodeViewFactory nodeViewFactory,
             [NotNull] IPortViewFactory portViewFactory,
-            [NotNull] ConvertToNodeData nodeConvertor,
             [NotNull] Func<IEnumerable<NodeId>> newNodes,
+            [NotNull] ConvertToNodeData nodeConvertor,
+            [NotNull] FindPortData findPorts,
             [NotNull] IBiDictionary<NodeId, Node> currentNodeViews,
             [NotNull] IBiDictionary<PortId, Port> currentPortViews,
-            [NotNull] IDictionary<PortId, PortData> currentPortDataMap
-        )
+            [NotNull] IDictionary<PortId, PortData> currentPortDataMap)
         {
             _view = view;
             _nodeViewFactory = nodeViewFactory;
             _portViewFactory = portViewFactory;
             _nodeConvertor = nodeConvertor;
+            _findPorts = findPorts;
             _newNodes = newNodes;
             _currentNodeViews = currentNodeViews;
             _currentPortViews = currentPortViews;
@@ -41,17 +42,17 @@ namespace GraphExt.Editor
 
         public void Tick()
         {
-            var newNodes = _newNodes().ToDictionary(node => node, node => _nodeConvertor(node));
+            var newNodes = _newNodes().ToArray();
             UpdateNodes();
             UpdatePorts();
 
             void UpdateNodes()
             {
-                var (added, removed) = _currentNodeViews.Select(t => t.Key).Diff(newNodes.Keys);
+                var (added, removed) = _currentNodeViews.Select(t => t.Key).Diff(newNodes);
 
                 foreach (var node in added)
                 {
-                    var nodeView = _nodeViewFactory.Create(newNodes[node]);
+                    var nodeView = _nodeViewFactory.Create(_nodeConvertor(node));
                     _currentNodeViews.Add(node, nodeView);
                     _view.AddElement(nodeView);
                 }
@@ -67,7 +68,7 @@ namespace GraphExt.Editor
             void UpdatePorts()
             {
                 var newPorts = newNodes
-                    .SelectMany(node => node.Value.Ports.Select(port => (portId: new PortId(node.Key, port.Key), port: port.Value)))
+                    .SelectMany(nodeId => _findPorts(nodeId).Select(port => (portId: new PortId(nodeId, port.Name), port: port)))
                     .ToDictionary(t => t.portId, t => t.port)
                 ;
                 var (added, removed) = _currentPortViews.Keys.Diff(newPorts.Keys);
@@ -76,8 +77,7 @@ namespace GraphExt.Editor
                 {
                     var container = FindPortContainer(port);
                     if (container == null) continue;
-                    var nodeView = newNodes[port.NodeId];
-                    var portView = _portViewFactory.CreatePort(nodeView.Ports[port.Name]);
+                    var portView = _portViewFactory.CreatePort(newPorts[port]);
                     _currentPortViews.Add(port, portView);
                     _currentPortDataMap.Add(port, newPorts[port]);
                     container.AddPort(portView);

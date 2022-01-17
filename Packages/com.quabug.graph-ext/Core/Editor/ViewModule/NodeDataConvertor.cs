@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEditor;
@@ -8,6 +7,7 @@ using UnityEngine;
 namespace GraphExt.Editor
 {
     public delegate NodeData ConvertToNodeData(in NodeId node);
+    public delegate IEnumerable<PortData> FindPortData(in NodeId node);
 
     public static class NodeDataConvertor
     {
@@ -24,29 +24,12 @@ namespace GraphExt.Editor
                 var properties = new NodePositionProperty(position.x, position.y).Yield()
                     .Concat(NodePropertyUtility.CreateProperties(node, nodeId, nodeProperty))
                 ;
-                var ports = NodePortUtility.FindPorts(nodes[nodeId]);
-                return new NodeData(properties, ports);
-            };
-        }
-
-        public static ConvertToNodeData ToNodeData<TNode, TNodeComponent>(
-            [NotNull] IReadOnlyDictionary<NodeId, TNodeComponent> nodes,
-            [NotNull] Func<TNodeComponent, TNode> getNode,
-            SerializedProperty nodeProperty = null
-        )
-        {
-            return (in NodeId nodeId) =>
-            {
-                var node = nodes[nodeId];
-                var properties = NodePropertyUtility.CreateProperties(node, nodeId, nodeProperty);
-                var ports = NodePortUtility.FindPorts(getNode(node));
-                return new NodeData(properties, ports);
+                return new NodeData(properties);
             };
         }
 
         public static ConvertToNodeData ToNodeData<TNodeComponent>(
             [NotNull] IReadOnlyDictionary<NodeId, TNodeComponent> nodes,
-            [NotNull] Func<TNodeComponent, IEnumerable<PortData>> findPorts,
             SerializedProperty nodeProperty = null
         )
         {
@@ -54,8 +37,19 @@ namespace GraphExt.Editor
             {
                 var node = nodes[nodeId];
                 var properties = NodePropertyUtility.CreateProperties(node, nodeId, nodeProperty);
-                var ports = findPorts(node);
-                return new NodeData(properties, ports);
+                return new NodeData(properties);
+            };
+        }
+    }
+
+    public static class PortDataConvertor
+    {
+        public static FindPortData FindPorts<TNode>([NotNull] IReadOnlyDictionary<NodeId, TNode> nodes)
+        {
+            return (in NodeId nodeId) =>
+            {
+                var node = nodes[nodeId];
+                return NodePortUtility.FindPorts(node);
             };
         }
     }
