@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7835047449537186396
+--- !u!114 &-7907137653543368059
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -10,70 +10,58 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: daff2ae279b345d29db328108eed3faf, type: 3}
-  m_Name: 
+  m_Name: ValueNode
   m_EditorClassIdentifier: 
-  _node:
+  Node:
     id: 0
   _serializableEdges:
-  - InputNode: 1225f22c-99cf-4b4f-8936-8240854ecf06
+  - InputNode: b48c2065-1a24-4764-90e5-945511f2e979
     InputPort: _Input
     InputPortId: in
-    OutputNode: 73acb154-c939-4fd2-9aaf-f560e3511b04
+    OutputNode: d47a7d36-3a6a-4652-a6b9-2c1cd6dcf17b
     OutputPort: _Output
     OutputPortId: out
-  - InputNode: 73acb154-c939-4fd2-9aaf-f560e3511b04
-    InputPort: _input1
-    InputPortId: in1
-    OutputNode: 13f23759-e5a9-49c5-9e8b-bd496c5e5e5c
-    OutputPort: _Output
-    OutputPortId: out
-  - InputNode: 7dcd33de-c901-4ceb-b8c5-3261347b886b
-    InputPort: _Input
-    InputPortId: in
-    OutputNode: 73acb154-c939-4fd2-9aaf-f560e3511b04
-    OutputPort: _Output
-    OutputPortId: out
-  _nodeId: 73acb154-c939-4fd2-9aaf-f560e3511b04
-  <Position>k__BackingField: {x: 454, y: 117}
-  references:
-    version: 1
-    00000000:
-      type: {class: AddNode, ns: , asm: GraphExt.Sample.ExpressionTree}
---- !u!114 &-982773500791597397
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: daff2ae279b345d29db328108eed3faf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _node:
-    id: 0
-  _serializableEdges:
-  - InputNode: 1225f22c-99cf-4b4f-8936-8240854ecf06
-    InputPort: _Input
-    InputPortId: in
-    OutputNode: 73acb154-c939-4fd2-9aaf-f560e3511b04
-    OutputPort: _Output
-    OutputPortId: out
-  - InputNode: 37e8f5ff-6d7f-4a55-8080-c5d73ea4733c
-    InputPort: _Input
-    InputPortId: in
-    OutputNode: 1225f22c-99cf-4b4f-8936-8240854ecf06
-    OutputPort: _output1
-    OutputPortId: out1
-  _nodeId: 1225f22c-99cf-4b4f-8936-8240854ecf06
-  <Position>k__BackingField: {x: 627.5, y: 77.5}
+  _nodeId: b48c2065-1a24-4764-90e5-945511f2e979
+  Position: {x: 578, y: 185}
   references:
     version: 1
     00000000:
       type: {class: ValueNode, ns: , asm: GraphExt.Sample.ExpressionTree}
       data:
         Value: 1
+--- !u!114 &-7300237601666675703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daff2ae279b345d29db328108eed3faf, type: 3}
+  m_Name: AddNode
+  m_EditorClassIdentifier: 
+  Node:
+    id: 0
+  _serializableEdges:
+  - InputNode: 806281aa-4c07-4e0b-adef-5875e2605445
+    InputPort: _Input
+    InputPortId: in
+    OutputNode: d47a7d36-3a6a-4652-a6b9-2c1cd6dcf17b
+    OutputPort: _Output
+    OutputPortId: out
+  - InputNode: b48c2065-1a24-4764-90e5-945511f2e979
+    InputPort: _Input
+    InputPortId: in
+    OutputNode: d47a7d36-3a6a-4652-a6b9-2c1cd6dcf17b
+    OutputPort: _Output
+    OutputPortId: out
+  _nodeId: d47a7d36-3a6a-4652-a6b9-2c1cd6dcf17b
+  Position: {x: 366, y: 219}
+  references:
+    version: 1
+    00000000:
+      type: {class: AddNode, ns: , asm: GraphExt.Sample.ExpressionTree}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -87,12 +75,10 @@ MonoBehaviour:
   m_Name: VisualGraph
   m_EditorClassIdentifier: 
   _nodes:
-  - {fileID: -7835047449537186396}
-  - {fileID: -982773500791597397}
-  - {fileID: 5310088223604226288}
-  - {fileID: 6022804531112513676}
-  - {fileID: 5851633608622220951}
---- !u!114 &5310088223604226288
+  - {fileID: -7300237601666675703}
+  - {fileID: 8542206064291794866}
+  - {fileID: -7907137653543368059}
+--- !u!114 &8542206064291794866
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -102,75 +88,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: daff2ae279b345d29db328108eed3faf, type: 3}
-  m_Name: 
+  m_Name: ValueNode
   m_EditorClassIdentifier: 
-  _node:
+  Node:
     id: 0
   _serializableEdges:
-  - InputNode: 73acb154-c939-4fd2-9aaf-f560e3511b04
-    InputPort: _input1
-    InputPortId: in1
-    OutputNode: 13f23759-e5a9-49c5-9e8b-bd496c5e5e5c
-    OutputPort: _Output
-    OutputPortId: out
-  _nodeId: 13f23759-e5a9-49c5-9e8b-bd496c5e5e5c
-  <Position>k__BackingField: {x: 287, y: 181.5}
-  references:
-    version: 1
-    00000000:
-      type: {class: AddNode, ns: , asm: GraphExt.Sample.ExpressionTree}
---- !u!114 &5851633608622220951
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: daff2ae279b345d29db328108eed3faf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _node:
-    id: 0
-  _serializableEdges:
-  - InputNode: 7dcd33de-c901-4ceb-b8c5-3261347b886b
+  - InputNode: 806281aa-4c07-4e0b-adef-5875e2605445
     InputPort: _Input
     InputPortId: in
-    OutputNode: 73acb154-c939-4fd2-9aaf-f560e3511b04
+    OutputNode: d47a7d36-3a6a-4652-a6b9-2c1cd6dcf17b
     OutputPort: _Output
     OutputPortId: out
-  _nodeId: 7dcd33de-c901-4ceb-b8c5-3261347b886b
-  <Position>k__BackingField: {x: 627.5, y: 219.5}
-  references:
-    version: 1
-    00000000:
-      type: {class: ValueNode, ns: , asm: GraphExt.Sample.ExpressionTree}
-      data:
-        Value: 3
---- !u!114 &6022804531112513676
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: daff2ae279b345d29db328108eed3faf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _node:
-    id: 0
-  _serializableEdges:
-  - InputNode: 37e8f5ff-6d7f-4a55-8080-c5d73ea4733c
-    InputPort: _Input
-    InputPortId: in
-    OutputNode: 1225f22c-99cf-4b4f-8936-8240854ecf06
-    OutputPort: _output1
-    OutputPortId: out1
-  _nodeId: 37e8f5ff-6d7f-4a55-8080-c5d73ea4733c
-  <Position>k__BackingField: {x: 619.5, y: 148}
+  _nodeId: 806281aa-4c07-4e0b-adef-5875e2605445
+  Position: {x: 563, y: 319}
   references:
     version: 1
     00000000:

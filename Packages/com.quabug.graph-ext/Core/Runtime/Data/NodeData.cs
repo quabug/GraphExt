@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 
 namespace GraphExt
@@ -6,6 +7,6 @@ namespace GraphExt
     public readonly struct NodeData
     {
         [NotNull] public readonly IReadOnlyList<INodeProperty> Properties;
-        public NodeData([NotNull] IReadOnlyList<INodeProperty> properties) => Properties = properties;
+        public NodeData([NotNull] IEnumerable<INodeProperty> properties) => Properties = properties.ToArray();
     }
 }

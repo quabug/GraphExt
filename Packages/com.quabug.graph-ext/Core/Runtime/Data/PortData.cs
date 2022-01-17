@@ -2,7 +2,7 @@
 
 namespace GraphExt
 {
-    public readonly struct PortData
+    public readonly struct PortData : IEquatable<PortData>
     {
         public readonly string Name;
         public readonly PortOrientation Orientation;
@@ -27,6 +27,30 @@ namespace GraphExt
             Array.Copy(AdditionalClasses, classes, AdditionalClasses.Length);
             classes[AdditionalClasses.Length] = @class;
             return new PortData(Name, Orientation, Direction, Capacity, PortType, classes);
+        }
+
+        public bool Equals(PortData other)
+        {
+            return Name == other.Name && Orientation == other.Orientation && Direction == other.Direction && Capacity == other.Capacity && Equals(PortType, other.PortType) && Equals(AdditionalClasses, other.AdditionalClasses);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is PortData other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (Name != null ? Name.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (int)Orientation;
+                hashCode = (hashCode * 397) ^ (int)Direction;
+                hashCode = (hashCode * 397) ^ Capacity;
+                hashCode = (hashCode * 397) ^ (PortType != null ? PortType.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (AdditionalClasses != null ? AdditionalClasses.GetHashCode() : 0);
+                return hashCode;
+            }
         }
     }
 }

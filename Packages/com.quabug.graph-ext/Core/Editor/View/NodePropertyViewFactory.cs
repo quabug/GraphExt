@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEditor.Experimental.GraphView;
@@ -9,19 +10,19 @@ namespace GraphExt.Editor
 {
     public interface INodePropertyViewFactory
     {
-        [CanBeNull] VisualElement Create(Node node, INodeProperty property, INodePropertyViewFactory factory);
+        [NotNull] IEnumerable<VisualElement> Create(Node node, INodeProperty property, [NotNull] INodePropertyViewFactory factory);
 
         public sealed class Null : INodePropertyViewFactory
         {
-            public VisualElement Create(Node node, INodeProperty property, INodePropertyViewFactory factory)
+            public IEnumerable<VisualElement> Create(Node node, INodeProperty property, INodePropertyViewFactory factory)
             {
-                return null;
+                return Enumerable.Empty<VisualElement>();
             }
         }
 
         public sealed class Exception : INodePropertyViewFactory
         {
-            public VisualElement Create(Node node, INodeProperty property, INodePropertyViewFactory factory)
+            public IEnumerable<VisualElement> Create(Node node, INodeProperty property, INodePropertyViewFactory factory)
             {
                 throw new NotImplementedException();
             }
@@ -30,12 +31,22 @@ namespace GraphExt.Editor
 
     public abstract class NodePropertyViewFactory<T> : INodePropertyViewFactory where T : INodeProperty
     {
-        public VisualElement Create(Node node, INodeProperty property, INodePropertyViewFactory factory)
+        public IEnumerable<VisualElement> Create(Node node, INodeProperty property, INodePropertyViewFactory factory)
         {
-            return property is T p ? Create(node, p, factory) : null;
+            return property is T p ? CreateViews(node, p, factory) : Enumerable.Empty<VisualElement>();
         }
 
-        protected abstract VisualElement Create(Node node, [NotNull] T property, INodePropertyViewFactory factory);
+        protected abstract IEnumerable<VisualElement> CreateViews(Node node, [NotNull] T property, INodePropertyViewFactory factory);
+    }
+
+    public abstract class SingleNodePropertyViewFactory<T> : NodePropertyViewFactory<T> where T : INodeProperty
+    {
+        protected override IEnumerable<VisualElement> CreateViews(Node node, T property, INodePropertyViewFactory factory)
+        {
+            return CreateView(node, property, factory).Yield();
+        }
+
+        protected abstract VisualElement CreateView(Node node, [NotNull] T property, INodePropertyViewFactory factory);
     }
 
     public class DefaultPropertyViewFactory : INodePropertyViewFactory
@@ -52,7 +63,7 @@ namespace GraphExt.Editor
             _groupFactory = new GroupNodePropertyViewFactory { Factories = factories };
         }
 
-        public VisualElement Create(Node node, INodeProperty property, INodePropertyViewFactory factory)
+        public IEnumerable<VisualElement> Create(Node node, INodeProperty property, INodePropertyViewFactory factory)
         {
             return _groupFactory.Create(node, property, factory);
         }
@@ -64,10 +75,11 @@ namespace GraphExt.Editor
         [SerializeReference, SerializeReferenceDrawer(Nullable = false)]
         public INodePropertyViewFactory[] Factories;
 
-        public VisualElement Create(Node node, INodeProperty property, INodePropertyViewFactory factory)
+        public IEnumerable<VisualElement> Create(Node node, INodeProperty property, INodePropertyViewFactory factory)
         {
-            factory ??= this;
-            return property == null ? null : Factories.Select(f => f.Create(node, property, factory)).FirstOrDefault(element => element != null);
+            if (property == null) return Enumerable.Empty<VisualElement>();
+            return Factories.Select(f => f.Create(node, property, factory)).FirstOrDefault(element => element.Any()) ??
+                   Enumerable.Empty<VisualElement>();
         }
     }
 }

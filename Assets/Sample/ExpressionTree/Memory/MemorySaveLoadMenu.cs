@@ -1,6 +1,9 @@
 #if UNITY_EDITOR
 
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using GraphExt;
 using GraphExt.Editor;
 using JetBrains.Annotations;
 using UnityEditor;
@@ -8,58 +11,65 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using PopupWindow = UnityEditor.PopupWindow;
 
-public class MemorySaveLoadMenu : IMenuEntry
+public class MemorySaveLoadMenu<TNode> : IMenuEntry where TNode : INode<GraphRuntime<TNode>>
 {
-    public void MakeEntry(GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
+    [NotNull] private readonly GraphRuntime<TNode> _graphRuntime;
+    [NotNull] private readonly IReadOnlyDictionary<NodeId, Vector2> _nodePositions;
+
+    public MemorySaveLoadMenu(
+        [NotNull] GraphRuntime<TNode> graphRuntime,
+        [NotNull] IReadOnlyDictionary<NodeId, Vector2> nodePositions
+    )
     {
-        if (graph.Module is MemoryGraphViewModule<IVisualNode> module)
+        _graphRuntime = graphRuntime;
+        _nodePositions = nodePositions;
+    }
+
+    public void MakeEntry(UnityEditor.Experimental.GraphView.GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
+    {
+        menu.AddItem(new GUIContent("Save"), false, () =>
         {
-            menu.AddItem(new GUIContent("Save"), false, () =>
+            ClosePopupWindow();
+            var path = EditorUtility.SaveFilePanel("save path", Application.dataPath, "graph", "json");
+            var jsonAssetPath = ToRelativePath(path);
+            var jsonAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(jsonAssetPath);
+            if (jsonAsset == null)
             {
-                ClosePopupWindow();
-                var path = EditorUtility.SaveFilePanel("save path", Application.dataPath, "graph", "json");
-                var jsonAssetPath = ToRelativePath(path);
-                var jsonAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(jsonAssetPath);
-                if (jsonAsset == null)
-                {
-                    jsonAsset = new TextAsset();
-                    AssetDatabase.CreateAsset(jsonAsset, jsonAssetPath);
-                }
-                File.WriteAllText(path, module.Serialize());
-                ChangeWindowFilePath(jsonAsset);
-            });
+                jsonAsset = new TextAsset();
+                AssetDatabase.CreateAsset(jsonAsset, jsonAssetPath);
+            }
+            File.WriteAllText(path, JsonSaveLoad.Serialize(
+                new JsonUtility.GraphRuntimeData<TNode>(_graphRuntime),
+                new JsonEditorUtility.GraphViewData<TNode>(_nodePositions)
+            ));
+            ChangeWindowFilePath(jsonAsset);
+        });
 
-            menu.AddItem(new GUIContent("Load"), false, () =>
-            {
-                ClosePopupWindow();
+        menu.AddItem(new GUIContent("Load"), false, () =>
+        {
+            ClosePopupWindow();
 
-                var path = EditorUtility.OpenFilePanel("load path", Application.dataPath, "json");
-                var json = File.ReadAllText(path);
-                var newGraph = JsonEditorUtility.Deserialize<IVisualNode>(json);
-                if (newGraph != null)
-                {
-                    graph.Module = newGraph;
-                    var jsonAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(ToRelativePath(path));
-                    ChangeWindowFilePath(jsonAsset);
-                }
-            });
+            var path = EditorUtility.OpenFilePanel("load path", Application.dataPath, "json");
+            var jsonAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(ToRelativePath(path));
+            ChangeWindowFilePath(jsonAsset);
+            GetWindow()?.Reset();
+        });
 
-            menu.AddItem(new GUIContent("Reset"), false, () =>
-            {
-                ClosePopupWindow();
-                var jsonAsset = CurrentWindowJsonAsset();
-                if (jsonAsset != null)
-                {
-                    var newGraph = JsonEditorUtility.Deserialize<IVisualNode>(jsonAsset.text);
-                    if (newGraph != null) graph.Module = newGraph;
-                }
-            });
+        menu.AddItem(new GUIContent("Reset"), false, () =>
+        {
+            ClosePopupWindow();
+            GetWindow()?.Reset();
+        });
 
-            menu.AddItem(new GUIContent("Clear"), false, () =>
-            {
-                ClosePopupWindow();
-                graph.Module = new MemoryGraphViewModule<IVisualNode>();
-            });
+        menu.AddItem(new GUIContent("ClearGraph"), false, () =>
+        {
+            ClosePopupWindow();
+            ClearGraph();
+        });
+
+        void ClearGraph()
+        {
+            foreach (var node in _graphRuntime.NodeMap.Keys.ToArray()) _graphRuntime.DeleteNode(node);
         }
     }
 
@@ -67,14 +77,14 @@ public class MemorySaveLoadMenu : IMenuEntry
 
     void ChangeWindowFilePath(TextAsset json)
     {
-        var window = EditorWindow.focusedWindow as GraphWindow;
-        if (window != null) window.WindowExtension.GetOrCreate<JsonLoaderWindowExtension>().JsonFile = json;
+        var window = GetWindow();
+        if (window != null) window.JsonFile = json;
     }
 
     TextAsset CurrentWindowJsonAsset()
     {
-        var window = EditorWindow.focusedWindow as GraphWindow;
-        return window == null ? null : window.WindowExtension.GetOrCreate<JsonLoaderWindowExtension>().JsonFile;
+        var window = GetWindow();
+        return window == null ? null : window.JsonFile;
     }
 
     void ClosePopupWindow()
@@ -82,6 +92,8 @@ public class MemorySaveLoadMenu : IMenuEntry
         var window = EditorWindow.focusedWindow as PopupWindow;
         if (window != null) window.Close();
     }
+
+    MemoryExpressionTreeWindow GetWindow() => EditorWindow.focusedWindow as MemoryExpressionTreeWindow;
 }
 
 #endif

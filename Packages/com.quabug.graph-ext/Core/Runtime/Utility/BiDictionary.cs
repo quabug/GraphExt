@@ -3,7 +3,25 @@ using System.Collections.Generic;
 
 namespace GraphExt
 {
-    public class BiDictionary<T1, T2> : IDictionary<T1, T2>
+    public interface IReadOnlyBiDictionary<T1, T2> : IReadOnlyDictionary<T1, T2>
+    {
+        IReadOnlyDictionary<T1, T2> Forward { get; }
+        IReadOnlyDictionary<T2, T1> Reverse { get; }
+        bool ContainsValue(T2 value);
+        bool TryGetKey(T2 value, out T1 key);
+        T1 GetKey(T2 value);
+    }
+
+    public interface IBiDictionary<T1, T2> : IDictionary<T1, T2>
+    {
+        bool TryGetKey(T2 value, out T1 key);
+        T1 GetKey(T2 value);
+        bool ContainsValue(T2 value);
+        bool RemoveValue(T2 value);
+        void SetKey(T2 value, T1 key);
+    }
+
+    public class BiDictionary<T1, T2> : IBiDictionary<T1, T2>, IReadOnlyBiDictionary<T1, T2>
     {
         private readonly Dictionary<T1, T2> _forward = new Dictionary<T1, T2>();
         private readonly Dictionary<T2, T1> _reverse = new Dictionary<T2, T1>();
@@ -76,11 +94,14 @@ namespace GraphExt
             set => Add(key, value);
         }
 
-        public T1 GetKey(T2 value) => _reverse[value];
-        public void SetKey(T2 value, T1 key) => _reverse[value] = key;
+        IEnumerable<T1> IReadOnlyDictionary<T1, T2>.Keys => _forward.Keys;
+        IEnumerable<T2> IReadOnlyDictionary<T1, T2>.Values => _forward.Values;
 
         public ICollection<T1> Keys => _forward.Keys;
         public ICollection<T2> Values => _forward.Values;
+
+        public T1 GetKey(T2 value) => _reverse[value];
+        public void SetKey(T2 value, T1 key) => _reverse[value] = key;
 
         public IEnumerator<KeyValuePair<T1, T2>> GetEnumerator()
         {

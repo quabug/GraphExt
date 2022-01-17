@@ -1,7 +1,6 @@
 ﻿#if UNITY_EDITOR
 
 using System;
-using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -21,18 +20,6 @@ namespace GraphExt.Editor
             UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(scene);
         }
 
-        public static NodeData CreateDefaultNodeData<TNode, TComponent>([NotNull] this TComponent nodeComponent, string nodePropertyName, Vector2 position)
-            where TNode : INode<GraphRuntime<TNode>>
-            where TComponent : MonoBehaviour, INodeComponent<TNode, TComponent>
-        {
-            var nodeSerializedProperty = new UnityEditor.SerializedObject(nodeComponent).FindProperty(nodePropertyName);
-            return new NodeData(new NodePositionProperty(position.x, position.y).Yield()
-                .Append<INodeProperty>(nodeComponent.CreateDynamicTitleProperty<TNode, TComponent>())
-                .Concat(nodeComponent.Node.CreateProperties(nodeComponent.Id, nodeSerializedProperty))
-                .ToArray()
-            );
-        }
-
         public static DynamicTitleProperty CreateDynamicTitleProperty<TNode, TComponent>([NotNull] this TComponent nodeComponent)
             where TNode : INode<GraphRuntime<TNode>>
             where TComponent : MonoBehaviour, INodeComponent<TNode, TComponent>
@@ -47,7 +34,6 @@ namespace GraphExt.Editor
                 {
                     NodeTitle.TitleType.Hidden => null,
                     NodeTitle.TitleType.GameObjectName => nodeObject.name,
-                    NodeTitle.TitleType.NodeTitleAttribute => NodeTitleAttribute.GetTitle(nodeComponent.Node),
                     NodeTitle.TitleType.CustomTitle => titleComponent.CustomTitle,
                     _ => throw new ArgumentOutOfRangeException()
                 };

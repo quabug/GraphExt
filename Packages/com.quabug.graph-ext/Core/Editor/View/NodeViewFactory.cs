@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using JetBrains.Annotations;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
@@ -26,19 +27,19 @@ namespace GraphExt.Editor
             var orders = new List<int>();
             foreach (var property in data.Properties)
             {
-                var propertyView = CreatePropertyView(property);
-                if (propertyView != null)
+                var propertyViews = CreatePropertyView(property);
+                foreach (var view in propertyViews.Where(view => view != null))
                 {
                     var index = orders.FindLastIndex(order => order <= property.Order);
                     orders.Insert(index + 1, property.Order);
-                    container.Insert(index + 1, propertyView);
+                    container.Insert(index + 1, view);
                 }
             }
             return nodeView;
 
-            VisualElement CreatePropertyView(INodeProperty property)
+            IEnumerable<VisualElement> CreatePropertyView(INodeProperty property)
             {
-                return NodePropertyViewFactory.Create(nodeView, property, null);
+                return NodePropertyViewFactory.Create(nodeView, property, NodePropertyViewFactory);
             }
         }
 

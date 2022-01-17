@@ -7,7 +7,7 @@ public class RuntimePrintAll : MonoBehaviour
     private void Awake()
     {
         var graph = JsonUtility.Deserialize<IVisualNode>(GraphJson.text);
-        foreach (var node in graph.Nodes)
+        foreach (var node in graph.NodeMap.Values)
             Debug.Log($"{node.GetType().Name} = {node.GetValue(graph)}");
     }
 }

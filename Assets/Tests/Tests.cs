@@ -68,7 +68,7 @@ public class TestNodePortAttribute
             new PortData(nameof(Node.Port), PortOrientation.Horizontal, PortDirection.Output, 100, typeof(string), Array.Empty<string>()),
         };
 
-        var ports = _node.FindPorts().ToArray();
+        var ports = NodePortUtility.FindPorts(_node).ToArray();
 
         Assert.That(expectedPorts, Is.EqualTo(ports));
     }

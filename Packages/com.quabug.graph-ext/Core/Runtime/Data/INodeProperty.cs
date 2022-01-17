@@ -12,8 +12,7 @@
             System.Reflection.MemberInfo memberInfo,
             object nodeObj,
             NodeId nodeId,
-            UnityEditor.SerializedProperty fieldProperty = null,
-            UnityEditor.SerializedProperty nodeProperty = null
+            UnityEditor.SerializedProperty fieldProperty = null
         );
     }
 #endif

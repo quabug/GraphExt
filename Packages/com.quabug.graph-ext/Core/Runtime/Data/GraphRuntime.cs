@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 namespace GraphExt
 {
-    public sealed class GraphRuntime<TNode> where TNode : INode<GraphRuntime<TNode>>
+    public interface IReadOnlyGraphRuntime<TNode> where TNode : INode<GraphRuntime<TNode>>
     {
         public delegate void OnNodeAddedFunc(in NodeId id, [NotNull] TNode node);
         public delegate void OnNodeWillDeleteFunc(in NodeId id, [NotNull] TNode node);
@@ -16,16 +16,44 @@ namespace GraphExt
         public event OnEdgeConnectedFunc OnEdgeConnected;
         public event OnEdgeWillDisconnectFunc OnEdgeWillDisconnect;
 
-        private readonly BiDictionary<NodeId, TNode> _nodeMap = new BiDictionary<NodeId, TNode>();
-        private readonly HashSet<EdgeId> _edges = new HashSet<EdgeId>();
+        [NotNull] public IReadOnlySet<EdgeId> Edges { get; }
+        [NotNull] public IReadOnlyDictionary<NodeId, TNode> NodeMap { get; }
+        [NotNull] public IReadOnlyDictionary<TNode, NodeId> NodeIdMap { get; }
 
-        [NotNull] public IReadOnlySet<EdgeId> Edges => _edges;
-        [NotNull] public IEnumerable<TNode> Nodes => _nodeMap.Forward.Values;
-        [NotNull] public IReadOnlyDictionary<NodeId, TNode> NodeMap => _nodeMap.Forward;
-        [NotNull] public IReadOnlyDictionary<TNode, NodeId> NodeIdMap => _nodeMap.Reverse;
+        [NotNull] public TNode this[in NodeId id] { get; }
+        public NodeId this[[NotNull] TNode node] { get; }
+    }
 
-        [NotNull] public TNode this[in NodeId id] => _nodeMap[id];
-        public NodeId this[[NotNull] TNode node] => _nodeMap.GetKey(node);
+    public sealed class GraphRuntime<TNode> : IReadOnlyGraphRuntime<TNode> where TNode : INode<GraphRuntime<TNode>>
+    {
+        public event IReadOnlyGraphRuntime<TNode>.OnNodeAddedFunc OnNodeAdded;
+        public event IReadOnlyGraphRuntime<TNode>.OnNodeWillDeleteFunc OnNodeWillDelete;
+        public event IReadOnlyGraphRuntime<TNode>.OnEdgeConnectedFunc OnEdgeConnected;
+        public event IReadOnlyGraphRuntime<TNode>.OnEdgeWillDisconnectFunc OnEdgeWillDisconnect;
+
+        private readonly BiDictionary<NodeId, TNode> _nodeMap;
+        private readonly HashSet<EdgeId> _edges;
+
+        public IReadOnlySet<EdgeId> Edges => _edges;
+        public IReadOnlyDictionary<NodeId, TNode> NodeMap => _nodeMap.Forward;
+        public IReadOnlyDictionary<TNode, NodeId> NodeIdMap => _nodeMap.Reverse;
+
+        public TNode this[in NodeId id] => _nodeMap[id];
+        public NodeId this[TNode node] => _nodeMap.GetKey(node);
+
+        public IEnumerable<(NodeId, TNode)> Nodes => _nodeMap.Forward.Select(t => (t.Key, t.Value));
+
+        public GraphRuntime()
+        {
+            _edges = new HashSet<EdgeId>();
+            _nodeMap = new BiDictionary<NodeId, TNode>();
+        }
+
+        public GraphRuntime(IReadOnlyGraphRuntime<TNode> graphRuntime)
+        {
+            _edges = graphRuntime.Edges.ToHashSet();
+            _nodeMap = new BiDictionary<NodeId, TNode>(graphRuntime.NodeMap);
+        }
 
         public void AddNode(in NodeId id, [NotNull] TNode node)
         {
@@ -83,19 +111,19 @@ namespace GraphExt
 
     public static class GraphRuntimeExtension
     {
-        [NotNull] public static IEnumerable<PortId> FindConnectedPorts<TNode>([NotNull] this GraphRuntime<TNode> graph, [NotNull] TNode node, [NotNull] string port)
+        [NotNull] public static IEnumerable<PortId> FindConnectedPorts<TNode>([NotNull] this IReadOnlyGraphRuntime<TNode> graph, [NotNull] TNode node, [NotNull] string port)
             where TNode : INode<GraphRuntime<TNode>>
         {
             return graph.FindConnectedPorts(new PortId(graph[node], port));
         }
 
-        [NotNull] public static IEnumerable<PortId> FindConnectedPorts<TNode>([NotNull] this GraphRuntime<TNode> graph, PortId portId)
+        [NotNull] public static IEnumerable<PortId> FindConnectedPorts<TNode>([NotNull] this IReadOnlyGraphRuntime<TNode> graph, PortId portId)
             where TNode : INode<GraphRuntime<TNode>>
         {
             return graph.Edges.SelectMany(edge => edge.GetConnectedPort(portId));
         }
 
-        [NotNull] public static IEnumerable<NodeId> FindConnectedNodes<TNode>([NotNull] this GraphRuntime<TNode> graph, in PortId portId)
+        [NotNull] public static IEnumerable<NodeId> FindConnectedNodes<TNode>([NotNull] this IReadOnlyGraphRuntime<TNode> graph, in PortId portId)
             where TNode : INode<GraphRuntime<TNode>>
         {
             return graph.FindConnectedPorts(portId).Select(port => port.NodeId);

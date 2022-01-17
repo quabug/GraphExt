@@ -43,7 +43,7 @@ public static class JsonSaveLoad
 
 public static class JsonUtility
 {
-    public static string Serialize<TNode>(this GraphRuntime<TNode> graph) where TNode : INode<GraphRuntime<TNode>>
+    public static string Serialize<TNode>(this IReadOnlyGraphRuntime<TNode> graph) where TNode : INode<GraphRuntime<TNode>>
     {
         return JsonSaveLoad.Serialize(new GraphRuntimeData<TNode>(graph));
     }
@@ -58,7 +58,7 @@ public static class JsonUtility
         public Dictionary<Guid, TNode> Nodes;
         public SerializableEdge[] Edges;
 
-        public GraphRuntimeData(GraphRuntime<TNode> graph)
+        public GraphRuntimeData(IReadOnlyGraphRuntime<TNode> graph)
         {
             Nodes = graph.NodeMap.ToDictionary(pair => pair.Key.Id, pair => pair.Value);
             Edges = graph.Edges.Distinct().Select(edge => edge.ToSerializable(graph)).ToArray();
@@ -88,34 +88,26 @@ public static class JsonUtility
 #if UNITY_EDITOR
 public static class JsonEditorUtility
 {
-    public static string Serialize<TNode>(this GraphExt.Editor.MemoryGraphViewModule<TNode> graph) where TNode : INode<GraphRuntime<TNode>>
-    {
-        return JsonSaveLoad.Serialize(new JsonUtility.GraphRuntimeData<TNode>(graph.Runtime), new GraphViewData<TNode>(graph));
-    }
-
-    public static GraphExt.Editor.MemoryGraphViewModule<TNode> Deserialize<TNode>(string json)
+    public static (IReadOnlyGraphRuntime<TNode> graphRuntime, IReadOnlyDictionary<NodeId, Vector2> nodePositions) Deserialize<TNode>(string json)
         where TNode : INode<GraphRuntime<TNode>>
     {
         var dataList = JsonSaveLoad.Deserialize(json, typeof(JsonUtility.GraphRuntimeData<TNode>), typeof(GraphViewData<TNode>)).ToArray();
         var runtimeGraph = ((JsonUtility.GraphRuntimeData<TNode>)dataList[0]).ToMemory();
-        return ((GraphViewData<TNode>)dataList[1]).CreateViewModule(runtimeGraph);
+        return (runtimeGraph, ((GraphViewData<TNode>)dataList[1]).ToMemory());
     }
 
-    struct GraphViewData<TNode> where TNode : INode<GraphRuntime<TNode>>
+    internal struct GraphViewData<TNode> where TNode : INode<GraphRuntime<TNode>>
     {
         public Dictionary<Guid, (float x, float y)> Positions;
 
-        public GraphViewData(GraphExt.Editor.MemoryGraphViewModule<TNode> graph)
+        public GraphViewData(IReadOnlyDictionary<NodeId, Vector2> nodePositions)
         {
-            Positions = graph.NodePositions.ToDictionary(t => t.id.Id, t => (t.position.x, t.position.y));
+            Positions = nodePositions.ToDictionary(t => t.Key.Id, t => (t.Value.x, t.Value.y));
         }
 
-        public GraphExt.Editor.MemoryGraphViewModule<TNode> CreateViewModule(GraphRuntime<TNode> runtimeData)
+        public IReadOnlyDictionary<NodeId, Vector2> ToMemory()
         {
-            return new GraphExt.Editor.MemoryGraphViewModule<TNode>(
-                runtimeData,
-                Positions.ToDictionary(pair => new NodeId(pair.Key), pair => new Vector2(pair.Value.x, pair.Value.y))
-            );
+            return Positions.ToDictionary(pair => new NodeId(pair.Key), pair => new Vector2(pair.Value.x, pair.Value.y));
         }
     }
 }
