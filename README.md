@@ -15,74 +15,7 @@ A library to help you customize your own Unity3D Graph solution.
 - Have [`Memory`](Packages/com.quabug.graph-ext/Backend/Memory), [`ScriptableObject`](Packages/com.quabug.graph-ext/Backend/ScriptableObject) and [`Prefab`](Packages/com.quabug.graph-ext/Backend/Prefab) back-end to store graph data by default.
 
 ## Architecture
-```
-    +----------------------------------------------------------------------+
-    |                                                                      |
-    |  Editor                                                              |
-    |                                                                      |
-    |            +-------------------------------------------+             |
-    |            |                 GraphView                 |             |
-    |            +-------------------------------------------+             |
-    |            |                                           |             |
-    |            | 1. Implement `UIElement.Graph`            |             |
-    |            | 2. Pull graph data from `GraphViewModule` |             |
-    |            |    and generate corresponding elements    |             |
-    |            | 3. Send data/event to back-end            |             |
-    |            |    via API of `GraphViewModule`           |             |
-    |            |                                           |             |
-    |            +---------------------+---------------------+             |
-    |                                  |                                   |
-    |                                  |                                   |
-    |                                  v                                   |
-    |               +------------------+-------------------+               |
-    |               |           GraphViewModule            |               |
-    |               +--------------------------------------+               |
-    |               |1. Data collection of View            |               |
-    |               |   Including nodes, ports and edges.  |               |
-    |               |2. Provide API to `GraphView`         |               |
-    |               |   to control back-end                |               |
-    |               +--------------------------------------+               |
-    |                                  ^                                   |
-    |                                  | inhenrited                        |
-    |                                  |                                   |
-    |          +-----------------------+-----------------------+           |
-    |          |             BackendGraphViewModule*           |           |
-    |          +-----------------------------------------------+           |
-    |          |  1. Implement `GraphViewModule`               |           |
-    |          |  2. Collect data from specific back-end       |           |
-    |          |  3. Bridge call from `GraphView` to back-end  |           |
-    |          +--+----------------------------+---------------+           |
-    |             |                            |                           |
-    |             |                            |                           |
-    |             |                            |                           |
-    +----------------------------------------------------------------------+
-                  |                            |
-                  |                            |
-+-------------------------------------------------------------------------------+
-|                 |                            |                                |
-|   Runtime       |                            |                                |
-|                 |                            v                                |
-|                 |         +------------------+-------------------------+      |
-|                 |         |            GraphRuntime<TNode>             |      |
-|                 |         +--------------------------------------------+      |
-|                 |         |Runtime graph data including nodes and edges|      |
-|                 |         +-------------+------------------------------+      |
-|                 |                       ^                                     |
-|                 |                       |                                     |
-|                 |                       |                                     |
-|                 v                       |                                     |
-|     +-----------+-----------------------+-----+                               |
-|     |           BackendRuntime*               |                               |
-|     +-----------------------------------------+                               |
-|     |Data and processing for specifc back-end,|                               |
-|     |like prefab, ScriptableObject, etc.      |                               |
-|     +-----------------------------------------+                               |
-|                                                                               |
-|                                                                               |
-+-------------------------------------------------------------------------------+
-
-```
-* [`Memory`](Packages/com.quabug.graph-ext/Backend/Memory), [`ScriptableObject`](Packages/com.quabug.graph-ext/Backend/ScriptableObject) and [`Prefab`](Packages/com.quabug.graph-ext/Backend/Prefab) back-end by default.
+![image](https://user-images.githubusercontent.com/683655/149826813-7fa740a1-0195-41b1-b538-9626563934e6.png)
 
 ## Tutorial (Binary Expression Tree)
 <details><summary>Step-by-step tutorial to build a following binary expression tree:
@@ -123,7 +56,6 @@ public class ValueNode : IExpressionNode
 3. Define `AddNode` with a single-input-port and a multi-output-port. `GetValue` will sum the value of output-connected nodes together.
 ``` c#
 [Serializable]
-[NodeTitle(ConstTitle = "add")] // set node title
 public class AddNode : IExpressionNode
 {
     // define a single-float-input port
@@ -158,24 +90,37 @@ public class ExpressionGraphScriptableObject : GraphScriptableObject<IExpression
 ```
 ![image](https://user-images.githubusercontent.com/683655/147674310-bdeae924-014a-4dd9-a5a1-ae6effd8644e.png)
 
-### 3. Define graph menu entries and window extension to use `ExpressionGraphScriptableObject` as backend:
-``` c#
-public class ExpressionNodeCreationMenuEntry : ScriptableObjectNodeCreationMenuEntry<IExpressionNode, ExpressionNodeScriptableObject> {}
-public class ExpressionNodeWindowExtension : ScriptableObjectWindowExtension<IExpressionNode, ExpressionNodeScriptableObject> {}
+### 3. Create a new graph window of scriptable object backend:
+``` C#
+public class ScriptableObjectExpressionTreeWindow : ScriptableObjectGraphWindow<IVisualNode, VisualNodeScriptableObject>
+{
+    private MenuBuilder _menuBuilder;
+
+    [MenuItem("Graph/ScriptableObject Expression Tree")]
+    public static void OpenWindow()
+    {
+        OpenWindow<ScriptableObjectExpressionTreeWindow>("Scriptable Object");
+    }
+
+    protected override void CreateMenu()
+    {
+        _menuBuilder = new MenuBuilder(_GraphSetup.GraphView, new IMenuEntry[]
+        {
+            new PrintValueMenu(_GraphSetup.GraphRuntime, _GraphSetup.NodeViews.Reverse),
+            new SelectionEntry<IVisualNode>(_GraphSetup.GraphRuntime, _GraphSetup.NodeViews.Reverse, _GraphSetup.EdgeViews.Reverse),
+            new NodeMenuEntry<IVisualNode>(_GraphSetup.GraphRuntime, _GraphSetup.NodePositions)
+        });
+    }
+}
 ```
 
-### 4. Create a new graph window config file and set to use expression extensions:
-![image](https://user-images.githubusercontent.com/683655/147674011-a0a5b768-2cd7-4f65-91bf-9a064ebe393c.png)
-![image](https://user-images.githubusercontent.com/683655/147674159-bad96cef-5f31-4505-9305-f607d088b308.png)
-
-### 5. Open expression graph window and choose a "Expression Graph" to modifying:
-![image](https://user-images.githubusercontent.com/683655/147678233-2d4155cf-d46c-45ca-bf6a-d33925d87ba5.png)
+### 4. Open expression graph window and choose a "Expression Graph" to modifying:
+![image](https://user-images.githubusercontent.com/683655/149827415-12e86d6f-c933-478f-a24c-de0ead625bfd.png)
 ![image](https://user-images.githubusercontent.com/683655/147678357-a8385a57-5070-4404-9a65-d1c1077bb9d5.png)
 
-### 6. (Optional) Make it nicer:
+### 5. (Optional) Make it nicer:
 - compact node look of `AddNode`:![image](https://user-images.githubusercontent.com/683655/147679433-baf816ef-d6ab-475c-9388-1396870f1191.png)
 ``` c#
-// delete `[NodeTitle]` to hide title
 public class AddNode : IExpressionNode
 {
     // define a property to hold input and output port
@@ -236,48 +181,39 @@ public class AddNode : ExpressionNode
     ...
     ```
     
-    2. Define necessary component, menu entry and window extension:
+    2. Define tree component:
     ``` c#
     // ExpressionTreeNodeComponent.cs
     public class ExpressionTreeNodeComponent : TreeNodeComponent<IExpressionNode, ExpressionTreeNodeComponent> {}
-    public class PrefabExpressionNodeCreationMenuEntry : NodeCreationMenuEntry<IExpressionNode, ExpressionTreeNodeComponent> {}
-    public class PrefabExpressionWindowExtension : PrefabStageWindowExtension<IExpressionNode, ExpressionTreeNodeComponent> {}
     ```
     
-    3. Create window config:
+    3. Create prefab window:
 
-    ![image](https://user-images.githubusercontent.com/683655/147681310-dbe5261f-dea6-4889-9db3-546aecf51ed8.png)
+    ``` c#
+    public class PrefabExpressionTreeWindow : PrefabGraphWindow<IVisualNode, VisualTreeComponent>
+    {
+        private MenuBuilder _menuBuilder;
+
+        [MenuItem("Graph/Prefab Expression Tree")]
+        public static void OpenWindow()
+        {
+            OpenWindow<PrefabExpressionTreeWindow>("Prefab");
+        }
+
+        protected override void CreateMenu()
+        {
+            _menuBuilder = new MenuBuilder(_GraphSetup.GraphView, new IMenuEntry[]
+            {
+                new PrintValueMenu(_GraphSetup.GraphRuntime, _GraphSetup.NodeViews.Reverse),
+                new SelectionEntry<IVisualNode>(_GraphSetup.GraphRuntime, _GraphSetup.NodeViews.Reverse, _GraphSetup.EdgeViews.Reverse),
+                new NodeMenuEntry<IVisualNode>(_GraphSetup.GraphRuntime, _GraphSetup.NodePositions)
+            });
+        }
+    }
+    ```
     
     4. Open a prefab and start to modify:
  
     ![image](https://user-images.githubusercontent.com/683655/147681512-e63c90b3-6727-4353-8434-a9179c6cdf62.png)
     
 </details>
-    
-## HowTo
-### Customize graph menu
-1. Implement a class of [`IMenuEntry`](Packages/com.quabug.graph-ext/Core/Editor/Menu/IMenuEntry.cs)
-2. Add it into _Menu_ of `GraphConfig`
-
-![image](https://user-images.githubusercontent.com/683655/147736001-46d230c6-60ca-452e-a258-44e8380f894e.png)
-
-### Customize view of node property
-1. Implement a property factory of [`INodePropertyFactory`](Packages/com.quabug.graph-ext/Core/Editor/View/NodePropertyViewFactory.cs)
-``` c#
-    public class FloatFieldViewFactory : INodePropertyViewFactory
-    {
-        public VisualElement Create(Node node, INodeProperty property, INodePropertyViewFactory factory)
-        {
-            return property is FieldInfoProperty<float> _ ? new Label("replace view") : null;
-        }
-    }
-```
-
-2. Add it into the top of _Factories_ of _Node Property View Factory_
-
-![image](https://user-images.githubusercontent.com/683655/147737968-21151171-6b3f-4e3e-9ef1-97d4d23374d3.png)
-
-3. Create a node and will change its property view.
-
-![image](https://user-images.githubusercontent.com/683655/147737633-a7c982f0-1e86-4e34-8ca8-d89025014ece.png)
-
