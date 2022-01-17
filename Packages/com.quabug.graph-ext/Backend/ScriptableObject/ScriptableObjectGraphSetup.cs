@@ -4,6 +4,7 @@ using System.Linq;
 using JetBrains.Annotations;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
+using UnityEngine.UIElements;
 
 namespace GraphExt.Editor
 {
@@ -40,6 +41,9 @@ namespace GraphExt.Editor
             graph.Initialize();
 
             GraphView = new GraphView(EdgeFunctions.IsCompatible(GraphRuntime, Ports), PortViews.Reverse);
+            GraphView.SetupGridBackground();
+            GraphView.SetupMiniMap();
+            GraphView.SetupDefaultManipulators();
 
             NodePositions = new NodePositions<TNodeScriptableObject>(
                 Graph.NodeObjectMap,

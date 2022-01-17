@@ -44,6 +44,9 @@ namespace GraphExt.Editor
                                                        graph.IsPortCompatible(input, output),
                 PortViews.Reverse
             );
+            GraphView.SetupGridBackground();
+            GraphView.SetupMiniMap();
+            GraphView.SetupDefaultManipulators();
 
             NodePositions = new NodePositions<TComponent>(
                 Graph.NodeObjectMap,
