@@ -1,23 +1,23 @@
 using GraphExt.Editor;
 using UnityEditor;
 
-public class PrefabExpressionTreeWindow : PrefabGraphWindow<IVisualNode, VisualTreeComponent>
-{
-    private MenuBuilder _menuBuilder;
-
-    [MenuItem("Graph/Prefab Expression Tree")]
-    public static void OpenWindow()
+    public class PrefabExpressionTreeWindow : PrefabGraphWindow<IVisualNode, VisualTreeComponent>
     {
-        OpenWindow<PrefabExpressionTreeWindow>("Prefab");
-    }
+        private MenuBuilder _menuBuilder;
 
-    protected override void CreateMenu()
-    {
-        _menuBuilder = new MenuBuilder(_GraphSetup.GraphView, new IMenuEntry[]
+        [MenuItem("Graph/Prefab Expression Tree")]
+        public static void OpenWindow()
         {
-            new PrintValueMenu(_GraphSetup.GraphRuntime, _GraphSetup.NodeViews.Reverse),
-            new SelectionEntry<IVisualNode>(_GraphSetup.GraphRuntime, _GraphSetup.NodeViews.Reverse, _GraphSetup.EdgeViews.Reverse),
-            new NodeMenuEntry<IVisualNode>(_GraphSetup.GraphRuntime, _GraphSetup.NodePositions)
-        });
+            OpenWindow<PrefabExpressionTreeWindow>("Prefab");
+        }
+
+        protected override void CreateMenu()
+        {
+            _menuBuilder = new MenuBuilder(_GraphSetup.GraphView, new IMenuEntry[]
+            {
+                new PrintValueMenu(_GraphSetup.GraphRuntime, _GraphSetup.NodeViews.Reverse),
+                new SelectionEntry<IVisualNode>(_GraphSetup.GraphRuntime, _GraphSetup.NodeViews.Reverse, _GraphSetup.EdgeViews.Reverse),
+                new NodeMenuEntry<IVisualNode>(_GraphSetup.GraphRuntime, _GraphSetup.NodePositions)
+            });
+        }
     }
-}
