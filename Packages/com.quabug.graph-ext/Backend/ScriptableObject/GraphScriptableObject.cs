@@ -12,11 +12,13 @@ namespace GraphExt
         public GraphRuntime<TNode> Runtime { get; private set; } = new GraphRuntime<TNode>();
         private BiDictionary<NodeId, TNodeScriptableObject> _nodesCache = new BiDictionary<NodeId, TNodeScriptableObject>();
         [NotNull] public TNodeScriptableObject this[in NodeId nodeId] => _nodesCache[nodeId];
+        public NodeId this[[NotNull] TNodeScriptableObject node] => _nodesCache.GetKey(node);
 
         [SerializeField, HideInInspector] private List<TNodeScriptableObject> _nodes = new List<TNodeScriptableObject>();
 
         public IReadOnlyList<TNodeScriptableObject> Nodes => _nodes;
         public IReadOnlyDictionary<NodeId, TNodeScriptableObject> NodeObjectMap => _nodesCache.Forward;
+        public IReadOnlyDictionary<TNodeScriptableObject, NodeId> ObjectNodeMap => _nodesCache.Reverse;
 
         private void Awake()
         {

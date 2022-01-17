@@ -46,13 +46,18 @@ namespace GraphExt.Editor
 
         GraphScriptableObject<TNode, TNodeScriptableObject> FindCurrentGraph()
         {
-            if (Selection.activeObject is GraphScriptableObject<TNode, TNodeScriptableObject> graph) return graph;
-            if (Selection.activeObject is NodeScriptableObject<TNode> node)
+            switch (Selection.activeObject)
             {
-                var path = AssetDatabase.GetAssetPath(node);
-                return AssetDatabase.LoadAssetAtPath<GraphScriptableObject<TNode, TNodeScriptableObject>>(path);
+                case GraphScriptableObject<TNode, TNodeScriptableObject> graph:
+                    return graph;
+                case NodeScriptableObject<TNode> node:
+                {
+                    var path = AssetDatabase.GetAssetPath(node);
+                    return AssetDatabase.LoadAssetAtPath<GraphScriptableObject<TNode, TNodeScriptableObject>>(path);
+                }
+                default:
+                    return null;
             }
-            return null;
         }
 
         protected virtual void CreateMenu() {}

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 
 namespace GraphExt.Editor
@@ -29,6 +30,9 @@ namespace GraphExt.Editor
         public NodeViewPresenter NodeViewPresenter { get; }
         public EdgeViewPresenter EdgeViewPresenter { get; }
         public SyncNodePositionPresenter SyncNodePositionPresenter { get; }
+
+        public FocusActiveNodePresenter<TNodeScriptableObject> FocusActiveNodePresenter { get; }
+        public ActiveSelectedNodePresenter<TNodeScriptableObject> ActiveSelectedNodePresenter { get; }
 
         public ScriptableObjectGraphSetup([NotNull] GraphScriptableObject<TNode, TNodeScriptableObject> graph)
         {
@@ -70,18 +74,34 @@ namespace GraphExt.Editor
                 NodeViews.Reverse,
                 NodePositions
             );
+
+            FocusActiveNodePresenter = new FocusActiveNodePresenter<TNodeScriptableObject>(
+                GraphView,
+                node => NodeViews[Graph[node]]
+            );
+
+            ActiveSelectedNodePresenter = new ActiveSelectedNodePresenter<TNodeScriptableObject>(
+                NodeViews,
+                Graph.NodeObjectMap,
+                node =>
+                {
+                    if (Selection.activeObject != node) Selection.activeObject = node;
+                }
+            );
         }
 
         public void Tick()
         {
             NodeViewPresenter.Tick();
             EdgeViewPresenter.Tick();
+            ActiveSelectedNodePresenter.Tick();
         }
 
         public void Dispose()
         {
             EdgeViewPresenter?.Dispose();
             SyncNodePositionPresenter?.Dispose();
+            FocusActiveNodePresenter?.Dispose();
         }
     }
 }
