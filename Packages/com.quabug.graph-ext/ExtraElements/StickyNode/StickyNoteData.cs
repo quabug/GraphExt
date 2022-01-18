@@ -8,7 +8,7 @@ namespace GraphExt
     }
 
     [Serializable]
-    public struct StickyNoteData
+    public struct StickyNoteData : IEquatable<StickyNoteData>
     {
         public float X;
         public float Y;
@@ -29,6 +29,32 @@ namespace GraphExt
             Content = content;
             Theme = theme;
             FontSize = fontSize;
+        }
+
+        public bool Equals(StickyNoteData other)
+        {
+            return X.Equals(other.X) && Y.Equals(other.Y) && Width.Equals(other.Width) && Height.Equals(other.Height) && Title == other.Title && Content == other.Content && Theme == other.Theme && FontSize == other.FontSize;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is StickyNoteData other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = X.GetHashCode();
+                hashCode = (hashCode * 397) ^ Y.GetHashCode();
+                hashCode = (hashCode * 397) ^ Width.GetHashCode();
+                hashCode = (hashCode * 397) ^ Height.GetHashCode();
+                hashCode = (hashCode * 397) ^ (Title != null ? Title.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (Content != null ? Content.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (int)Theme;
+                hashCode = (hashCode * 397) ^ FontSize;
+                return hashCode;
+            }
         }
     }
 
