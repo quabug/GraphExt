@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using GraphExt;
@@ -88,12 +90,20 @@ public static class JsonUtility
 #if UNITY_EDITOR
 public static class JsonEditorUtility
 {
-    public static (IReadOnlyGraphRuntime<TNode> graphRuntime, IReadOnlyDictionary<NodeId, Vector2> nodePositions) Deserialize<TNode>(string json)
-        where TNode : INode<GraphRuntime<TNode>>
+    public static (IReadOnlyGraphRuntime<TNode> graphRuntime, IReadOnlyDictionary<NodeId, Vector2> nodePositions, IReadOnlyDictionary<NodeId, StickyNoteData> notes)
+        Deserialize<TNode>(string json) where TNode : INode<GraphRuntime<TNode>>
     {
-        var dataList = JsonSaveLoad.Deserialize(json, typeof(JsonUtility.GraphRuntimeData<TNode>), typeof(GraphViewData<TNode>)).ToArray();
+        var dataList = JsonSaveLoad.Deserialize(json, typeof(JsonUtility.GraphRuntimeData<TNode>), typeof(GraphViewData<TNode>), typeof(Dictionary<string, StickyNoteData>)).ToArray();
         var runtimeGraph = ((JsonUtility.GraphRuntimeData<TNode>)dataList[0]).ToMemory();
-        return (runtimeGraph, ((GraphViewData<TNode>)dataList[1]).ToMemory());
+        return (runtimeGraph, ((GraphViewData<TNode>)dataList[1]).ToMemory(), Convert(dataList[2]));
+    }
+
+    private static Dictionary<NodeId, StickyNoteData> Convert(object data)
+    {
+        return data is Dictionary<string, StickyNoteData> notes
+            ? notes.ToDictionary(t => new NodeId(t.Key), t => t.Value)
+            : new Dictionary<NodeId, StickyNoteData>()
+        ;
     }
 
     internal struct GraphViewData<TNode> where TNode : INode<GraphRuntime<TNode>>

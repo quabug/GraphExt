@@ -5,9 +5,9 @@ using JetBrains.Annotations;
 
 namespace GraphExt
 {
-    internal static class EnumerableExtensions
+    public static class EnumerableExtensions
     {
-        public static int IndexOf<T>(this IEnumerable<T> list, T value)
+        internal static int IndexOf<T>(this IEnumerable<T> list, T value)
         {
             var index = 0;
             foreach (var element in list)
@@ -18,12 +18,12 @@ namespace GraphExt
             return -1;
         }
 
-        public static IEnumerable<T> Yield<T>(this T element)
+        internal static IEnumerable<T> Yield<T>(this T element)
         {
             yield return element;
         }
 
-        public static T[] RemoveWhere<T>(this ICollection<T> collection, Func<T, bool> match)
+        internal static T[] RemoveWhere<T>(this ICollection<T> collection, Func<T, bool> match)
         {
             var removed = collection.Where(match).ToArray();
             foreach (var item in removed) collection.Remove(item);

@@ -51,7 +51,7 @@ namespace GraphExt.Editor
 
             void UpdateNodes()
             {
-                var (added, removed) = _currentNodeViews.Select(t => t.Key).Diff(newNodes);
+                var (added, removed) = _currentNodeViews.Keys.Diff(newNodes);
 
                 foreach (var node in added)
                 {

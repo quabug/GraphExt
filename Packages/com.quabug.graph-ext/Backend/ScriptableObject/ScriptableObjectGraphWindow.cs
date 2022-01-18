@@ -1,4 +1,5 @@
 using UnityEditor;
+using UnityEngine;
 
 namespace GraphExt.Editor
 {
@@ -15,18 +16,18 @@ namespace GraphExt.Editor
             Selection.selectionChanged += OnSelectionChanged;
         }
 
-        private void Update()
+        protected virtual void Update()
         {
             _GraphSetup?.Tick();
         }
 
-        private void OnDestroy()
+        protected virtual void OnDestroy()
         {
             _GraphSetup?.Dispose();
             Selection.selectionChanged -= OnSelectionChanged;
         }
 
-        private void OnSelectionChanged()
+        protected void OnSelectionChanged()
         {
             var graph = FindCurrentGraph();
             if (graph == null)
@@ -34,25 +35,26 @@ namespace GraphExt.Editor
                 RemoveGraphView();
                 _GraphSetup?.Dispose();
                 _GraphSetup = null;
+                OnGraphRecreated();
             }
             else if (_GraphSetup == null || graph != _GraphSetup.Graph)
             {
                 _GraphSetup?.Dispose();
                 _GraphSetup = new ScriptableObjectGraphSetup<TNode, TNodeScriptableObject>(graph);
                 ReplaceGraphView(_GraphSetup.GraphView);
-                CreateMenu();
+                OnGraphRecreated();
             }
         }
 
-        GraphScriptableObject<TNode, TNodeScriptableObject> FindCurrentGraph()
+        private GraphScriptableObject<TNode, TNodeScriptableObject> FindCurrentGraph()
         {
             switch (Selection.activeObject)
             {
                 case GraphScriptableObject<TNode, TNodeScriptableObject> graph:
                     return graph;
-                case NodeScriptableObject<TNode> node:
+                case ScriptableObject obj:
                 {
-                    var path = AssetDatabase.GetAssetPath(node);
+                    var path = AssetDatabase.GetAssetPath(obj);
                     return AssetDatabase.LoadAssetAtPath<GraphScriptableObject<TNode, TNodeScriptableObject>>(path);
                 }
                 default:
@@ -60,6 +62,6 @@ namespace GraphExt.Editor
             }
         }
 
-        protected virtual void CreateMenu() {}
+        protected virtual void OnGraphRecreated() {}
     }
 }

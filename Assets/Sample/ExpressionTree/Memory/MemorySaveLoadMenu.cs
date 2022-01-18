@@ -15,14 +15,17 @@ public class MemorySaveLoadMenu<TNode> : IMenuEntry where TNode : INode<GraphRun
 {
     [NotNull] private readonly GraphRuntime<TNode> _graphRuntime;
     [NotNull] private readonly IReadOnlyDictionary<NodeId, Vector2> _nodePositions;
+    [NotNull] private readonly IReadOnlyDictionary<NodeId, StickyNoteData> _notes;
 
     public MemorySaveLoadMenu(
         [NotNull] GraphRuntime<TNode> graphRuntime,
-        [NotNull] IReadOnlyDictionary<NodeId, Vector2> nodePositions
+        [NotNull] IReadOnlyDictionary<NodeId, Vector2> nodePositions,
+        [NotNull] IReadOnlyDictionary<NodeId, StickyNoteData> notes
     )
     {
         _graphRuntime = graphRuntime;
         _nodePositions = nodePositions;
+        _notes = notes;
     }
 
     public void MakeEntry(UnityEditor.Experimental.GraphView.GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
@@ -40,7 +43,8 @@ public class MemorySaveLoadMenu<TNode> : IMenuEntry where TNode : INode<GraphRun
             }
             File.WriteAllText(path, JsonSaveLoad.Serialize(
                 new JsonUtility.GraphRuntimeData<TNode>(_graphRuntime),
-                new JsonEditorUtility.GraphViewData<TNode>(_nodePositions)
+                new JsonEditorUtility.GraphViewData<TNode>(_nodePositions),
+                _notes
             ));
             ChangeWindowFilePath(jsonAsset);
         });

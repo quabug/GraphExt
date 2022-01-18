@@ -57,11 +57,33 @@ MonoBehaviour:
     OutputPort: _Output
     OutputPortId: out
   _nodeId: d47a7d36-3a6a-4652-a6b9-2c1cd6dcf17b
-  Position: {x: 366, y: 219}
+  Position: {x: 408, y: 260.5}
   references:
     version: 1
     00000000:
       type: {class: AddNode, ns: , asm: GraphExt.Sample.ExpressionTree}
+--- !u!114 &-6518323576404188088
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b337b2087ee4508b6034f89b64fdc16, type: 3}
+  m_Name: Note
+  m_EditorClassIdentifier: 
+  Id: d1db215d-6e8a-4884-b8ee-72c02027c2e2
+  Data:
+    X: 824
+    Y: 206
+    Width: 200
+    Height: 200
+    Title: Note
+    Content: 
+    Theme: 1
+    FontSize: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -100,7 +122,7 @@ MonoBehaviour:
     OutputPort: _Output
     OutputPortId: out
   _nodeId: 806281aa-4c07-4e0b-adef-5875e2605445
-  Position: {x: 563, y: 319}
+  Position: {x: 579, y: 337.5}
   references:
     version: 1
     00000000:

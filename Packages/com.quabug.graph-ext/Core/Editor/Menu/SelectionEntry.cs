@@ -27,22 +27,21 @@ namespace GraphExt.Editor
 
         public void MakeEntry(UnityEditor.Experimental.GraphView.GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
         {
-            if (graph.selection != null && graph.selection.Any())
+            var edges = graph.selection?.OfType<Edge>();
+            var nodes = graph.selection?.OfType<Node>();
+            if (edges != null && edges.Any() || nodes != null && nodes.Any())
             {
                 menu.AddItem(new GUIContent("Delete"), false, () =>
                 {
-                    if (graph.selection != null)
+                    foreach (var edge in edges)
                     {
-                        foreach (var edge in graph.selection.OfType<Edge>())
-                        {
-                            var edgeId = _edges[edge];
-                            _graph.Disconnect(input: edgeId.Input, output: edgeId.Output);
-                        }
+                        var edgeId = _edges[edge];
+                        _graph.Disconnect(input: edgeId.Input, output: edgeId.Output);
+                    }
 
-                        foreach (var node in graph.selection.OfType<Node>())
-                        {
-                            _graph.DeleteNode(_nodes[node]);
-                        }
+                    foreach (var node in nodes)
+                    {
+                        _graph.DeleteNode(_nodes[node]);
                     }
                 });
                 menu.AddSeparator("");
