@@ -11,8 +11,7 @@ public class ScriptableObjectExpressionTreeWindow : ScriptableObjectGraphWindow<
 
     private readonly BiDictionary<NodeId, StickyNote> _stickyNoteViews = new BiDictionary<NodeId, StickyNote>();
     private StickyNodePresenter _stickyNodePresenter;
-    private readonly Dictionary<NodeId, StickyNoteScriptableObject> _notes =
-        new Dictionary<NodeId, StickyNoteScriptableObject>();
+    private readonly Dictionary<NodeId, StickyNoteScriptableObject> _notes = new Dictionary<NodeId, StickyNoteScriptableObject>();
 
     [MenuItem("Graph/ScriptableObject Expression Tree")]
     public static void OpenWindow()

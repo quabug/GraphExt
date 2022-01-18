@@ -1,5 +1,4 @@
 using JetBrains.Annotations;
-using UnityEditor;
 using UnityEditor.Experimental.SceneManagement;
 using UnityEngine;
 
@@ -10,6 +9,7 @@ namespace GraphExt.Editor
         where TComponent : MonoBehaviour, INodeComponent<TNode, TComponent>
     {
         protected PrefabGraphSetup<TNode, TComponent> _GraphSetup;
+        protected PrefabStage _PrefabStage;
 
         protected override void CreateGUI()
         {
@@ -18,12 +18,12 @@ namespace GraphExt.Editor
             PrefabStage.prefabStageClosing += ClearEditorView;
         }
 
-        private void Update()
+        protected virtual void Update()
         {
             _GraphSetup?.Tick();
         }
 
-        private void OnDestroy()
+        protected virtual void OnDestroy()
         {
             _GraphSetup?.Dispose();
             PrefabStage.prefabStageOpened -= ResetGraphBackend;
@@ -32,6 +32,7 @@ namespace GraphExt.Editor
 
         private void ResetGraphBackend([CanBeNull] PrefabStage prefabStage)
         {
+            _PrefabStage = prefabStage;
             if (prefabStage == null)
             {
                 RemoveGraphView();
@@ -44,8 +45,8 @@ namespace GraphExt.Editor
                 var gameObjectsGraph = new GameObjectNodes<TNode, TComponent>(prefabStage.prefabContentsRoot);
                 _GraphSetup = new PrefabGraphSetup<TNode, TComponent>(gameObjectsGraph);
                 ReplaceGraphView(_GraphSetup.GraphView);
-                CreateMenu();
             }
+            OnGraphRecreated();
         }
 
         private void ClearEditorView(PrefabStage closingStage)
@@ -55,6 +56,6 @@ namespace GraphExt.Editor
             ResetGraphBackend(currentStage == closingStage ? null : currentStage);
         }
 
-        protected virtual void CreateMenu() {}
+        protected virtual void OnGraphRecreated() {}
     }
 }
