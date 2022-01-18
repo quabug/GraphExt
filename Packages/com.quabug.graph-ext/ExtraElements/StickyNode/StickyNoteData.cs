@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 namespace GraphExt
 {
@@ -9,13 +8,28 @@ namespace GraphExt
     }
 
     [Serializable]
-    public class StickyNoteData
+    public readonly struct StickyNoteData
     {
-        public Rect Rect;
-        public string Title;
-        public string Content;
-        public StickyNoteTheme Theme;
-        public int FontSize;
+        public readonly float X;
+        public readonly float Y;
+        public readonly float Width;
+        public readonly float Height;
+        public readonly string Title;
+        public readonly string Content;
+        public readonly StickyNoteTheme Theme;
+        public readonly int FontSize;
+
+        public StickyNoteData(float x, float y, float width, float height, string title, string content, StickyNoteTheme theme, int fontSize)
+        {
+            X = x;
+            Y = y;
+            Width = width;
+            Height = height;
+            Title = title;
+            Content = content;
+            Theme = theme;
+            FontSize = fontSize;
+        }
     }
 
     internal static class StickyNoteDataExtension

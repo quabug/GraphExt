@@ -54,14 +54,17 @@ namespace GraphExt.Editor
             void CreateNode()
             {
                 var nodeId = Guid.NewGuid();
-                var data = new StickyNoteData()
-                {
-                    Title = "Note",
-                    Content = "",
-                    Rect = new Rect(menuPosition, new Vector2(200, 200)),
-                    Theme = StickyNoteTheme.Dark,
-                    FontSize = 0
-                };
+                var data = new StickyNoteData
+                (
+                    x: menuPosition.x,
+                    y: menuPosition.y,
+                    width: 200,
+                    height: 200,
+                    title: "Note",
+                    content: "",
+                    theme: StickyNoteTheme.Dark,
+                    fontSize: 0
+                );
                 _addNote(nodeId, data);
             }
         }

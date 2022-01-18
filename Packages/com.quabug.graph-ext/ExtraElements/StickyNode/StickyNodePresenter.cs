@@ -4,6 +4,7 @@ using System;
 using JetBrains.Annotations;
 using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
+using UnityEngine;
 
 namespace GraphExt.Editor
 {
@@ -40,7 +41,7 @@ namespace GraphExt.Editor
                 var data = _getStickyNoteData(note);
                 _stickyNoteViews.Add(note, view);
                 _graphView.AddElement(view);
-                view.SetPosition(data.Rect);
+                view.SetPosition(new Rect(data.X, data.Y, data.Width, data.Height));
                 view.title = data.Title;
                 view.contents = data.Content;
                 view.theme = data.Theme.ToEditor();
@@ -61,14 +62,18 @@ namespace GraphExt.Editor
         {
             var view = (StickyNote)evt.target;
             var nodeId = _stickyNoteViews.GetKey(view);
-            var data = new StickyNoteData()
-            {
-                Rect = view.GetPosition(),
-                Title = view.title,
-                Content = view.contents,
-                Theme = view.theme.ToRuntime(),
-                FontSize = view.fontSize.ToRuntime()
-            };
+            var rect = view.GetPosition();
+            var data = new StickyNoteData
+            (
+                x: rect.x,
+                y: rect.y,
+                width: rect.width,
+                height: rect.height,
+                title: view.title,
+                content: view.contents,
+                theme: view.theme.ToRuntime(),
+                fontSize: view.fontSize.ToRuntime()
+            );
             _setStickyNoteData(nodeId, data);
         }
     }

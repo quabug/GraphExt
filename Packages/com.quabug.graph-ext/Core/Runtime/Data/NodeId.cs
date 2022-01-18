@@ -6,6 +6,7 @@ namespace GraphExt
     {
         public readonly Guid Id;
         public NodeId(Guid id) => Id = id;
+        public NodeId(string id) => Id = Guid.Parse(id);
 
         public override string ToString()
         {

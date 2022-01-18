@@ -7,8 +7,8 @@ using UnityEngine;
 
 public class MemoryExpressionTreeWindow : BaseGraphWindow
 {
-    private Dictionary<NodeId, StickyNoteData> _stickyNotes = new Dictionary<NodeId, StickyNoteData>();
-    private BiDictionary<NodeId, StickyNote> _stickyNoteViews = new BiDictionary<NodeId, StickyNote>();
+    private readonly Dictionary<NodeId, StickyNoteData> _stickyNotes = new Dictionary<NodeId, StickyNoteData>();
+    private readonly BiDictionary<NodeId, StickyNote> _stickyNoteViews = new BiDictionary<NodeId, StickyNote>();
     private StickyNodePresenter _stickyNodePresenter;
 
     private MemoryGraphSetup<IVisualNode> _graphSetup;
@@ -30,10 +30,16 @@ public class MemoryExpressionTreeWindow : BaseGraphWindow
     protected override void CreateGUI()
     {
         _graphSetup?.Dispose();
+        _stickyNotes.Clear();
+        _stickyNoteViews.Clear();
         if (JsonFile != null)
         {
-            var (graphRuntime, nodePositions) = JsonEditorUtility.Deserialize<IVisualNode>(JsonFile.text);
+            var (graphRuntime, nodePositions, notes) = JsonEditorUtility.Deserialize<IVisualNode>(JsonFile.text);
             _graphSetup = new MemoryGraphSetup<IVisualNode>(graphRuntime, nodePositions);
+            if (notes != null)
+            {
+                foreach (var note in notes) _stickyNotes.Add(note.Key, note.Value);
+            }
         }
         else
         {
@@ -63,12 +69,12 @@ public class MemoryExpressionTreeWindow : BaseGraphWindow
 
     private void Update()
     {
-        _graphSetup.Tick();
-        _stickyNodePresenter.Tick();
+        _graphSetup?.Tick();
+        _stickyNodePresenter?.Tick();
     }
 
     private void OnDestroy()
     {
-        _graphSetup.Dispose();
+        _graphSetup?.Dispose();
     }
 }
