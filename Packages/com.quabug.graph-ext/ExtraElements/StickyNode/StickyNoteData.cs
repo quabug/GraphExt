@@ -8,16 +8,16 @@ namespace GraphExt
     }
 
     [Serializable]
-    public readonly struct StickyNoteData
+    public struct StickyNoteData
     {
-        public readonly float X;
-        public readonly float Y;
-        public readonly float Width;
-        public readonly float Height;
-        public readonly string Title;
-        public readonly string Content;
-        public readonly StickyNoteTheme Theme;
-        public readonly int FontSize;
+        public float X;
+        public float Y;
+        public float Width;
+        public float Height;
+        public string Title;
+        public string Content;
+        public StickyNoteTheme Theme;
+        public int FontSize;
 
         public StickyNoteData(float x, float y, float width, float height, string title, string content, StickyNoteTheme theme, int fontSize)
         {

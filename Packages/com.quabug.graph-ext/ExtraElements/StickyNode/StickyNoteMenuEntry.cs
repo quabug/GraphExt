@@ -49,22 +49,22 @@ namespace GraphExt.Editor
         public void MakeEntry(UnityEditor.Experimental.GraphView.GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
         {
             var menuPosition = graph.viewTransform.matrix.inverse.MultiplyPoint(evt.localMousePosition);
-            menu.AddItem(new GUIContent("StickyNote"), false, CreateNode);
+            menu.AddItem(new GUIContent("Create Note"), false, CreateNode);
 
             void CreateNode()
             {
                 var nodeId = Guid.NewGuid();
                 var data = new StickyNoteData
-                (
-                    x: menuPosition.x,
-                    y: menuPosition.y,
-                    width: 200,
-                    height: 200,
-                    title: "Note",
-                    content: "",
-                    theme: StickyNoteTheme.Dark,
-                    fontSize: 0
-                );
+                {
+                    X = menuPosition.x,
+                    Y = menuPosition.y,
+                    Width = 200,
+                    Height = 200,
+                    Title = "Note",
+                    Content = "",
+                    Theme = StickyNoteTheme.Dark,
+                    FontSize = 0
+                };
                 _addNote(nodeId, data);
             }
         }
