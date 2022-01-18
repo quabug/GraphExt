@@ -66,7 +66,8 @@ public class ScriptableObjectExpressionTreeWindow : ScriptableObjectGraphWindow<
         var nodeId = _stickyNoteViews.GetKey(note);
         var noteInstance = _notes[nodeId];
         _notes.Remove(nodeId);
-        DestroyImmediate(noteInstance);
+        DestroyImmediate(noteInstance, allowDestroyingAssets: true);
+        AssetDatabase.SaveAssets();
     }
 
     private void AddNote(NodeId nodeId, StickyNoteData note)

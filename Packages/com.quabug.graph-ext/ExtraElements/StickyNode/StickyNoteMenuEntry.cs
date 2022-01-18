@@ -25,12 +25,11 @@ namespace GraphExt.Editor
             {
                 menu.AddItem(new GUIContent("Delete"), false, () =>
                 {
-                    if (graph.selection != null)
+                    var count = graph.selection?.Count ?? 0;
+                    for (var i = count - 1; i >= 0; i--)
                     {
-                        foreach (var note in graph.selection.OfType<StickyNote>())
-                        {
+                        if (graph.selection[i] is StickyNote note)
                             _deleteNote(note);
-                        }
                     }
                 });
             }
