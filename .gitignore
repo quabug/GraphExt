@@ -79,3 +79,6 @@ Packages/variant.expression/Tests/
 Packages/codegen/Tests
 Packages/codegen/Tests.meta
 Packages/variant.expression/Tests.meta
+
+/Assets/Samples/
+/Assets/Samples.meta

@@ -1,0 +1,24 @@
+{
+    "name": "GraphExt.GTF",
+    "rootNamespace": "GraphExt.GTF.Editor",
+    "references": [
+        "GUID:f5a2611bdfe852b4c8fca5bac89a209d",
+        "GUID:18b4fb767b8f81047b7c24fdec94709e",
+        "GUID:20e1af7e65b430244924993fb3219d29",
+        "GUID:8aa539bd3286aa34ab6d4bc41eb45a21",
+        "GUID:6077d53cee304074ab132af0ea2850ae",
+        "GUID:756d163a75d2d4509b594fdc3b57f09d",
+        "GUID:f2ad78aaacbe17141a951a4897019a2e"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

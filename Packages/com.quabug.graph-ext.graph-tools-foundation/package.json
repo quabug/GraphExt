@@ -1,0 +1,12 @@
+{
+  "name": "com.quabug.graph-ext.graph-tools-foundation",
+  "version": "0.0.1",
+  "unity": "2020.3",
+  "displayName": "Graph Ext for GraphTools Foundation",
+  "dependencies": {
+    "com.quabug.graph-ext": "1.7.0",
+    "com.unity.graphtools.foundation": "0.11.2-preview"
+  },
+  "description": "A library to help you customize your own Unity3D Graph solution.",
+  "type": "library"
+}

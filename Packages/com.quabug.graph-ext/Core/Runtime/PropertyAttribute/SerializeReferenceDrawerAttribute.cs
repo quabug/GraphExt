@@ -4,7 +4,7 @@ using UnityEngine;
 namespace GraphExt
 {
     [AttributeUsage(AttributeTargets.Field)]
-    internal class SerializeReferenceDrawerAttribute : PropertyAttribute
+    public class SerializeReferenceDrawerAttribute : PropertyAttribute
     {
         public Type TypeRestrict;
         public string TypeRestrictBySiblingTypeName;

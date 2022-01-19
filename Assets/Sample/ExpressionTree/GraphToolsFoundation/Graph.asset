@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84d85cac2d784b47a1e247bae3a52fd2, type: 3}
+  m_Name: Graph
+  m_EditorClassIdentifier: 
+  m_GraphModel:
+    id: 0
+  NodeSearcherItems:
+  - id: 1
+  - id: 2
+  references:
+    version: 1
+    00000000:
+      type: {class: GraphModelExt, ns: , asm: GraphExt.Sample.ExpressionTree}
+      data:
+        m_AssetModel: {fileID: 11400000}
+        m_GraphNodeModels: []
+        m_EdgeModels: []
+        m_BadgeModels: []
+        m_GraphEdgeModels: []
+        m_PolymorphicEdgeModels: []
+        m_StickyNoteModels: []
+        m_GraphStickyNoteModels: []
+        m_PlacematModels: []
+        m_GraphPlacematModels: []
+        m_GraphVariableModels: []
+        m_GraphPortalModels: []
+        m_Name: 
+        m_StencilTypeName: GraphExt.GTF.Editor.StencilExt, GraphExt.GTF, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    00000001:
+      type: {class: StickyNoteItem, ns: GraphExt.GTF.Editor, asm: GraphExt.GTF}
+    00000002:
+      type: {class: NodeItems, ns: , asm: GraphExt.Sample.ExpressionTree}
