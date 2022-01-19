@@ -11,7 +11,7 @@ namespace GraphExt.Editor
         protected PrefabGraphSetup<TNode, TComponent> _GraphSetup;
         protected PrefabStage _PrefabStage;
 
-        protected override void CreateGUI()
+        protected override void RecreateGUI()
         {
             ResetGraphBackend(PrefabStageUtility.GetCurrentPrefabStage());
             PrefabStage.prefabStageOpened += ResetGraphBackend;

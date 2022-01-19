@@ -61,7 +61,10 @@ namespace GraphExt.Editor
                 () => GraphRuntime.Nodes.Select(t => t.Item1),
                 NodeDataConvertor.ToNodeData(id => Graph.NodeObjectMap[id], id => Graph.SerializedObjects[id]),
                 PortDataConvertor.FindPorts(GraphRuntime.NodeMap),
-                NodeViews, PortViews, Ports);
+                NodeViews,
+                PortViews,
+                Ports
+            );
 
             EdgeViewPresenter = new EdgeViewPresenter(
                 GraphView,

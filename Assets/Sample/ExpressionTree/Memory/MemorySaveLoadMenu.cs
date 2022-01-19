@@ -56,13 +56,13 @@ public class MemorySaveLoadMenu<TNode> : IMenuEntry where TNode : INode<GraphRun
             var path = EditorUtility.OpenFilePanel("load path", Application.dataPath, "json");
             var jsonAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(ToRelativePath(path));
             ChangeWindowFilePath(jsonAsset);
-            GetWindow()?.Reset();
+            GetWindow()?.Recreate();
         });
 
         menu.AddItem(new GUIContent("Reset"), false, () =>
         {
             ClosePopupWindow();
-            GetWindow()?.Reset();
+            GetWindow()?.Recreate();
         });
 
         menu.AddItem(new GUIContent("ClearGraph"), false, () =>

@@ -2,12 +2,26 @@ using System;
 using System.IO;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace GraphExt.Editor
 {
     public abstract class BaseGraphWindow : EditorWindow
     {
+        [SerializeField] protected GraphConfig _Config;
+        public GraphConfig Config
+        {
+            set
+            {
+                if (_Config != value)
+                {
+                    _Config = value;
+                    RecreateGUI();
+                }
+            }
+        }
+
         private readonly Lazy<VisualElement> _graphRoot;
 
         protected BaseGraphWindow()
@@ -15,15 +29,12 @@ namespace GraphExt.Editor
             _graphRoot = new Lazy<VisualElement>(LoadVisualTree);
         }
 
-        protected static void OpenWindow<TGraphWindow>(string windowName) where TGraphWindow : BaseGraphWindow
+        public void CreateGUI()
         {
-            var window = Window.GetOrCreate<TGraphWindow>(windowName);
-            window.titleContent.text = windowName;
-            window.Show(immediateDisplay: true);
-            window.Focus();
+            if (_Config) RecreateGUI();
         }
 
-        protected abstract void CreateGUI();
+        protected abstract void RecreateGUI();
 
         protected void RemoveGraphView()
         {
@@ -56,6 +67,7 @@ namespace GraphExt.Editor
 
             var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(ussPath);
             rootVisualElement.styleSheets.Add(styleSheet);
+            if (_Config.WindowStyleSheet != null) rootVisualElement.styleSheets.Add(_Config.WindowStyleSheet);
             return rootVisualElement;
         }
     }

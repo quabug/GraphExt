@@ -123,7 +123,10 @@ namespace GraphExt.Editor
             IEnumerable<Type> GetAppropriateTypesForAssigningToManagedReference()
             {
                 var baseType = attr.BaseType ?? typeof(object);
-                return TypeCache.GetTypesDerivedFrom(baseType).Where(whereFunc);
+                var types = TypeCache.GetTypesDerivedFrom(baseType).Where(whereFunc);
+                if (attr.InstantializableType)
+                    types = types.Where(type => !type.IsAbstract && !type.IsGenericType && type.GetConstructors().Any(ci => !ci.GetParameters().Any()));
+                return types;
             }
         }
     }

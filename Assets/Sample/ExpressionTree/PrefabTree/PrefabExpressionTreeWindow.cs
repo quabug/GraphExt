@@ -14,12 +14,6 @@ public class PrefabExpressionTreeWindow : PrefabGraphWindow<IVisualNode, VisualT
     private StickyNodePresenter _stickyNodePresenter;
     private readonly Dictionary<NodeId, StickyNoteComponent> _notes = new Dictionary<NodeId, StickyNoteComponent>();
 
-    [MenuItem("Graph/Prefab Expression Tree")]
-    public static void OpenWindow()
-    {
-        OpenWindow<PrefabExpressionTreeWindow>("Prefab");
-    }
-
     protected override void OnGraphRecreated()
     {
         _stickyNoteViews.Clear();

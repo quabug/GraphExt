@@ -9,7 +9,7 @@ namespace GraphExt.Editor
     {
         protected ScriptableObjectGraphSetup<TNode, TNodeScriptableObject> _GraphSetup;
 
-        protected override void CreateGUI()
+        protected override void RecreateGUI()
         {
             OnSelectionChanged();
             Selection.selectionChanged -= OnSelectionChanged;

@@ -15,6 +15,7 @@ namespace GraphExt
         public string CategoryName;
         public bool Nullable = true;
         public string Where = "";
+        public bool InstantializableType = false;
         public SerializedTypeAttribute(Type baseType = null) => BaseType = baseType;
     }
 

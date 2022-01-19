@@ -13,12 +13,6 @@ public class ScriptableObjectExpressionTreeWindow : ScriptableObjectGraphWindow<
     private StickyNodePresenter _stickyNodePresenter;
     private readonly Dictionary<NodeId, StickyNoteScriptableObject> _notes = new Dictionary<NodeId, StickyNoteScriptableObject>();
 
-    [MenuItem("Graph/ScriptableObject Expression Tree")]
-    public static void OpenWindow()
-    {
-        OpenWindow<ScriptableObjectExpressionTreeWindow>("Scriptable Object");
-    }
-
     protected override void OnGraphRecreated()
     {
         _stickyNoteViews.Clear();

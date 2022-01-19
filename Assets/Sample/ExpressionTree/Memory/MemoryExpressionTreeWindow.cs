@@ -16,18 +16,12 @@ public class MemoryExpressionTreeWindow : BaseGraphWindow
 
     public TextAsset JsonFile;
 
-    public void Reset()
+    public void Recreate()
     {
-        CreateGUI();
+        RecreateGUI();
     }
 
-    [MenuItem("Graph/Memory Expression Tree")]
-    public static void OpenWindow()
-    {
-        OpenWindow<MemoryExpressionTreeWindow>("Memory");
-    }
-
-    protected override void CreateGUI()
+    protected override void RecreateGUI()
     {
         _graphSetup?.Dispose();
         _stickyNotes.Clear();
