@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5ba7f039e774f7b9f34a9386ac259ed, type: 3}
   m_Name: Graph Window Config
   m_EditorClassIdentifier: 
-  WindowName: Memory
-  WindowType: MemoryExpressionTreeWindow, GraphExt.Sample.ExpressionTree, Version=0.0.0.0,
+  WindowName: Prefab
+  WindowType: PrefabExpressionTreeWindow, GraphExt.Sample.ExpressionTree, Version=0.0.0.0,
     Culture=neutral, PublicKeyToken=null
   NodeViewFactory:
     id: 0

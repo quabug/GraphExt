@@ -19,10 +19,8 @@ namespace GraphExt
             hideFlags = HideFlags.None;
             Id = id;
             Data = data;
-#if UNITY_EDITOR
             name = "Note";
             transform.SetParent(graphRoot.transform);
-#endif
         }
     }
 }

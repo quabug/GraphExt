@@ -32,9 +32,9 @@ public class MemoryExpressionTreeWindow : BaseGraphWindow
         _menuBuilder = new MenuBuilder(_graphSetup.GraphView, new IMenuEntry[]
         {
             new PrintValueMenu(_graphSetup.GraphRuntime, _graphSetup.NodeViews.Reverse),
-            new StickyNoteDeletionMenuEntry(note => _stickyNoteSystem.RemoveNote(note)),
+            new StickyNoteDeletionMenuEntry(_stickyNoteSystem.RemoveNote),
             new SelectionEntry<IVisualNode>(_graphSetup.GraphRuntime, _graphSetup.NodeViews.Reverse, _graphSetup.EdgeViews.Reverse),
-            new StickyNoteCreationMenuEntry((id, noteData) => _stickyNoteSystem.AddNote(id, noteData)),
+            new StickyNoteCreationMenuEntry(_stickyNoteSystem.AddNote),
             new NodeMenuEntry<IVisualNode>(_graphSetup.GraphRuntime, _graphSetup.NodePositions),
             new MemorySaveLoadMenu<IVisualNode>(_graphSetup.GraphRuntime, _graphSetup.NodePositions, _stickyNoteSystem.StickyNotes)
         });

@@ -21,8 +21,6 @@ namespace GraphExt
 #if UNITY_EDITOR
             UnityEditor.AssetDatabase.AddObjectToAsset(this, graph);
             name = "Note";
-            UnityEditor.AssetDatabase.SaveAssets();
-            UnityEditor.AssetDatabase.Refresh();
 #endif
         }
     }

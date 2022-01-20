@@ -1,7 +1,4 @@
-using GraphExt;
 using GraphExt.Editor;
-using UnityEditor;
-using UnityEditor.Experimental.GraphView;
 
 public class ScriptableObjectExpressionTreeWindow : ScriptableObjectGraphWindow<IVisualNode, VisualNodeScriptableObject>
 {
@@ -23,21 +20,9 @@ public class ScriptableObjectExpressionTreeWindow : ScriptableObjectGraphWindow<
         {
             new PrintValueMenu(_GraphSetup.GraphRuntime, _GraphSetup.NodeViews.Reverse),
             new SelectionEntry<IVisualNode>(_GraphSetup.GraphRuntime, _GraphSetup.NodeViews.Reverse, _GraphSetup.EdgeViews.Reverse),
-            new StickyNoteDeletionMenuEntry(DeleteNote),
-            new StickyNoteCreationMenuEntry(AddNote),
+            new StickyNoteDeletionMenuEntry(_stickyNoteSystem.RemoveNote),
+            new StickyNoteCreationMenuEntry(_stickyNoteSystem.AddNote),
             new NodeMenuEntry<IVisualNode>(_GraphSetup.GraphRuntime, _GraphSetup.NodePositions)
         });
-    }
-
-    private void DeleteNote(StickyNote note)
-    {
-        _stickyNoteSystem.RemoveNote(note);
-        AssetDatabase.SaveAssets();
-    }
-
-    private void AddNote(StickyNoteId id, StickyNoteData note)
-    {
-        _stickyNoteSystem.AddNote(id, note);
-        AssetDatabase.SaveAssets();
     }
 }

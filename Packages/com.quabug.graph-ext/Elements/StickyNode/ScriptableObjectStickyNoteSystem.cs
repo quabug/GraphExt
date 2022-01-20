@@ -27,6 +27,7 @@ namespace GraphExt.Editor
         protected override void SetNodeData(in StickyNoteId id, StickyNoteData data)
         {
             _notes[id].Data = data;
+            Save();
         }
 
         protected override void AddNoteData(in StickyNoteId id, StickyNoteData data)
@@ -34,6 +35,7 @@ namespace GraphExt.Editor
             var noteObject = ScriptableObject.CreateInstance<StickyNoteScriptableObject>();
             noteObject.Init(_graph, id, data);
             _notes[id] = noteObject;
+            Save();
         }
 
         protected override void RemoveNoteData(in StickyNoteId id)
@@ -41,6 +43,13 @@ namespace GraphExt.Editor
             var noteInstance = _notes[id];
             _notes.Remove(id);
             Object.DestroyImmediate(noteInstance, allowDestroyingAssets: true);
+            Save();
+        }
+
+        private void Save()
+        {
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
         }
     }
 }

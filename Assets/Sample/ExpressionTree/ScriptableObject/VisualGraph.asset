@@ -74,10 +74,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b337b2087ee4508b6034f89b64fdc16, type: 3}
   m_Name: Note
   m_EditorClassIdentifier: 
-  Id: d1db215d-6e8a-4884-b8ee-72c02027c2e2
+  _id: E8616C13-79C0-4D86-828B-E56753951D95
   Data:
     X: 824
     Y: 206
+    Width: 200
+    Height: 200
+    Title: Note
+    Content: 
+    Theme: 1
+    FontSize: 0
+--- !u!114 &-5409653261649164649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b337b2087ee4508b6034f89b64fdc16, type: 3}
+  m_Name: Note
+  m_EditorClassIdentifier: 
+  _id: 4c04f003-0050-47e3-bf8a-d00aac74c37d
+  Data:
+    X: 641
+    Y: 491
     Width: 200
     Height: 200
     Title: Note

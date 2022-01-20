@@ -24,6 +24,7 @@ namespace GraphExt.Editor
         protected override void SetNodeData(in StickyNoteId id, StickyNoteData data)
         {
             _notes[id].Data = data;
+            SavePrefabScene();
         }
 
         protected override void AddNoteData(in StickyNoteId id, StickyNoteData data)
@@ -32,6 +33,7 @@ namespace GraphExt.Editor
             var noteInstance = noteObject.AddComponent<StickyNoteComponent>();
             noteInstance.Init(_root, id, data);
             _notes[id] = noteInstance;
+            SavePrefabScene();
         }
 
         protected override void RemoveNoteData(in StickyNoteId id)
@@ -39,6 +41,12 @@ namespace GraphExt.Editor
             var noteInstance = _notes[id];
             _notes.Remove(id);
             Object.DestroyImmediate(noteInstance.gameObject);
+            SavePrefabScene();
+        }
+
+        private void SavePrefabScene()
+        {
+            UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(_root.scene);
         }
     }
 }
