@@ -1,46 +1,20 @@
-using System.Collections.Generic;
-using ExtraElements.StickyNode;
 using GraphExt;
 using GraphExt.Editor;
-using UnityEditor;
 using UnityEditor.Experimental.GraphView;
-using UnityEngine;
 
 public class PrefabExpressionTreeWindow : PrefabGraphWindow<IVisualNode, VisualTreeComponent>
 {
     private MenuBuilder _menuBuilder;
-
-    private readonly BiDictionary<NodeId, StickyNote> _stickyNoteViews = new BiDictionary<NodeId, StickyNote>();
-    private StickyNodePresenter _stickyNodePresenter;
-    private readonly Dictionary<NodeId, StickyNoteComponent> _notes = new Dictionary<NodeId, StickyNoteComponent>();
+    private PrefabStickyNoteSystem _stickyNoteSystem;
 
     protected override void OnGraphRecreated()
     {
-        _stickyNoteViews.Clear();
-        _notes.Clear();
-        _stickyNodePresenter = null;
         if (_GraphSetup != null && _PrefabStage != null)
         {
             var root = _PrefabStage.prefabContentsRoot;
-            foreach (var note in root.GetComponentsInChildren<StickyNoteComponent>())
-                _notes[note.NodeId] = note;
-
-            _stickyNodePresenter = new StickyNodePresenter(
-                _GraphSetup.GraphView,
-                () => _notes.Keys,
-                _stickyNoteViews,
-                nodeId => _notes[nodeId].Data,
-                (id, data) => _notes[id].Data = data
-            );
-
+            _stickyNoteSystem = new PrefabStickyNoteSystem(_GraphSetup.GraphView, root);
             CreateMenu();
         }
-    }
-
-    protected override void Update()
-    {
-        base.Update();
-        _stickyNodePresenter?.Tick();
     }
 
     private void CreateMenu()
@@ -57,19 +31,13 @@ public class PrefabExpressionTreeWindow : PrefabGraphWindow<IVisualNode, VisualT
 
     private void DeleteNote(StickyNote note)
     {
-        var nodeId = _stickyNoteViews.GetKey(note);
-        var noteInstance = _notes[nodeId];
-        _notes.Remove(nodeId);
-        DestroyImmediate(noteInstance.gameObject);
+        _stickyNoteSystem.RemoveNote(note);
         UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(_PrefabStage.scene);
     }
 
-    private void AddNote(NodeId nodeId, StickyNoteData note)
+    private void AddNote(StickyNoteId id, StickyNoteData note)
     {
-        var noteObject = new GameObject("Note");
-        var noteInstance = noteObject.AddComponent<StickyNoteComponent>();
-        noteInstance.Init(_PrefabStage.prefabContentsRoot, nodeId, note);
-        _notes[nodeId] = noteInstance;
+        _stickyNoteSystem.AddNote(id, note);
         UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(_PrefabStage.scene);
     }
 }

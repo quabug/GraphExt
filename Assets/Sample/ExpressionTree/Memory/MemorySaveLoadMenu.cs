@@ -15,12 +15,12 @@ public class MemorySaveLoadMenu<TNode> : IMenuEntry where TNode : INode<GraphRun
 {
     [NotNull] private readonly GraphRuntime<TNode> _graphRuntime;
     [NotNull] private readonly IReadOnlyDictionary<NodeId, Vector2> _nodePositions;
-    [NotNull] private readonly IReadOnlyDictionary<NodeId, StickyNoteData> _notes;
+    [NotNull] private readonly IReadOnlyDictionary<StickyNoteId, StickyNoteData> _notes;
 
     public MemorySaveLoadMenu(
         [NotNull] GraphRuntime<TNode> graphRuntime,
         [NotNull] IReadOnlyDictionary<NodeId, Vector2> nodePositions,
-        [NotNull] IReadOnlyDictionary<NodeId, StickyNoteData> notes
+        [NotNull] IReadOnlyDictionary<StickyNoteId, StickyNoteData> notes
     )
     {
         _graphRuntime = graphRuntime;

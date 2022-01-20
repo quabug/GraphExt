@@ -38,9 +38,9 @@ namespace GraphExt.Editor
 
     public class StickyNoteCreationMenuEntry : IMenuEntry
     {
-        [NotNull] private readonly Action<NodeId, StickyNoteData> _addNote;
+        [NotNull] private readonly Action<StickyNoteId, StickyNoteData> _addNote;
 
-        public StickyNoteCreationMenuEntry([NotNull] Action<NodeId, StickyNoteData> addNote)
+        public StickyNoteCreationMenuEntry([NotNull] Action<StickyNoteId, StickyNoteData> addNote)
         {
             _addNote = addNote;
         }

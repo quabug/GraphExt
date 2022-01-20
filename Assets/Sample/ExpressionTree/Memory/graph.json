@@ -106,5 +106,15 @@
     "Content": "444444",
     "Theme": 1,
     "FontSize": 0
+  },
+  "ed548f3a-9a00-46da-9e50-176c3a0fb356": {
+    "X": 342.0,
+    "Y": 439.0,
+    "Width": 200.0,
+    "Height": 200.0,
+    "Title": "Note",
+    "Content": "",
+    "Theme": 1,
+    "FontSize": 0
   }
 }

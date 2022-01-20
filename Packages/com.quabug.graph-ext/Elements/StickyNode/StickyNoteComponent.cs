@@ -1,24 +1,23 @@
 using System;
-using GraphExt;
 using JetBrains.Annotations;
 using UnityEngine;
 
-namespace ExtraElements.StickyNode
+namespace GraphExt
 {
     public class StickyNoteComponent : MonoBehaviour
     {
         [SerializeField, HideInInspector] private string _id;
-        public NodeId NodeId
+        public StickyNoteId Id
         {
             get =>Guid.Parse(_id);
             set => _id = value.ToString();
         }
         public StickyNoteData Data;
 
-        public void Init([NotNull] GameObject graphRoot, in NodeId nodeId, StickyNoteData data)
+        public void Init([NotNull] GameObject graphRoot, in StickyNoteId id, StickyNoteData data)
         {
             hideFlags = HideFlags.None;
-            NodeId = nodeId;
+            Id = id;
             Data = data;
 #if UNITY_EDITOR
             name = "Note";
