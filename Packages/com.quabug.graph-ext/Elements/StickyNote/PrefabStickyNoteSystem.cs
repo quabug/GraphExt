@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#if UNITY_EDITOR
+
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -50,3 +52,5 @@ namespace GraphExt.Editor
         }
     }
 }
+
+#endif

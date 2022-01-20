@@ -1,4 +1,6 @@
-﻿using JetBrains.Annotations;
+﻿#if UNITY_EDITOR
+
+using JetBrains.Annotations;
 using UnityEditor.Experimental.GraphView;
 
 namespace GraphExt.Editor
@@ -35,3 +37,5 @@ namespace GraphExt.Editor
         protected abstract void RemoveNoteData(in StickyNoteId id);
     }
 }
+
+#endif
