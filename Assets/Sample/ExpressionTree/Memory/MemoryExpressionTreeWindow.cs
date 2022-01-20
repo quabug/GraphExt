@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using GraphExt;
 using GraphExt.Editor;
 using UnityEngine;
 
@@ -24,6 +26,7 @@ public class MemoryExpressionTreeWindow : BaseGraphWindow
         else
         {
             _graphSetup = new MemoryGraphSetup<IVisualNode>();
+            _stickyNoteSystem = new MemoryStickyNoteSystem(_graphSetup.GraphView, new Dictionary<StickyNoteId, StickyNoteData>());
         }
 
         _menuBuilder = new MenuBuilder(_graphSetup.GraphView, new IMenuEntry[]
