@@ -2,7 +2,7 @@
 
 namespace GraphExt.Editor
 {
-    public interface IPortViewFactory
+    public interface IPortViewFactory : IGraphElementViewFactory
     {
         Port CreatePort(in PortData data);
     }

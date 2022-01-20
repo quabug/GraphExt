@@ -12,8 +12,9 @@ namespace GraphExt.Editor
 
         public MemoryStickyNoteSystem(
             [NotNull] UnityEditor.Experimental.GraphView.GraphView graphView,
+            [NotNull] IStickyNoteViewFactory stickyNoteViewFactory,
             [NotNull] IReadOnlyDictionary<StickyNoteId, StickyNoteData> notes
-        ) : base(graphView)
+        ) : base(graphView, stickyNoteViewFactory)
         {
             foreach (var notePair in notes)
             {

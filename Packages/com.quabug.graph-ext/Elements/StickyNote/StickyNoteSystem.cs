@@ -10,10 +10,14 @@ namespace GraphExt.Editor
         public BiDictionary<StickyNoteId, StickyNote> NoteViews { get; } = new BiDictionary<StickyNoteId, StickyNote>();
         public StickyNodePresenter StickyNodePresenter { get; }
 
-        public StickyNoteSystem( [NotNull] UnityEditor.Experimental.GraphView.GraphView graphView)
+        public StickyNoteSystem(
+            [NotNull] UnityEditor.Experimental.GraphView.GraphView graphView,
+            [NotNull] IStickyNoteViewFactory stickyNoteViewFactory
+        )
         {
             StickyNodePresenter = new StickyNodePresenter(
                 graphView,
+                stickyNoteViewFactory,
                 NoteViews,
                 SetNodeData
             );

@@ -9,11 +9,17 @@ namespace GraphExt.Editor
     public class PrefabStickyNoteSystem : StickyNoteSystem
     {
         [NotNull] private readonly GameObject _root;
-        private readonly Dictionary<StickyNoteId, StickyNoteComponent> _notes = new Dictionary<StickyNoteId, StickyNoteComponent>();
+
+        private readonly Dictionary<StickyNoteId, StickyNoteComponent> _notes =
+            new Dictionary<StickyNoteId, StickyNoteComponent>();
+
         public IReadOnlyDictionary<StickyNoteId, StickyNoteComponent> StickyNotes => _notes;
 
-        public PrefabStickyNoteSystem([NotNull] UnityEditor.Experimental.GraphView.GraphView graphView, [NotNull] GameObject root)
-            : base(graphView)
+        public PrefabStickyNoteSystem(
+            [NotNull] UnityEditor.Experimental.GraphView.GraphView graphView,
+            [NotNull] IStickyNoteViewFactory stickyNoteViewFactory,
+            [NotNull] GameObject root
+        ) : base(graphView, stickyNoteViewFactory)
         {
             _root = root;
             foreach (var note in root.GetComponentsInChildren<StickyNoteComponent>())

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -9,18 +10,12 @@ namespace GraphExt.Editor
     {
         public string WindowName = "Graph Window";
         [SerializedType(typeof(BaseGraphWindow), InstantializableType = true, Nullable = false)] public string WindowType;
-
-        [SerializeReference, SerializeReferenceDrawer] public INodeViewFactory NodeViewFactory = new DefaultNodeViewFactory();
-        [SerializeReference, SerializeReferenceDrawer] public IPortViewFactory PortViewFactory = new DefaultPortViewFactory();
-        [SerializeReference, SerializeReferenceDrawer] public IEdgeViewFactory EdgeViewFactory = new DefaultEdgeViewFactory();
-
+        [SerializeReference, SerializeReferenceDrawer] public IGraphElementViewFactory[] ViewFactories;
         public StyleSheet WindowStyleSheet;
 
-        private void Reset()
+        public T GetViewFactory<T>() where T : IGraphElementViewFactory
         {
-            NodeViewFactory = new DefaultNodeViewFactory();
-            PortViewFactory = new DefaultPortViewFactory();
-            EdgeViewFactory = new DefaultEdgeViewFactory();
+            return ViewFactories.OfType<T>().First();
         }
 
         [ContextMenu("Open Window")]

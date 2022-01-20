@@ -9,7 +9,11 @@ public class ScriptableObjectExpressionTreeWindow : ScriptableObjectGraphWindow<
     {
         if (_GraphSetup != null)
         {
-            _stickyNoteSystem = new ScriptableObjectStickyNoteSystem(_GraphSetup.GraphView, _GraphSetup.Graph);
+            _stickyNoteSystem = new ScriptableObjectStickyNoteSystem(
+                _GraphSetup.GraphView,
+                _Config.GetViewFactory<IStickyNoteViewFactory>(),
+                _GraphSetup.Graph
+            );
             CreateMenu();
         }
     }

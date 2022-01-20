@@ -11,30 +11,28 @@ namespace GraphExt.Editor
         public delegate void SetData(in StickyNoteId id, StickyNoteData data);
 
         [NotNull] private readonly UnityEditor.Experimental.GraphView.GraphView _graphView;
+        [NotNull] private readonly IStickyNoteViewFactory _viewFactory;
         [NotNull] private readonly IBiDictionary<StickyNoteId, StickyNote> _stickyNoteViews;
         [NotNull] private readonly SetData _setStickyNoteData;
 
         public StickyNodePresenter(
             [NotNull] UnityEditor.Experimental.GraphView.GraphView graphView,
+            [NotNull] IStickyNoteViewFactory viewFactory,
             [NotNull] IBiDictionary<StickyNoteId, StickyNote> stickyNoteViews,
             [NotNull] SetData setStickyNoteData
         )
         {
             _graphView = graphView;
+            _viewFactory = viewFactory;
             _stickyNoteViews = stickyNoteViews;
             _setStickyNoteData = setStickyNoteData;
         }
 
         public void CreateNoteView(in StickyNoteId id, StickyNoteData data)
         {
-            var view = new StickyNote();
+            var view = _viewFactory.Create(data);
             _stickyNoteViews.Add(id, view);
             _graphView.AddElement(view);
-            view.SetPosition(new Rect(data.X, data.Y, data.Width, data.Height));
-            view.title = data.Title;
-            view.contents = data.Content;
-            view.theme = data.Theme.ToEditor();
-            view.fontSize = data.FontSize.ToEditor();
             view.RegisterCallback<StickyNoteChangeEvent>(OnStickyNoteChanged);
         }
 

@@ -21,12 +21,20 @@ public class MemoryExpressionTreeWindow : BaseGraphWindow
         {
             var (graphRuntime, nodePositions, notes) = JsonEditorUtility.Deserialize<IVisualNode>(JsonFile.text);
             _graphSetup = new MemoryGraphSetup<IVisualNode>(graphRuntime, nodePositions);
-            _stickyNoteSystem = new MemoryStickyNoteSystem(_graphSetup.GraphView, notes);
+            _stickyNoteSystem = new MemoryStickyNoteSystem(
+                _graphSetup.GraphView,
+                _Config.GetViewFactory<IStickyNoteViewFactory>(),
+                notes
+            );
         }
         else
         {
             _graphSetup = new MemoryGraphSetup<IVisualNode>();
-            _stickyNoteSystem = new MemoryStickyNoteSystem(_graphSetup.GraphView, new Dictionary<StickyNoteId, StickyNoteData>());
+            _stickyNoteSystem = new MemoryStickyNoteSystem(
+                _graphSetup.GraphView,
+                _Config.GetViewFactory<IStickyNoteViewFactory>(),
+                new Dictionary<StickyNoteId, StickyNoteData>()
+            );
         }
 
         _menuBuilder = new MenuBuilder(_graphSetup.GraphView, new IMenuEntry[]

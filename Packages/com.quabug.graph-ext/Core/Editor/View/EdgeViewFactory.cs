@@ -2,7 +2,7 @@
 
 namespace GraphExt.Editor
 {
-    public interface IEdgeViewFactory
+    public interface IEdgeViewFactory : IGraphElementViewFactory
     {
         Edge CreateEdge(Port port1, Port port2);
         void AfterCreated(Edge edge);

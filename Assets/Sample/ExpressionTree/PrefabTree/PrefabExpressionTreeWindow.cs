@@ -10,7 +10,11 @@ public class PrefabExpressionTreeWindow : PrefabGraphWindow<IVisualNode, VisualT
         if (_GraphSetup != null && _PrefabStage != null)
         {
             var root = _PrefabStage.prefabContentsRoot;
-            _stickyNoteSystem = new PrefabStickyNoteSystem(_GraphSetup.GraphView, root);
+            _stickyNoteSystem = new PrefabStickyNoteSystem(
+                _GraphSetup.GraphView,
+                _Config.GetViewFactory<IStickyNoteViewFactory>(),
+                root
+            );
             CreateMenu();
         }
     }

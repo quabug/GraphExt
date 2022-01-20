@@ -11,11 +11,17 @@ namespace GraphExt.Editor
     public class ScriptableObjectStickyNoteSystem : StickyNoteSystem
     {
         [NotNull] private readonly ScriptableObject _graph;
-        private readonly Dictionary<StickyNoteId, StickyNoteScriptableObject> _notes = new Dictionary<StickyNoteId, StickyNoteScriptableObject>();
+
+        private readonly Dictionary<StickyNoteId, StickyNoteScriptableObject> _notes =
+            new Dictionary<StickyNoteId, StickyNoteScriptableObject>();
+
         public IReadOnlyDictionary<StickyNoteId, StickyNoteScriptableObject> StickyNotes => _notes;
 
-        public ScriptableObjectStickyNoteSystem([NotNull] UnityEditor.Experimental.GraphView.GraphView graphView, [NotNull] ScriptableObject graph)
-            : base(graphView)
+        public ScriptableObjectStickyNoteSystem(
+            [NotNull] UnityEditor.Experimental.GraphView.GraphView graphView,
+            [NotNull] IStickyNoteViewFactory stickyNoteViewFactory,
+            [NotNull] ScriptableObject graph
+        ) : base(graphView, stickyNoteViewFactory)
         {
             _graph = graph;
             var path = AssetDatabase.GetAssetPath(graph);
