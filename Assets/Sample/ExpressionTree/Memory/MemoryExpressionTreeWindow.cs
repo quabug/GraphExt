@@ -20,7 +20,7 @@ public class MemoryExpressionTreeWindow : BaseGraphWindow
         if (JsonFile != null)
         {
             var (graphRuntime, nodePositions, notes) = JsonEditorUtility.Deserialize<IVisualNode>(JsonFile.text);
-            _graphSetup = new MemoryGraphSetup<IVisualNode>(graphRuntime, nodePositions);
+            _graphSetup = new MemoryGraphSetup<IVisualNode>(_Config, graphRuntime, nodePositions);
             _stickyNoteSystem = new MemoryStickyNoteSystem(
                 _graphSetup.GraphView,
                 _Config.GetViewFactory<IStickyNoteViewFactory>(),
@@ -29,7 +29,7 @@ public class MemoryExpressionTreeWindow : BaseGraphWindow
         }
         else
         {
-            _graphSetup = new MemoryGraphSetup<IVisualNode>();
+            _graphSetup = new MemoryGraphSetup<IVisualNode>(_Config);
             _stickyNoteSystem = new MemoryStickyNoteSystem(
                 _graphSetup.GraphView,
                 _Config.GetViewFactory<IStickyNoteViewFactory>(),

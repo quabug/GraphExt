@@ -15,12 +15,11 @@ MonoBehaviour:
   WindowName: Memory
   WindowType: MemoryExpressionTreeWindow, GraphExt.Sample.ExpressionTree, Version=0.0.0.0,
     Culture=neutral, PublicKeyToken=null
-  NodeViewFactory:
-    id: 0
-  PortViewFactory:
-    id: 1
-  EdgeViewFactory:
-    id: 2
+  ViewFactories:
+  - id: 0
+  - id: 1
+  - id: 2
+  - id: 3
   WindowStyleSheet: {fileID: 7433441132597879392, guid: 96b1bd8a3a2d24f47b06343d2befd8c7, type: 3}
   references:
     version: 1
@@ -29,10 +28,12 @@ MonoBehaviour:
       data:
         NodePropertyViewFactory:
           Factories:
-          - id: 3
+          - id: 4
     00000001:
       type: {class: DefaultPortViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
     00000002:
       type: {class: DefaultEdgeViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
     00000003:
+      type: {class: DefaultStickyNoteViewFactory, ns: GraphExt.Editor, asm: GraphExt.StickyNote}
+    00000004:
       type: {class: DefaultPropertyViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}

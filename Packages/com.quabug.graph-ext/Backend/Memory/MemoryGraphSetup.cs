@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
@@ -15,10 +16,6 @@ namespace GraphExt.Editor
         public Dictionary<PortId, PortData> Ports { get; } = new Dictionary<PortId, PortData>();
         public Dictionary<NodeId, Vector2> NodePositions { get; } = new Dictionary<NodeId, Vector2>();
 
-        public DefaultNodeViewFactory NodeViewFactory { get; } = new DefaultNodeViewFactory();
-        public DefaultEdgeViewFactory EdgeViewFactory { get; } = new DefaultEdgeViewFactory();
-        public DefaultPortViewFactory PortViewFactory { get; } = new DefaultPortViewFactory();
-
         public GraphRuntime<TNode> GraphRuntime { get; } = new GraphRuntime<TNode>();
         public GraphView GraphView { get; private set; }
 
@@ -26,16 +23,16 @@ namespace GraphExt.Editor
         public EdgeViewPresenter EdgeViewPresenter { get; private set; }
         public SyncNodePositionPresenter SyncNodePositionPresenter { get; private set; }
 
-        public MemoryGraphSetup()
+        public MemoryGraphSetup([NotNull] GraphConfig config)
         {
-            Setup();
+            Setup(config);
         }
 
-        public MemoryGraphSetup(IReadOnlyGraphRuntime<TNode> graphRuntime, IReadOnlyDictionary<NodeId, Vector2> positions)
+        public MemoryGraphSetup([NotNull] GraphConfig config, IReadOnlyGraphRuntime<TNode> graphRuntime, IReadOnlyDictionary<NodeId, Vector2> positions)
         {
             GraphRuntime = new GraphRuntime<TNode>(graphRuntime);
             NodePositions = positions.ToDictionary(t => t.Key, t => t.Value);
-            Setup();
+            Setup(config);
         }
 
         public void Tick()
@@ -49,7 +46,7 @@ namespace GraphExt.Editor
             EdgeViewPresenter?.Dispose();
         }
 
-        private void Setup()
+        private void Setup(GraphConfig config)
         {
             GraphView = new GraphView(EdgeFunctions.IsCompatible(GraphRuntime, Ports), PortViews.Reverse);
             GraphView.SetupGridBackground();
@@ -58,8 +55,8 @@ namespace GraphExt.Editor
 
             NodeViewPresenter = new NodeViewPresenter(
                 GraphView,
-                NodeViewFactory,
-                PortViewFactory,
+                config.GetViewFactory<INodeViewFactory>(),
+                config.GetViewFactory<IPortViewFactory>(),
                 () => GraphRuntime.Nodes.Select(t => t.Item1),
                 NodeDataConvertor.ToNodeData(GraphRuntime.NodeMap, NodePositions),
                 PortDataConvertor.FindPorts(GraphRuntime.NodeMap),
@@ -70,7 +67,7 @@ namespace GraphExt.Editor
 
             EdgeViewPresenter = new EdgeViewPresenter(
                 GraphView,
-                EdgeViewFactory,
+                config.GetViewFactory<IEdgeViewFactory>(),
                 () => GraphRuntime.Edges,
                 EdgeViews,
                 PortViews,

@@ -40,7 +40,7 @@ namespace GraphExt.Editor
             else if (_GraphSetup == null || graph != _GraphSetup.Graph)
             {
                 _GraphSetup?.Dispose();
-                _GraphSetup = new ScriptableObjectGraphSetup<TNode, TNodeScriptableObject>(graph);
+                _GraphSetup = new ScriptableObjectGraphSetup<TNode, TNodeScriptableObject>(_Config, graph);
                 ReplaceGraphView(_GraphSetup.GraphView);
                 OnGraphRecreated();
             }

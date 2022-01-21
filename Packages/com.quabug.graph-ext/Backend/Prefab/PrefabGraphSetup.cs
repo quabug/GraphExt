@@ -21,10 +21,6 @@ namespace GraphExt.Editor
         public Dictionary<PortId, PortData> Ports { get; } = new Dictionary<PortId, PortData>();
         public NodePositions<TComponent> NodePositions { get; }
 
-        public DefaultNodeViewFactory NodeViewFactory { get; } = new DefaultNodeViewFactory();
-        public DefaultEdgeViewFactory EdgeViewFactory { get; } = new DefaultEdgeViewFactory();
-        public DefaultPortViewFactory PortViewFactory { get; } = new DefaultPortViewFactory();
-
         public GraphRuntime<TNode> GraphRuntime => Graph.Runtime;
         public GraphView GraphView { get; }
 
@@ -35,7 +31,7 @@ namespace GraphExt.Editor
         public FocusActiveNodePresenter<TComponent> FocusActiveNodePresenter { get; }
         public ActiveSelectedNodePresenter<TComponent> ActiveSelectedNodePresenter { get; }
 
-        public PrefabGraphSetup([NotNull] GameObjectNodes<TNode, TComponent> graph)
+        public PrefabGraphSetup([NotNull] GraphConfig config, [NotNull] GameObjectNodes<TNode, TComponent> graph)
         {
             Graph = graph;
             var isRuntimeCompatible = EdgeFunctions.IsCompatible(GraphRuntime, Ports);
@@ -56,8 +52,8 @@ namespace GraphExt.Editor
 
             NodeViewPresenter = new NodeViewPresenter(
                 GraphView,
-                NodeViewFactory,
-                PortViewFactory,
+                config.GetViewFactory<INodeViewFactory>(),
+                config.GetViewFactory<IPortViewFactory>(),
                 () => GraphRuntime.Nodes.Select(t => t.Item1),
                 NodeDataConvertor.ToNodeData(id => Graph.NodeObjectMap[id], id => Graph.SerializedObjects[id]),
                 PortDataConvertor.FindPorts(GraphRuntime.NodeMap),
@@ -68,7 +64,7 @@ namespace GraphExt.Editor
 
             EdgeViewPresenter = new EdgeViewPresenter(
                 GraphView,
-                EdgeViewFactory,
+                config.GetViewFactory<IEdgeViewFactory>(),
                 () => GraphRuntime.Edges,
                 EdgeViews,
                 PortViews,

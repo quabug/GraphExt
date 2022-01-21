@@ -43,7 +43,7 @@ namespace GraphExt.Editor
             {
                 _GraphSetup?.Dispose();
                 var gameObjectsGraph = new GameObjectNodes<TNode, TComponent>(prefabStage.prefabContentsRoot);
-                _GraphSetup = new PrefabGraphSetup<TNode, TComponent>(gameObjectsGraph);
+                _GraphSetup = new PrefabGraphSetup<TNode, TComponent>(_Config, gameObjectsGraph);
                 ReplaceGraphView(_GraphSetup.GraphView);
             }
             OnGraphRecreated();
