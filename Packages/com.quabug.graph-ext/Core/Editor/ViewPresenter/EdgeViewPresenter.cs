@@ -11,7 +11,7 @@ namespace GraphExt.Editor
     /// 2. Create `Edge`s into `GraphView`
     /// 3. Observe connection events and send events to module
     /// </summary>
-    public class EdgeViewPresenter : IViewPresenter, IDisposable
+    public class EdgeViewPresenter : ITickablePresenter, IDisposable
     {
         [NotNull] private readonly Func<IEnumerable<EdgeId>> _getEdges;
         [NotNull] private readonly UnityEditor.Experimental.GraphView.GraphView _view;

@@ -10,7 +10,7 @@ namespace GraphExt.Editor
     /// <summary>
     /// synchronize nodes between module and `GraphView`
     /// </summary>
-    public class NodeViewPresenter : IViewPresenter
+    public class NodeViewPresenter : ITickablePresenter
     {
         [NotNull] private readonly UnityEditor.Experimental.GraphView.GraphView _view;
         [NotNull] private readonly INodeViewFactory _nodeViewFactory;

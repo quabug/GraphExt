@@ -124,8 +124,8 @@ namespace GraphExt.Editor
             {
                 var baseType = attr.BaseType ?? typeof(object);
                 var types = TypeCache.GetTypesDerivedFrom(baseType).Where(whereFunc);
-                if (attr.InstantializableType)
-                    types = types.Where(type => !type.IsAbstract && !type.IsGenericType && type.GetConstructors().Any(ci => !ci.GetParameters().Any()));
+                if (attr.InstantializableType) types = types.Where(type => !type.IsAbstract && !type.IsGenericType);
+                if (attr.HasDefaultConstructor) types = types.Where(type => type.GetConstructors().Any(ci => !ci.GetParameters().Any()));
                 return types;
             }
         }

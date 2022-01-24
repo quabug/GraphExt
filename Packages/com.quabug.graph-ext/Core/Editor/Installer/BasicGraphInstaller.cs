@@ -10,22 +10,22 @@ namespace GraphExt.Editor
     [Serializable]
     public class BasicGraphInstaller<TNode> : IInstaller where TNode : INode<GraphRuntime<TNode>>
     {
-        [SerializedType(typeof(IGraphViewFactory), Nullable = false)]
+        [SerializedType(typeof(IGraphViewFactory), Nullable = false, InstantializableType = true, RenamePatter = @"\w*\.||")]
         public string GraphViewFactory = typeof(DefaultGraphViewFactory).AssemblyQualifiedName;
 
-        [SerializedType(typeof(INodeViewFactory), Nullable = false)]
+        [SerializedType(typeof(INodeViewFactory), Nullable = false, InstantializableType = true, RenamePatter = @"\w*\.||")]
         public string NodeViewFactory = typeof(DefaultNodeViewFactory).AssemblyQualifiedName;
 
-        [SerializedType(typeof(IPortViewFactory), Nullable = false)]
+        [SerializedType(typeof(IPortViewFactory), Nullable = false, InstantializableType = true, RenamePatter = @"\w*\.||")]
         public string PortViewFactory = typeof(DefaultPortViewFactory).AssemblyQualifiedName;
 
-        [SerializedType(typeof(IEdgeViewFactory), Nullable = false)]
+        [SerializedType(typeof(IEdgeViewFactory), Nullable = false, InstantializableType = true, RenamePatter = @"\w*\.||")]
         public string EdgeViewFactory = typeof(DefaultEdgeViewFactory).AssemblyQualifiedName;
 
-        [SerializedType(typeof(IViewPresenter), Nullable = false)]
+        [SerializedType(typeof(IViewPresenter), Nullable = false, InstantializableType = true, RenamePatter = @"\w*\.||")]
         public string[] Presenters;
 
-        [SerializedType(typeof(IMenuEntry), Nullable = false)]
+        [SerializedType(typeof(IMenuEntry), Nullable = false, InstantializableType = true, RenamePatter = @"\w*\.||")]
         public string[] MenuEntries;
 
         public void Install(Container container)
@@ -35,7 +35,7 @@ namespace GraphExt.Editor
             container.RegisterTypeNameSingleton<IPortViewFactory>(PortViewFactory);
             container.RegisterTypeNameSingleton<IEdgeViewFactory>(EdgeViewFactory);
 
-            container.RegisterGraphRuntime<TNode>();
+            container.RegisterGraphRuntimeInstance(new GraphRuntime<TNode>());
             container.RegisterGraphView();
 
             container.RegisterBiDictionaryInstance(new BiDictionary<NodeId, Node>());

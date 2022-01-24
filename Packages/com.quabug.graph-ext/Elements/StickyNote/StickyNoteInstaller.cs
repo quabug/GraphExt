@@ -1,7 +1,6 @@
 using System;
 using OneShot;
 using UnityEditor.Experimental.GraphView;
-using UnityEngine;
 
 namespace GraphExt.Editor
 {
@@ -9,17 +8,23 @@ namespace GraphExt.Editor
     public class StickyNoteInstaller<TStickyNoteSystem> : IInstaller
         where TStickyNoteSystem : StickyNoteSystem
     {
-        [SerializeReference, SerializeReferenceDrawer(Nullable = false)]
-        public IStickyNoteViewFactory ViewFactory;
+        [SerializedType(typeof(IStickyNoteViewFactory), Nullable = false, InstantializableType = true, RenamePatter = @"\w*\.||")]
+        public string ViewFactory;
 
         public void Install(Container container)
         {
+            container.RegisterTypeNameSingleton<IStickyNoteViewFactory>(ViewFactory);
             container.RegisterSingleton<TStickyNoteSystem>();
-            container.RegisterInstance(ViewFactory);
+            container.Register<StickyNoteSystem>(container.Resolve<TStickyNoteSystem>);
             container.RegisterBiDictionaryInstance(new BiDictionary<StickyNoteId, StickyNote>());
             container.RegisterSingleton<StickyNotePresenter>();
-            container.Register<AddNote>(() => container.Resolve<StickyNoteSystem>().AddNote);
-            container.Register<RemoveNoteView>(() => container.Resolve<StickyNoteSystem>().RemoveNote);
+            container.Register<IViewPresenter>(container.Resolve<StickyNotePresenter>);
+            container.Register<AddNote>(() => container.Resolve<TStickyNoteSystem>().AddNote);
+            container.Register<RemoveNoteView>(() => container.Resolve<TStickyNoteSystem>().RemoveNote);
         }
     }
+
+    public class MemoryStickyNoteInstaller : StickyNoteInstaller<MemoryStickyNoteSystem> {}
+    public class PrefabStickyNoteInstaller : StickyNoteInstaller<PrefabStickyNoteSystem> {}
+    public class ScriptableObjectStickyNoteInstaller : StickyNoteInstaller<ScriptableObjectStickyNoteSystem> {}
 }

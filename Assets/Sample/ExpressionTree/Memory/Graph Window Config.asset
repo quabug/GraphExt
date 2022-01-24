@@ -13,27 +13,36 @@ MonoBehaviour:
   m_Name: Graph Window Config
   m_EditorClassIdentifier: 
   WindowName: Memory
-  WindowType: MemoryExpressionTreeWindow, GraphExt.Sample.ExpressionTree, Version=0.0.0.0,
-    Culture=neutral, PublicKeyToken=null
-  ViewFactories:
+  WindowStyleSheet: {fileID: 7433441132597879392, guid: 96b1bd8a3a2d24f47b06343d2befd8c7, type: 3}
+  Installers:
   - id: 0
   - id: 1
   - id: 2
-  - id: 3
-  WindowStyleSheet: {fileID: 7433441132597879392, guid: 96b1bd8a3a2d24f47b06343d2befd8c7, type: 3}
   references:
     version: 1
     00000000:
-      type: {class: DefaultNodeViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
+      type: {class: VisualNodeBasicGraphInstaller, ns: , asm: GraphExt.Sample.ExpressionTree}
       data:
-        NodePropertyViewFactory:
-          Factories:
-          - id: 4
+        GraphViewFactory: GraphExt.Editor.DefaultGraphViewFactory, GraphExt.Editor,
+          Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+        NodeViewFactory: GraphExt.Editor.DefaultNodeViewFactory, GraphExt.Editor,
+          Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+        PortViewFactory: GraphExt.Editor.DefaultPortViewFactory, GraphExt.Editor,
+          Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+        EdgeViewFactory: GraphExt.Editor.DefaultEdgeViewFactory, GraphExt.Editor,
+          Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+        Presenters:
+        - GraphExt.Editor.NodeViewPresenter, GraphExt.Editor, Version=0.0.0.0, Culture=neutral,
+          PublicKeyToken=null
+        - GraphExt.Editor.EdgeViewPresenter, GraphExt.Editor, Version=0.0.0.0, Culture=neutral,
+          PublicKeyToken=null
+        MenuEntries:
+        - PrintValueMenu, GraphExt.Sample.ExpressionTree, Version=0.0.0.0, Culture=neutral,
+          PublicKeyToken=null
     00000001:
-      type: {class: DefaultPortViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
+      type: {class: MemoryInstaller, ns: GraphExt.Editor, asm: GraphExt.Memory}
     00000002:
-      type: {class: DefaultEdgeViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
-    00000003:
-      type: {class: DefaultStickyNoteViewFactory, ns: GraphExt.Editor, asm: GraphExt.StickyNote}
-    00000004:
-      type: {class: DefaultPropertyViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
+      type: {class: MemoryStickyNoteInstaller, ns: GraphExt.Editor, asm: GraphExt.StickyNote}
+      data:
+        ViewFactory: GraphExt.Editor.DefaultStickyNoteViewFactory, GraphExt.StickyNote,
+          Version=0.0.0.0, Culture=neutral, PublicKeyToken=null

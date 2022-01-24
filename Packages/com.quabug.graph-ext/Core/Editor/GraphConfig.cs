@@ -10,7 +10,7 @@ namespace GraphExt.Editor
 
         public StyleSheet WindowStyleSheet;
 
-        [SerializeReference, SerializeReferenceDrawer(Nullable = false)]
+        [SerializeReference, SerializeReferenceDrawer(Nullable = false, RenamePatter = @"\w*\.||")]
         public IInstaller[] Installers;
 
         [ContextMenu("Open Window")]

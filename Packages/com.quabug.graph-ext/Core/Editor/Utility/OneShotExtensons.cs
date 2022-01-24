@@ -33,13 +33,14 @@ namespace GraphExt.Editor
 
         public static void RegisterGraphView(this Container container)
         {
-            container.RegisterSingleton<GraphView>();
+            container.Register(() => container.Resolve<IGraphViewFactory>().Create());
             container.Register<UnityEditor.Experimental.GraphView.GraphView>(container.Resolve<GraphView>);
         }
 
-        public static void RegisterGraphRuntime<TNode>(this Container container) where TNode : INode<GraphRuntime<TNode>>
+        public static void RegisterGraphRuntimeInstance<TNode>(this Container container, GraphRuntime<TNode> graphRuntime)
+            where TNode : INode<GraphRuntime<TNode>>
         {
-            container.RegisterSingleton<GraphRuntime<TNode>>();
+            container.RegisterInstance(graphRuntime);
             container.Register<IReadOnlyGraphRuntime<TNode>>(container.Resolve<GraphRuntime<TNode>>);
             container.Register(() => container.Resolve<GraphRuntime<TNode>>().NodeMap);
             container.Register(() => container.Resolve<GraphRuntime<TNode>>().NodeIdMap);
@@ -54,12 +55,8 @@ namespace GraphExt.Editor
 
         public static void RegisterTypeNameArraySingleton<T>(this Container container, IEnumerable<string> typeNames) where T : class
         {
-            container.RegisterSingleton(() => typeNames
-                .Select(Type.GetType)
-                .Select(container.Instantiate)
-                .OfType<T>()
-                .ToArray()
-            );
+            foreach (var type in typeNames.Select(Type.GetType))
+                container.RegisterSingleton(() => (T)container.Instantiate(type));
         }
     }
 }
