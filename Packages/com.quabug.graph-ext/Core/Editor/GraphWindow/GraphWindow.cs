@@ -46,18 +46,24 @@ namespace GraphExt.Editor
 
         public void RecreateGUI()
         {
-            _container?.Dispose();
-            foreach (var presenter in _presenters.OfType<IDisposable>()) presenter.Dispose();
+            if (_container != null)
+            {
+                foreach (var disposable in _container.ResolveGroup<IDisposable>()) disposable.Dispose();
+                _container.Dispose();
+            }
+
             _container = new Container();
+            _container.RegisterInstance(this);
             foreach (var installer in _config.Installers) installer.Install(_container);
-            foreach (var installer in _config.MenuEntries) installer.Install(_container);
+            foreach (var installer in _config.MenuEntries.Reverse()) installer.Install(_container);
+
             var graphView = _container.Resolve<UnityEditor.Experimental.GraphView.GraphView>();
             ReplaceGraphView(graphView);
             _presenters = _container.ResolveGroup<IViewPresenter>().ToArray();
-            _menuBuilder = new MenuBuilder(graphView, _container.ResolveGroup<IMenuEntry>().Reverse().ToArray());
+            _menuBuilder = _container.Instantiate<MenuBuilder>();
         }
 
-        private void RemoveGraphView()
+        public void RemoveGraphView()
         {
             var graph = _graphRoot.Value.Q<UnityEditor.Experimental.GraphView.GraphView>();
             graph?.parent.Remove(graph);
