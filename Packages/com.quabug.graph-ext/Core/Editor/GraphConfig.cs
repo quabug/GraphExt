@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -10,26 +8,15 @@ namespace GraphExt.Editor
     {
         public string WindowName = "Graph Window";
 
-        [SerializedType(typeof(BaseGraphWindow), InstantializableType = true, Nullable = false)]
-        public string WindowType;
-
-        [SerializeReference, SerializeReferenceDrawer(Nullable = false)]
-        public IGraphElementViewFactory[] ViewFactories;
-
         public StyleSheet WindowStyleSheet;
 
         [SerializeReference, SerializeReferenceDrawer(Nullable = false)]
         public IInstaller[] Installers;
 
-        public T GetViewFactory<T>() where T : IGraphElementViewFactory
-        {
-            return ViewFactories.OfType<T>().First();
-        }
-
         [ContextMenu("Open Window")]
         public void OpenWindow()
         {
-            var window = (BaseGraphWindow) Window.GetOrCreate(Type.GetType(WindowType), WindowName);
+            var window = Window.GetOrCreate<GraphWindow>(WindowName);
             window.titleContent.text = WindowName;
             window.Show(immediateDisplay: true);
             window.Focus();

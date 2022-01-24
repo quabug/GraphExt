@@ -10,22 +10,22 @@ namespace GraphExt.Editor
     [Serializable]
     public class BasicGraphInstaller<TNode> : IInstaller where TNode : INode<GraphRuntime<TNode>>
     {
-        [SerializedType(typeof(IGraphViewFactory), Nullable = false, InstantializableType = true)]
+        [SerializedType(typeof(IGraphViewFactory), Nullable = false)]
         public string GraphViewFactory = typeof(DefaultGraphViewFactory).AssemblyQualifiedName;
 
-        [SerializedType(typeof(INodeViewFactory), Nullable = false, InstantializableType = true)]
+        [SerializedType(typeof(INodeViewFactory), Nullable = false)]
         public string NodeViewFactory = typeof(DefaultNodeViewFactory).AssemblyQualifiedName;
 
-        [SerializedType(typeof(IPortViewFactory), Nullable = false, InstantializableType = true)]
+        [SerializedType(typeof(IPortViewFactory), Nullable = false)]
         public string PortViewFactory = typeof(DefaultPortViewFactory).AssemblyQualifiedName;
 
-        [SerializedType(typeof(IEdgeViewFactory), Nullable = false, InstantializableType = true)]
+        [SerializedType(typeof(IEdgeViewFactory), Nullable = false)]
         public string EdgeViewFactory = typeof(DefaultEdgeViewFactory).AssemblyQualifiedName;
 
-        [SerializedType(typeof(IViewPresenter), Nullable = false, InstantializableType = true)]
+        [SerializedType(typeof(IViewPresenter), Nullable = false)]
         public string[] Presenters;
 
-        [SerializedType(typeof(IMenuEntry), Nullable = false, InstantializableType = true)]
+        [SerializedType(typeof(IMenuEntry), Nullable = false)]
         public string[] MenuEntries;
 
         public void Install(Container container)

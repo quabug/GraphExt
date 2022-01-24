@@ -9,14 +9,14 @@ namespace GraphExt.Editor
 {
     public sealed class GraphWindow : EditorWindow
     {
-        [SerializeField] private GraphConfig _Config;
+        [SerializeField] private GraphConfig _config;
         public GraphConfig Config
         {
             set
             {
-                if (_Config != value)
+                if (_config != value)
                 {
-                    _Config = value;
+                    _config = value;
                     // RecreateGUI();
                 }
             }
@@ -67,7 +67,7 @@ namespace GraphExt.Editor
 
             var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(ussPath);
             rootVisualElement.styleSheets.Add(styleSheet);
-            if (_Config.WindowStyleSheet != null) rootVisualElement.styleSheets.Add(_Config.WindowStyleSheet);
+            if (_config.WindowStyleSheet != null) rootVisualElement.styleSheets.Add(_config.WindowStyleSheet);
             return rootVisualElement;
         }
     }
