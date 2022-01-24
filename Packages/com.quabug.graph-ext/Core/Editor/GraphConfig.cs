@@ -13,6 +13,9 @@ namespace GraphExt.Editor
         [SerializeReference, SerializeReferenceDrawer(Nullable = false, RenamePatter = @"\w*\.||")]
         public IInstaller[] Installers;
 
+        [SerializeReference, SerializeReferenceDrawer(Nullable = false, RenamePatter = @"\w*\.||")]
+        public IMenuEntryInstaller[] MenuEntries;
+
         [ContextMenu("Open Window")]
         public void OpenWindow()
         {

@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,19 +17,19 @@ public class MemorySaveLoadMenu<TNode> : IMenuEntry where TNode : INode<GraphRun
     [NotNull] private readonly GraphRuntime<TNode> _graphRuntime;
     [NotNull] private readonly IReadOnlyDictionary<NodeId, Vector2> _nodePositions;
     [NotNull] private readonly IReadOnlyDictionary<StickyNoteId, StickyNoteData> _notes;
-    [NotNull] private readonly JsonFileInstaller _jsonFileInstaller;
+    [NotNull] private readonly Action<TextAsset> _setJsonFile;
 
     public MemorySaveLoadMenu(
         [NotNull] GraphRuntime<TNode> graphRuntime,
         [NotNull] IReadOnlyDictionary<NodeId, Vector2> nodePositions,
         [NotNull] IReadOnlyDictionary<StickyNoteId, StickyNoteData> notes,
-        [NotNull] JsonFileInstaller jsonFileInstaller
+        [NotNull] Action<TextAsset> setJsonFile
     )
     {
         _graphRuntime = graphRuntime;
         _nodePositions = nodePositions;
         _notes = notes;
-        _jsonFileInstaller = jsonFileInstaller;
+        _setJsonFile = setJsonFile;
     }
 
     public void MakeEntry(UnityEditor.Experimental.GraphView.GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
@@ -49,7 +50,7 @@ public class MemorySaveLoadMenu<TNode> : IMenuEntry where TNode : INode<GraphRun
                 new JsonEditorUtility.GraphViewData<TNode>(_nodePositions),
                 _notes
             ));
-            ChangeWindowFilePath(jsonAsset);
+            _setJsonFile(jsonAsset);
         });
 
         menu.AddItem(new GUIContent("Load"), false, () =>
@@ -58,7 +59,7 @@ public class MemorySaveLoadMenu<TNode> : IMenuEntry where TNode : INode<GraphRun
 
             var path = EditorUtility.OpenFilePanel("load path", Application.dataPath, "json");
             var jsonAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(ToRelativePath(path));
-            ChangeWindowFilePath(jsonAsset);
+            _setJsonFile(jsonAsset);
             GetWindow()?.RecreateGUI();
         });
 
@@ -81,16 +82,6 @@ public class MemorySaveLoadMenu<TNode> : IMenuEntry where TNode : INode<GraphRun
     }
 
     string ToRelativePath([PathReference] string absolutePath) => "Assets" + absolutePath.Substring(Application.dataPath.Length);
-
-    void ChangeWindowFilePath(TextAsset json)
-    {
-        _jsonFileInstaller.JsonFile = json;
-    }
-
-    TextAsset CurrentWindowJsonAsset()
-    {
-        return _jsonFileInstaller.JsonFile;
-    }
 
     void ClosePopupWindow()
     {

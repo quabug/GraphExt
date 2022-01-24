@@ -25,9 +25,6 @@ namespace GraphExt.Editor
         [SerializedType(typeof(IViewPresenter), Nullable = false, InstantializableType = true, RenamePatter = @"\w*\.||")]
         public string[] Presenters;
 
-        [SerializedType(typeof(IMenuEntry), Nullable = false, InstantializableType = true, RenamePatter = @"\w*\.||")]
-        public string[] MenuEntries;
-
         public void Install(Container container)
         {
             container.RegisterInstance(GraphViewFactory);
@@ -44,7 +41,6 @@ namespace GraphExt.Editor
             container.RegisterDictionaryInstance(new Dictionary<PortId, PortData>());
 
             container.RegisterTypeNameArraySingleton<IViewPresenter>(Presenters);
-            container.RegisterTypeNameArraySingleton<IMenuEntry>(MenuEntries);
 
             Func<IReadOnlyDictionary<NodeId, TNode>, IReadOnlyDictionary<NodeId, Vector2>, ConvertToNodeData>
                 toNodeData = NodeDataConvertor.ToNodeData;

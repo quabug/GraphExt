@@ -1,14 +1,18 @@
-﻿using GraphExt.Editor;
+﻿using System;
+using GraphExt.Editor;
 using OneShot;
 using UnityEngine;
 
-public class JsonFileInstaller : IInstaller
+public class JsonFileInstaller : IMenuEntryInstaller
 {
     public TextAsset JsonFile;
 
     public void Install(Container container)
     {
-        container.RegisterInstance(this);
+        var child = container.CreateChildContainer();
+        child.RegisterInstance<Action<TextAsset>>(json => JsonFile = json);
+        child.RegisterSingleton<MemorySaveLoadMenu<IVisualNode>>();
+        container.Register<IMenuEntry>(() => child.Resolve<MemorySaveLoadMenu<IVisualNode>>());
         if (JsonFile != null)
         {
             var (graphRuntime, nodePositions, notes) = JsonEditorUtility.Deserialize<IVisualNode>(JsonFile.text);

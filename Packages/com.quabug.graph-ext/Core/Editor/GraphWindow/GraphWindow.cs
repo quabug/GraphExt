@@ -50,10 +50,11 @@ namespace GraphExt.Editor
             foreach (var presenter in _presenters.OfType<IDisposable>()) presenter.Dispose();
             _container = new Container();
             foreach (var installer in _config.Installers) installer.Install(_container);
+            foreach (var installer in _config.MenuEntries) installer.Install(_container);
             var graphView = _container.Resolve<UnityEditor.Experimental.GraphView.GraphView>();
             ReplaceGraphView(graphView);
             _presenters = _container.ResolveGroup<IViewPresenter>().ToArray();
-            _menuBuilder = new MenuBuilder(graphView, _container.ResolveGroup<IMenuEntry>().ToArray());
+            _menuBuilder = new MenuBuilder(graphView, _container.ResolveGroup<IMenuEntry>().Reverse().ToArray());
         }
 
         private void RemoveGraphView()
