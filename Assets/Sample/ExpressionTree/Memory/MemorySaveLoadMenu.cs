@@ -16,19 +16,19 @@ public class MemorySaveLoadMenu<TNode> : IMenuEntry where TNode : INode<GraphRun
     [NotNull] private readonly GraphRuntime<TNode> _graphRuntime;
     [NotNull] private readonly IReadOnlyDictionary<NodeId, Vector2> _nodePositions;
     [NotNull] private readonly IReadOnlyDictionary<StickyNoteId, StickyNoteData> _notes;
-    [NotNull] private readonly MemoryInstaller _memoryInstaller;
+    [NotNull] private readonly JsonFileInstaller _jsonFileInstaller;
 
     public MemorySaveLoadMenu(
         [NotNull] GraphRuntime<TNode> graphRuntime,
         [NotNull] IReadOnlyDictionary<NodeId, Vector2> nodePositions,
         [NotNull] IReadOnlyDictionary<StickyNoteId, StickyNoteData> notes,
-        [NotNull] MemoryInstaller memoryInstaller
+        [NotNull] JsonFileInstaller jsonFileInstaller
     )
     {
         _graphRuntime = graphRuntime;
         _nodePositions = nodePositions;
         _notes = notes;
-        _memoryInstaller = memoryInstaller;
+        _jsonFileInstaller = jsonFileInstaller;
     }
 
     public void MakeEntry(UnityEditor.Experimental.GraphView.GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
@@ -84,12 +84,12 @@ public class MemorySaveLoadMenu<TNode> : IMenuEntry where TNode : INode<GraphRun
 
     void ChangeWindowFilePath(TextAsset json)
     {
-        _memoryInstaller.JsonFile = json;
+        _jsonFileInstaller.JsonFile = json;
     }
 
     TextAsset CurrentWindowJsonAsset()
     {
-        return _memoryInstaller.JsonFile;
+        return _jsonFileInstaller.JsonFile;
     }
 
     void ClosePopupWindow()

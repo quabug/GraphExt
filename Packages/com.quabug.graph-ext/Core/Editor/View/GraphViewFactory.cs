@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEditor.Experimental.GraphView;
 
@@ -7,41 +6,37 @@ namespace GraphExt.Editor
 {
     public interface IGraphViewFactory
     {
-        [NotNull] GraphView Create();
+        [NotNull] GraphView Create(GraphView.FindCompatiblePorts findCompatiblePorts);
     }
 
     public class DefaultGraphViewFactory : IGraphViewFactory
     {
-        [NotNull] private readonly IReadOnlyDictionary<Port, PortId> _ports;
-        [NotNull] private readonly IsEdgeCompatibleFunc _isEdgeCompatible;
-
-        public DefaultGraphViewFactory(
-            [NotNull] IReadOnlyDictionary<Port, PortId> ports,
-            [NotNull] IsEdgeCompatibleFunc isEdgeCompatible
-        )
+        public GraphView Create(GraphView.FindCompatiblePorts findCompatiblePorts)
         {
-            _ports = ports;
-            _isEdgeCompatible= isEdgeCompatible;
-        }
-
-        public GraphView Create()
-        {
-            var graphView = new GraphView(GetCompatiblePorts);
+            var graphView = new GraphView(findCompatiblePorts);
             graphView.SetupGridBackground();
             graphView.SetupMiniMap();
             graphView.SetupDefaultManipulators();
             return graphView;
         }
 
-        private IEnumerable<Port> GetCompatiblePorts(Port startPort)
+        public static GraphView.FindCompatiblePorts GetFindCompatiblePortsFunc(
+            [NotNull] IReadOnlyDictionary<Port, PortId> ports,
+            [NotNull] IsEdgeCompatibleFunc isEdgeCompatible
+        )
         {
-            foreach (var endPort in _ports.Keys)
+            return GetCompatiblePorts;
+
+            IEnumerable<Port> GetCompatiblePorts(Port startPort)
             {
-                if (startPort.orientation != endPort.orientation || startPort.direction == endPort.direction) continue;
-                var startPortId = _ports[startPort];
-                var endPortId = _ports[endPort];
-                if (!_isEdgeCompatible(input: endPortId, output: startPortId)) continue;
-                yield return endPort;
+                foreach (var endPort in ports.Keys)
+                {
+                    if (startPort.orientation != endPort.orientation || startPort.direction == endPort.direction) continue;
+                    var startPortId = ports[startPort];
+                    var endPortId = ports[endPort];
+                    if (!isEdgeCompatible(input: endPortId, output: startPortId)) continue;
+                    yield return endPort;
+                }
             }
         }
     }

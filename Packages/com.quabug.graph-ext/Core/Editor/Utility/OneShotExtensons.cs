@@ -25,7 +25,11 @@ namespace GraphExt.Editor
 
         public static void RegisterGraphView(this Container container)
         {
-            container.RegisterSingleton<GraphView>(() => container.Resolve<IGraphViewFactory>().Create());
+            container.RegisterSingleton(() =>
+            {
+                Func<GraphView.FindCompatiblePorts, GraphView> create = container.Resolve<IGraphViewFactory>().Create;
+                return container.Call<GraphView>(create);
+            });
             container.Register<UnityEditor.Experimental.GraphView.GraphView>(container.Resolve<GraphView>);
         }
 

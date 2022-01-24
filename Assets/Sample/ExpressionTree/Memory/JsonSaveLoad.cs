@@ -90,7 +90,7 @@ public static class JsonUtility
 #if UNITY_EDITOR
 public static class JsonEditorUtility
 {
-    public static (IReadOnlyGraphRuntime<TNode> graphRuntime, IReadOnlyDictionary<NodeId, Vector2> nodePositions, IReadOnlyDictionary<StickyNoteId, StickyNoteData> notes)
+    public static (GraphRuntime<TNode> graphRuntime, Dictionary<NodeId, Vector2> nodePositions, Dictionary<StickyNoteId, StickyNoteData> notes)
         Deserialize<TNode>(string json) where TNode : INode<GraphRuntime<TNode>>
     {
         var dataList = JsonSaveLoad.Deserialize(json, typeof(JsonUtility.GraphRuntimeData<TNode>), typeof(GraphViewData<TNode>), typeof(Dictionary<string, StickyNoteData>)).ToArray();
@@ -115,7 +115,7 @@ public static class JsonEditorUtility
             Positions = nodePositions.ToDictionary(t => t.Key.Id, t => (t.Value.x, t.Value.y));
         }
 
-        public IReadOnlyDictionary<NodeId, Vector2> ToMemory()
+        public Dictionary<NodeId, Vector2> ToMemory()
         {
             return Positions.ToDictionary(pair => new NodeId(pair.Key), pair => new Vector2(pair.Value.x, pair.Value.y));
         }
