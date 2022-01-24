@@ -29,7 +29,7 @@ namespace GraphExt.Editor
             foreach (var note in AssetDatabase.LoadAllAssetsAtPath(path).OfType<StickyNoteScriptableObject>())
             {
                 _notes.Add(note.Id, note);
-                stickyNotePresenter.CreateNoteView(note.Id, note.Data);
+                StickyNotePresenter.CreateNoteView(note.Id, note.Data);
             }
         }
 

@@ -26,7 +26,7 @@ namespace GraphExt.Editor
             foreach (var note in root.GetComponentsInChildren<StickyNoteComponent>())
             {
                 _notes.Add(note.Id, note);
-                stickyNotePresenter.CreateNoteView(note.Id, note.Data);
+                StickyNotePresenter.CreateNoteView(note.Id, note.Data);
             }
         }
 

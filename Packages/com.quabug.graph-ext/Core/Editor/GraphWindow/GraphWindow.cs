@@ -44,7 +44,7 @@ namespace GraphExt.Editor
             foreach (var presenter in _presenters.OfType<ITickablePresenter>()) presenter.Tick();
         }
 
-        private void RecreateGUI()
+        public void RecreateGUI()
         {
             _container?.Dispose();
             foreach (var presenter in _presenters.OfType<IDisposable>()) presenter.Dispose();

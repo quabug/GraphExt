@@ -17,14 +17,6 @@ namespace GraphExt.Editor
         public static void RegisterBiDictionaryInstance<TId, TView>(this Container container, BiDictionary<TId, TView> map)
         {
             container.RegisterInstance(map);
-            container.RegisterInstance<IBiDictionary<TId, TView>>(map);
-            container.RegisterInstance<IReadOnlyBiDictionary<TId, TView>>(map);
-            container.RegisterInstance(map.Forward);
-            container.RegisterInstance(map.Reverse);
-        }
-
-        public static void RegisterBiDictionaryInterface<TId, TView>(this Container container)
-        {
             container.Register<IBiDictionary<TId, TView>>(container.Resolve<BiDictionary<TId, TView>>);
             container.Register<IReadOnlyBiDictionary<TId, TView>>(container.Resolve<BiDictionary<TId, TView>>);
             container.Register(() => container.Resolve<BiDictionary<TId, TView>>().Forward);
@@ -33,7 +25,7 @@ namespace GraphExt.Editor
 
         public static void RegisterGraphView(this Container container)
         {
-            container.Register(() => container.Resolve<IGraphViewFactory>().Create());
+            container.RegisterSingleton<GraphView>(() => container.Resolve<IGraphViewFactory>().Create());
             container.Register<UnityEditor.Experimental.GraphView.GraphView>(container.Resolve<GraphView>);
         }
 
@@ -55,8 +47,7 @@ namespace GraphExt.Editor
 
         public static void RegisterTypeNameArraySingleton<T>(this Container container, IEnumerable<string> typeNames) where T : class
         {
-            foreach (var type in typeNames.Select(Type.GetType))
-                container.RegisterSingleton(() => (T)container.Instantiate(type));
+            foreach (var type in typeNames) container.RegisterTypeNameSingleton<T>(type);
         }
     }
 }

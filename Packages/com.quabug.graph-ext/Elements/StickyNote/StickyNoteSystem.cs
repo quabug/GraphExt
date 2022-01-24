@@ -11,13 +11,14 @@ namespace GraphExt.Editor
     public abstract class StickyNoteSystem
     {
         public BiDictionary<StickyNoteId, StickyNote> NoteViews { get; }
-        public StickyNotePresenter stickyNotePresenter { get; }
+        public StickyNotePresenter StickyNotePresenter { get; }
 
         public StickyNoteSystem(
             [NotNull] StickyNotePresenter presenter,
             [NotNull] BiDictionary<StickyNoteId, StickyNote> views
         )
         {
+            StickyNotePresenter = presenter;
             NoteViews = views;
             presenter.OnDataChanged += SetNodeData;
         }
@@ -25,13 +26,13 @@ namespace GraphExt.Editor
         public void AddNote(in StickyNoteId id, StickyNoteData data)
         {
             AddNoteData(id, data);
-            stickyNotePresenter.CreateNoteView(id, data);
+            StickyNotePresenter.CreateNoteView(id, data);
         }
 
         public void RemoveNote(StickyNote view)
         {
             var id = NoteViews.GetKey(view);
-            stickyNotePresenter.RemoveNoteView(id);
+            StickyNotePresenter.RemoveNoteView(id);
             RemoveNoteData(id);
         }
 

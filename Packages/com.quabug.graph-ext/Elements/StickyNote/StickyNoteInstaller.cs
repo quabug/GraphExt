@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using OneShot;
 using UnityEditor.Experimental.GraphView;
 
@@ -17,6 +18,7 @@ namespace GraphExt.Editor
             container.RegisterSingleton<TStickyNoteSystem>();
             container.Register<StickyNoteSystem>(container.Resolve<TStickyNoteSystem>);
             container.RegisterBiDictionaryInstance(new BiDictionary<StickyNoteId, StickyNote>());
+            container.RegisterDictionaryInstance(new Dictionary<StickyNoteId, StickyNoteData>());
             container.RegisterSingleton<StickyNotePresenter>();
             container.Register<IViewPresenter>(container.Resolve<StickyNotePresenter>);
             container.Register<AddNote>(() => container.Resolve<TStickyNoteSystem>().AddNote);

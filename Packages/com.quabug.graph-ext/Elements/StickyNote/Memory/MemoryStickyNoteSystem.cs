@@ -20,7 +20,7 @@ namespace GraphExt.Editor
             foreach (var notePair in notes)
             {
                 _stickyNotes.Add(notePair.Key, notePair.Value);
-                stickyNotePresenter.CreateNoteView(notePair.Key, notePair.Value);
+                StickyNotePresenter.CreateNoteView(notePair.Key, notePair.Value);
             }
         }
 
