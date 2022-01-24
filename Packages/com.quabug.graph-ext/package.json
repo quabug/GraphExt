@@ -4,7 +4,8 @@
   "unity": "2020.3",
   "displayName": "Graph Ext",
   "dependencies": {
-    "com.unity.modules.uielements": "1.0.0"
+    "com.unity.modules.uielements": "1.0.0",
+    "com.quabug.one-shot-injection": "1.3.0"
   },
   "description": "A library to help you customize your own Unity3D Graph solution.",
   "type": "library"

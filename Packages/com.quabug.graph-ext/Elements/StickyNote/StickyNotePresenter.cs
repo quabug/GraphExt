@@ -2,30 +2,27 @@
 
 using JetBrains.Annotations;
 using UnityEditor.Experimental.GraphView;
-using UnityEngine;
 
 namespace GraphExt.Editor
 {
-    public class StickyNodePresenter : IViewPresenter
+    public class StickyNotePresenter : IViewPresenter
     {
-        public delegate void SetData(in StickyNoteId id, StickyNoteData data);
-
         [NotNull] private readonly UnityEditor.Experimental.GraphView.GraphView _graphView;
         [NotNull] private readonly IStickyNoteViewFactory _viewFactory;
         [NotNull] private readonly IBiDictionary<StickyNoteId, StickyNote> _stickyNoteViews;
-        [NotNull] private readonly SetData _setStickyNoteData;
 
-        public StickyNodePresenter(
+        public delegate void DataChanged(in StickyNoteId id, StickyNoteData data);
+        public event DataChanged OnDataChanged;
+
+        public StickyNotePresenter(
             [NotNull] UnityEditor.Experimental.GraphView.GraphView graphView,
             [NotNull] IStickyNoteViewFactory viewFactory,
-            [NotNull] IBiDictionary<StickyNoteId, StickyNote> stickyNoteViews,
-            [NotNull] SetData setStickyNoteData
+            [NotNull] IBiDictionary<StickyNoteId, StickyNote> stickyNoteViews
         )
         {
             _graphView = graphView;
             _viewFactory = viewFactory;
             _stickyNoteViews = stickyNoteViews;
-            _setStickyNoteData = setStickyNoteData;
         }
 
         public void CreateNoteView(in StickyNoteId id, StickyNoteData data)
@@ -60,7 +57,7 @@ namespace GraphExt.Editor
                 theme: view.theme.ToRuntime(),
                 fontSize: view.fontSize.ToRuntime()
             );
-            _setStickyNoteData(noteId, data);
+            OnDataChanged?.Invoke(noteId, data);
         }
     }
 }

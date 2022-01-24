@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEditor;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace GraphExt.Editor
@@ -18,17 +19,17 @@ namespace GraphExt.Editor
         public IReadOnlyDictionary<StickyNoteId, StickyNoteScriptableObject> StickyNotes => _notes;
 
         public ScriptableObjectStickyNoteSystem(
-            [NotNull] UnityEditor.Experimental.GraphView.GraphView graphView,
-            [NotNull] IStickyNoteViewFactory stickyNoteViewFactory,
+            [NotNull] StickyNotePresenter presenter,
+            [NotNull] BiDictionary<StickyNoteId, StickyNote> views,
             [NotNull] ScriptableObject graph
-        ) : base(graphView, stickyNoteViewFactory)
+        ) : base(presenter, views)
         {
             _graph = graph;
             var path = AssetDatabase.GetAssetPath(graph);
             foreach (var note in AssetDatabase.LoadAllAssetsAtPath(path).OfType<StickyNoteScriptableObject>())
             {
                 _notes.Add(note.Id, note);
-                StickyNodePresenter.CreateNoteView(note.Id, note.Data);
+                stickyNotePresenter.CreateNoteView(note.Id, note.Data);
             }
         }
 

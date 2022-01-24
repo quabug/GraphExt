@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using UnityEditor.Experimental.GraphView;
 
 namespace GraphExt.Editor
 {
@@ -11,15 +12,15 @@ namespace GraphExt.Editor
         public IReadOnlyDictionary<StickyNoteId, StickyNoteData> StickyNotes => _stickyNotes;
 
         public MemoryStickyNoteSystem(
-            [NotNull] UnityEditor.Experimental.GraphView.GraphView graphView,
-            [NotNull] IStickyNoteViewFactory stickyNoteViewFactory,
+            [NotNull] StickyNotePresenter presenter,
+            [NotNull] BiDictionary<StickyNoteId, StickyNote> views,
             [NotNull] IReadOnlyDictionary<StickyNoteId, StickyNoteData> notes
-        ) : base(graphView, stickyNoteViewFactory)
+        ) : base(presenter, views)
         {
             foreach (var notePair in notes)
             {
                 _stickyNotes.Add(notePair.Key, notePair.Value);
-                StickyNodePresenter.CreateNoteView(notePair.Key, notePair.Value);
+                stickyNotePresenter.CreateNoteView(notePair.Key, notePair.Value);
             }
         }
 

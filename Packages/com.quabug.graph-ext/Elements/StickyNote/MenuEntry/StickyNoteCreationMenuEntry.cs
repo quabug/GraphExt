@@ -10,7 +10,6 @@ namespace GraphExt.Editor
 {
     public class StickyNoteCreationMenuEntry : IMenuEntry
     {
-        public delegate void AddNote(in StickyNoteId id, StickyNoteData data);
         private readonly AddNote _addNote;
 
         public StickyNoteCreationMenuEntry([NotNull] AddNote addNote)

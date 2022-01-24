@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace GraphExt.Editor
@@ -16,16 +17,16 @@ namespace GraphExt.Editor
         public IReadOnlyDictionary<StickyNoteId, StickyNoteComponent> StickyNotes => _notes;
 
         public PrefabStickyNoteSystem(
-            [NotNull] UnityEditor.Experimental.GraphView.GraphView graphView,
-            [NotNull] IStickyNoteViewFactory stickyNoteViewFactory,
+            [NotNull] StickyNotePresenter presenter,
+            [NotNull] BiDictionary<StickyNoteId, StickyNote> views,
             [NotNull] GameObject root
-        ) : base(graphView, stickyNoteViewFactory)
+        ) : base(presenter, views)
         {
             _root = root;
             foreach (var note in root.GetComponentsInChildren<StickyNoteComponent>())
             {
                 _notes.Add(note.Id, note);
-                StickyNodePresenter.CreateNoteView(note.Id, note.Data);
+                stickyNotePresenter.CreateNoteView(note.Id, note.Data);
             }
         }
 

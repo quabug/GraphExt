@@ -9,9 +9,17 @@ namespace GraphExt.Editor
     public class GraphConfig : ScriptableObject
     {
         public string WindowName = "Graph Window";
-        [SerializedType(typeof(BaseGraphWindow), InstantializableType = true, Nullable = false)] public string WindowType;
-        [SerializeReference, SerializeReferenceDrawer] public IGraphElementViewFactory[] ViewFactories;
+
+        [SerializedType(typeof(BaseGraphWindow), InstantializableType = true, Nullable = false)]
+        public string WindowType;
+
+        [SerializeReference, SerializeReferenceDrawer(Nullable = false)]
+        public IGraphElementViewFactory[] ViewFactories;
+
         public StyleSheet WindowStyleSheet;
+
+        [SerializeReference, SerializeReferenceDrawer(Nullable = false)]
+        public IInstaller[] Installers;
 
         public T GetViewFactory<T>() where T : IGraphElementViewFactory
         {

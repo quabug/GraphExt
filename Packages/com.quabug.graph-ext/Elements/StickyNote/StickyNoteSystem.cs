@@ -5,34 +5,33 @@ using UnityEditor.Experimental.GraphView;
 
 namespace GraphExt.Editor
 {
+    public delegate void AddNote(in StickyNoteId id, StickyNoteData data);
+    public delegate void RemoveNoteView(StickyNote view);
+
     public abstract class StickyNoteSystem
     {
-        public BiDictionary<StickyNoteId, StickyNote> NoteViews { get; } = new BiDictionary<StickyNoteId, StickyNote>();
-        public StickyNodePresenter StickyNodePresenter { get; }
+        public BiDictionary<StickyNoteId, StickyNote> NoteViews { get; }
+        public StickyNotePresenter stickyNotePresenter { get; }
 
         public StickyNoteSystem(
-            [NotNull] UnityEditor.Experimental.GraphView.GraphView graphView,
-            [NotNull] IStickyNoteViewFactory stickyNoteViewFactory
+            [NotNull] StickyNotePresenter presenter,
+            [NotNull] BiDictionary<StickyNoteId, StickyNote> views
         )
         {
-            StickyNodePresenter = new StickyNodePresenter(
-                graphView,
-                stickyNoteViewFactory,
-                NoteViews,
-                SetNodeData
-            );
+            NoteViews = views;
+            presenter.OnDataChanged += SetNodeData;
         }
 
         public void AddNote(in StickyNoteId id, StickyNoteData data)
         {
             AddNoteData(id, data);
-            StickyNodePresenter.CreateNoteView(id, data);
+            stickyNotePresenter.CreateNoteView(id, data);
         }
 
         public void RemoveNote(StickyNote view)
         {
             var id = NoteViews.GetKey(view);
-            StickyNodePresenter.RemoveNoteView(id);
+            stickyNotePresenter.RemoveNoteView(id);
             RemoveNoteData(id);
         }
 

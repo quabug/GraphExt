@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
@@ -10,30 +11,18 @@ namespace GraphExt.Editor
     /// </summary>
     public class GraphView : UnityEditor.Experimental.GraphView.GraphView
     {
-        [NotNull] private readonly IsEdgeCompatibleFunc _isEdgeCompatible;
-        [NotNull] private readonly IReadOnlyDictionary<Port, PortId> _ports;
+        public delegate IEnumerable<Port> FindCompatiblePorts(Port startPort);
 
-        public GraphView(
-            [NotNull] IsEdgeCompatibleFunc isEdgeCompatible,
-            [NotNull] IReadOnlyDictionary<Port, PortId> ports
-        )
+        [NotNull] private readonly FindCompatiblePorts _findCompatiblePorts;
+
+        public GraphView([NotNull] FindCompatiblePorts findCompatiblePorts)
         {
-            _isEdgeCompatible = isEdgeCompatible;
-            _ports = ports;
+            _findCompatiblePorts = findCompatiblePorts;
         }
 
         public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
         {
-            var compatiblePorts = new List<Port>();
-            ports.ForEach(endPort =>
-            {
-                if (startPort.orientation != endPort.orientation || startPort.direction == endPort.direction) return;
-                var startPortId = _ports[startPort];
-                var endPortId = _ports[endPort];
-                if (!_isEdgeCompatible(input: endPortId, output: startPortId)) return;
-                compatiblePorts.Add(endPort);
-            });
-            return compatiblePorts;
+            return _findCompatiblePorts(startPort).ToList();
         }
 
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)

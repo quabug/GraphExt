@@ -7,5 +7,12 @@
     "com.unity.test-framework": "1.1.29",
     "com.unity.ui.builder": "1.0.0-preview.18",
     "com.unity.modules.uielements": "1.0.0"
-  }
+  },
+  "scopedRegistries": [
+    {
+      "name": "package.openupm.com",
+      "url": "https://package.openupm.com",
+      "scopes": [ "com.quabug" ]
+    }
+  ]
 }

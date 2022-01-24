@@ -1,6 +1,5 @@
 #if UNITY_EDITOR
 
-using System;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEditor;
@@ -12,11 +11,11 @@ namespace GraphExt.Editor
 {
     public class StickyNoteDeletionMenuEntry : IMenuEntry
     {
-        [NotNull] private readonly Action<StickyNote> _deleteNote;
+        [NotNull] private readonly RemoveNoteView _deleteNoteView;
 
-        public StickyNoteDeletionMenuEntry([NotNull] Action<StickyNote> deleteNote)
+        public StickyNoteDeletionMenuEntry([NotNull] RemoveNoteView deleteNoteView)
         {
-            _deleteNote = deleteNote;
+            _deleteNoteView = deleteNoteView;
         }
 
         public void MakeEntry(UnityEditor.Experimental.GraphView.GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
@@ -29,7 +28,7 @@ namespace GraphExt.Editor
                     for (var i = count - 1; i >= 0; i--)
                     {
                         if (graph.selection[i] is StickyNote note)
-                            _deleteNote(note);
+                            _deleteNoteView(note);
                     }
                 });
             }
