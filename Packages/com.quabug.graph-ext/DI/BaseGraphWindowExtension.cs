@@ -15,35 +15,37 @@ namespace GraphExt.Editor
         [SerializeReference, SerializeReferenceDrawer(Nullable = false, RenamePatter = @"\w*\.||")]
         public IMenuEntryInstaller[] MenuEntries;
 
-        private Container _container;
-        private MenuBuilder _menuBuilder;
-        private WindowSystems _systems;
+        [SerializedType(typeof(IWindowSystem), Nullable = false, InstantializableType = true, RenamePatter = @"\w*\.||")]
+        public string[] AdditionalWindowSystems;
+
+        protected Container _Container;
+        protected MenuBuilder _MenuBuilder;
+        protected WindowSystems _Systems;
 
         public void RecreateGraphView(VisualElement root)
         {
-            _container = new Container();
-            Install(_container);
-
-            // var graphView = _container.Resolve<UnityEditor.Experimental.GraphView.GraphView>();
-            // ReplaceGraphView(graphView);
-            InstantiateSystems(_container);
+            _Container = new Container();
+            Install(_Container);
+            InstantiateSystems(_Container);
+            RecreateGraphView(root, _Container);
         }
 
         public void Tick()
         {
-            _systems.Tick();
+            _Systems.Tick();
         }
 
         public void Clear()
         {
-            _menuBuilder?.Dispose();
-            _systems?.Dispose();
-            _container?.Dispose();
+            _MenuBuilder?.Dispose();
+            _Systems?.Dispose();
+            _Container?.Dispose();
         }
 
         protected virtual void Install(Container container)
         {
             container.RegisterInstance(this);
+            container.RegisterTypeNameArraySingleton<IWindowSystem>(AdditionalWindowSystems);
             foreach (var installer in Installers) installer.Install(container);
             foreach (var installer in MenuEntries.Reverse()) installer.Install(container);
         }
@@ -57,11 +59,11 @@ namespace GraphExt.Editor
 
         protected virtual void InstantiateSystems(Container container)
         {
-            _systems = container.Resolve<WindowSystems>();
-            _menuBuilder = container.Instantiate<MenuBuilder>();
+            _Systems = container.Instantiate<WindowSystems>();
+            _MenuBuilder = container.Instantiate<MenuBuilder>();
         }
 
-        class WindowSystems : IDisposable
+        protected class WindowSystems : IDisposable
         {
             private readonly IWindowSystem[] _systems;
 

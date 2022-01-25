@@ -3,7 +3,7 @@ using GraphExt.Editor;
 using OneShot;
 using UnityEngine;
 
-public class JsonFileInstaller : IMenuEntryInstaller
+public class JsonFileSaveLoadMenuEntry : IMenuEntryInstaller
 {
     public TextAsset JsonFile;
 

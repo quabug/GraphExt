@@ -22,9 +22,6 @@ namespace GraphExt.Editor
         [SerializeReference, SerializeReferenceDrawer(Nullable = false, RenamePatter = @"\w*\.||")]
         public IEdgeViewFactory EdgeViewFactory = new DefaultEdgeViewFactory();
 
-        [SerializedType(typeof(IWindowSystem), Nullable = false, InstantializableType = true, RenamePatter = @"\w*\.||")]
-        public string[] Presenters;
-
         public void Install(Container container)
         {
             container.RegisterInstance(GraphViewFactory);
@@ -40,8 +37,14 @@ namespace GraphExt.Editor
             container.RegisterBiDictionaryInstance(new BiDictionary<EdgeId, Edge>());
             container.RegisterDictionaryInstance(new Dictionary<PortId, PortData>());
 
-            container.RegisterTypeNameArraySingleton<IWindowSystem>(Presenters);
+            RegisterNodeViewPresenter(container);
+            RegisterEdgeViewPresenter(container);
+            container.RegisterSingleton<ElementMovedEventEmitter>();
+            container.RegisterSingleton<IWindowSystem>(container.Resolve<ElementMovedEventEmitter>);
+        }
 
+        void RegisterNodeViewPresenter(Container container)
+        {
             Func<IReadOnlyDictionary<NodeId, TNode>, IReadOnlyDictionary<NodeId, Vector2>, ConvertToNodeData>
                 toNodeData = NodeDataConvertor.ToNodeData;
             container.RegisterSingleton(() => container.Call<ConvertToNodeData>(toNodeData));
@@ -49,6 +52,18 @@ namespace GraphExt.Editor
             Func<IReadOnlyDictionary<NodeId, TNode>, FindPortData> findPortData = PortDataConvertor.FindPorts;
             container.RegisterSingleton(() => container.Call<FindPortData>(findPortData));
 
+            container.RegisterSingleton<Func<IEnumerable<NodeId>>>(() =>
+            {
+                var graph = container.Resolve<GraphRuntime<TNode>>();
+                return () => graph.Nodes.Select(n => n.Item1);
+            });
+
+            container.RegisterSingleton<NodeViewPresenter>();
+            container.Register<IWindowSystem>(container.Resolve<NodeViewPresenter>);
+        }
+
+        void RegisterEdgeViewPresenter(Container container)
+        {
             Func<GraphRuntime<TNode>, IReadOnlyDictionary<PortId, PortData>, IsEdgeCompatibleFunc>
                 isCompatible = EdgeFunctions.CreateIsCompatibleFunc;
             container.RegisterSingleton(() => container.Call<IsEdgeCompatibleFunc>(isCompatible));
@@ -63,17 +78,14 @@ namespace GraphExt.Editor
             Func<GraphRuntime<TNode>, EdgeDisconnectFunc> disconnect = EdgeFunctions.Disconnect;
             container.RegisterSingleton(() => container.Call<EdgeDisconnectFunc>(disconnect));
 
-            container.RegisterSingleton<Func<IEnumerable<NodeId>>>(() =>
-            {
-                var graph = container.Resolve<GraphRuntime<TNode>>();
-                return () => graph.Nodes.Select(n => n.Item1);
-            });
-
             container.RegisterSingleton<Func<IEnumerable<EdgeId>>>(() =>
             {
                 var graph = container.Resolve<GraphRuntime<TNode>>();
                 return () => graph.Edges;
             });
+
+            container.RegisterSingleton<EdgeViewPresenter>();
+            container.Register<IWindowSystem>(container.Resolve<EdgeViewPresenter>);
         }
     }
 }
