@@ -1,7 +1,5 @@
 using System;
 using System.IO;
-using System.Linq;
-using OneShot;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -19,15 +17,15 @@ namespace GraphExt.Editor
                 if (_config != value)
                 {
                     _config = value;
-                    RecreateGUI();
+                    CreateGUI();
                 }
             }
         }
 
         private readonly Lazy<VisualElement> _graphRoot;
-        private Container _container;
-        private MenuBuilder _menuBuilder;
-        private IViewPresenter[] _presenters = Array.Empty<IViewPresenter>();
+        // private Container _container;
+        // private MenuBuilder _menuBuilder;
+        // private IWindowSystem[] _systems = Array.Empty<IWindowSystem>();
 
         public GraphWindow()
         {
@@ -36,52 +34,60 @@ namespace GraphExt.Editor
 
         public void CreateGUI()
         {
-            if (_config) RecreateGUI();
+            if (_config)
+            {
+                var graphViewRoot = _graphRoot.Value.Q<VisualElement>("graph-content");
+                _config.GraphWindowExtension.RecreateGraphView(graphViewRoot);
+            }
         }
 
         private void Update()
         {
-            foreach (var presenter in _presenters.OfType<ITickablePresenter>()) presenter.Tick();
+            if (_config) _config.GraphWindowExtension.Tick();
+            // foreach (var presenter in _systems.OfType<ITickableWindowSystem>()) presenter.Tick();
         }
 
-        public void RecreateGUI()
+        private void OnDestroy()
         {
-            if (_container != null)
-            {
-                foreach (var disposable in _container.ResolveGroup<IDisposable>()) disposable.Dispose();
-                _container.Dispose();
-            }
-
-            _container = new Container();
-            _container.RegisterInstance(this);
-            foreach (var installer in _config.Installers) installer.Install(_container);
-            foreach (var installer in _config.MenuEntries.Reverse()) installer.Install(_container);
-
-            var graphView = _container.Resolve<UnityEditor.Experimental.GraphView.GraphView>();
-            ReplaceGraphView(graphView);
-            _presenters = _container.ResolveGroup<IViewPresenter>().ToArray();
-            _menuBuilder = _container.Instantiate<MenuBuilder>();
+            if (_config) _config.GraphWindowExtension.Clear();
         }
-
-        public void RemoveGraphView()
-        {
-            var graph = _graphRoot.Value.Q<UnityEditor.Experimental.GraphView.GraphView>();
-            graph?.parent.Remove(graph);
-        }
-
-        private void AddGraphView(UnityEditor.Experimental.GraphView.GraphView graphView)
-        {
-            var graphRoot = _graphRoot.Value;
-            graphRoot.Q<VisualElement>("graph-content").Add(graphView);
-            var miniMap = graphRoot.Q<MiniMap>();
-            if (miniMap != null) miniMap.graphView = graphView;
-        }
-
-        private void ReplaceGraphView(UnityEditor.Experimental.GraphView.GraphView graphView)
-        {
-            RemoveGraphView();
-            AddGraphView(graphView);
-        }
+        //
+        // public void RecreateGUI()
+        // {
+        //     RecreateGUI(new Container());
+        // }
+        //
+        // public void RecreateGUI(Container container)
+        // {
+        //     if (_container != null)
+        //     {
+        //         _menuBuilder.Dispose();
+        //         foreach (var disposable in _systems.OfType<IDisposable>()) disposable.Dispose();
+        //         _container.Dispose();
+        //     }
+        //
+        //     _container = container;
+        //     _container.RegisterInstance(this);
+        //     foreach (var installer in _config.Installers) installer.Install(_container);
+        //     foreach (var installer in _config.MenuEntries.Reverse()) installer.Install(_container);
+        //
+        //     // var graphView = _container.Resolve<UnityEditor.Experimental.GraphView.GraphView>();
+        //     // ReplaceGraphView(graphView);
+        //     _systems = _container.ResolveGroup<IWindowSystem>().ToArray();
+        //     _menuBuilder = _container.Instantiate<MenuBuilder>();
+        // }
+        //
+        // private void RemoveGraphView()
+        // {
+        //     var graph = _graphRoot.Value.Q<UnityEditor.Experimental.GraphView.GraphView>();
+        //     graph?.parent.Remove(graph);
+        // }
+        //
+        // private void ReplaceGraphView(UnityEditor.Experimental.GraphView.GraphView graphView)
+        // {
+        //     RemoveGraphView();
+        //     AddGraphView(graphView);
+        // }
 
         private VisualElement LoadVisualTree()
         {

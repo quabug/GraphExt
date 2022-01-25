@@ -11,10 +11,13 @@ namespace GraphExt.Editor
         public StyleSheet WindowStyleSheet;
 
         [SerializeReference, SerializeReferenceDrawer(Nullable = false, RenamePatter = @"\w*\.||")]
-        public IInstaller[] Installers;
-
-        [SerializeReference, SerializeReferenceDrawer(Nullable = false, RenamePatter = @"\w*\.||")]
-        public IMenuEntryInstaller[] MenuEntries;
+        public IGraphWindowExtension GraphWindowExtension;
+        //
+        // [SerializeReference, SerializeReferenceDrawer(Nullable = false, RenamePatter = @"\w*\.||")]
+        // public IGraphInstaller[] Installers;
+        //
+        // [SerializeReference, SerializeReferenceDrawer(Nullable = false, RenamePatter = @"\w*\.||")]
+        // public IMenuEntryInstaller[] MenuEntries;
 
         [ContextMenu("Open Window")]
         public void OpenWindow()

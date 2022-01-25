@@ -1,6 +1,6 @@
 namespace GraphExt.Editor
 {
-    public interface ITickablePresenter : IViewPresenter
+    public interface ITickableWindowSystem : IWindowSystem
     {
         void Tick();
     }

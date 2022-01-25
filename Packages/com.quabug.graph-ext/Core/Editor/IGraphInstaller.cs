@@ -2,7 +2,7 @@ using OneShot;
 
 namespace GraphExt.Editor
 {
-    public interface IInstaller
+    public interface IGraphInstaller
     {
         void Install(Container container);
     }

@@ -50,9 +50,8 @@ namespace GraphExt.Editor
         {
             var miniMap = new MiniMap();
             graphView.Add(miniMap);
-            // NOTE: not working... have to set `graphView` on `CreateGUI` of `Window`
-            miniMap.graphView = graphView;
             miniMap.windowed = true;
+            miniMap.graphView = graphView;
             miniMap.name = "minimap";
         }
     }

@@ -1,0 +1,18 @@
+{
+  "name": "GraphExt.DI",
+  "rootNamespace": "GraphExt.Editor",
+  "references": [
+    "GUID:0236c215bc7864b95a54f8ee59b23f13"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": true,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

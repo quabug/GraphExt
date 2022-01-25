@@ -15,8 +15,8 @@ namespace GraphExt.Editor
         {
             var graphView = new GraphView(findCompatiblePorts);
             graphView.SetupGridBackground();
-            graphView.SetupMiniMap();
             graphView.SetupDefaultManipulators();
+            graphView.SetupMiniMap();
             return graphView;
         }
 

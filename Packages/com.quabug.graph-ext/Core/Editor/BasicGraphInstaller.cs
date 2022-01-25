@@ -8,7 +8,7 @@ using UnityEngine;
 namespace GraphExt.Editor
 {
     [Serializable]
-    public class BasicGraphInstaller<TNode> : IInstaller where TNode : INode<GraphRuntime<TNode>>
+    public class BasicGraphInstaller<TNode> : IGraphInstaller where TNode : INode<GraphRuntime<TNode>>
     {
         [SerializeReference, SerializeReferenceDrawer(Nullable = false, RenamePatter = @"\w*\.||")]
         public IGraphViewFactory GraphViewFactory = new DefaultGraphViewFactory();
@@ -22,7 +22,7 @@ namespace GraphExt.Editor
         [SerializeReference, SerializeReferenceDrawer(Nullable = false, RenamePatter = @"\w*\.||")]
         public IEdgeViewFactory EdgeViewFactory = new DefaultEdgeViewFactory();
 
-        [SerializedType(typeof(IViewPresenter), Nullable = false, InstantializableType = true, RenamePatter = @"\w*\.||")]
+        [SerializedType(typeof(IWindowSystem), Nullable = false, InstantializableType = true, RenamePatter = @"\w*\.||")]
         public string[] Presenters;
 
         public void Install(Container container)
@@ -40,7 +40,7 @@ namespace GraphExt.Editor
             container.RegisterBiDictionaryInstance(new BiDictionary<EdgeId, Edge>());
             container.RegisterDictionaryInstance(new Dictionary<PortId, PortData>());
 
-            container.RegisterTypeNameArraySingleton<IViewPresenter>(Presenters);
+            container.RegisterTypeNameArraySingleton<IWindowSystem>(Presenters);
 
             Func<IReadOnlyDictionary<NodeId, TNode>, IReadOnlyDictionary<NodeId, Vector2>, ConvertToNodeData>
                 toNodeData = NodeDataConvertor.ToNodeData;

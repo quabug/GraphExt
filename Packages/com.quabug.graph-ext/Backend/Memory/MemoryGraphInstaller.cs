@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GraphExt.Editor
 {
-    public class MemoryInstaller : IInstaller
+    public class MemoryGraphInstaller : IGraphInstaller
     {
         public void Install(Container container)
         {

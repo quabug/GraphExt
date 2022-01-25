@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using JetBrains.Annotations;
 using Shtif;
 using UnityEditor;
@@ -5,7 +7,8 @@ using UnityEngine.UIElements;
 
 namespace GraphExt.Editor
 {
-    public class MenuBuilder
+    [UsedImplicitly]
+    public class MenuBuilder : IDisposable
     {
         [NotNull] private readonly UnityEditor.Experimental.GraphView.GraphView _graphView;
         [NotNull] private readonly IMenuEntry[] _entries;
@@ -27,6 +30,11 @@ namespace GraphExt.Editor
             popup.showTooltip = false;
             popup.resizeToContent = true;
             popup.Show(evt.mousePosition);
+        }
+
+        public void Dispose()
+        {
+            foreach (var entry in _entries.OfType<IDisposable>()) entry.Dispose();
         }
     }
 }

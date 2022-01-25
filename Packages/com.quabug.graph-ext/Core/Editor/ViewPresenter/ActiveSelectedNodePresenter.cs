@@ -9,7 +9,7 @@ namespace GraphExt.Editor
     /// Make `Selection` active object of corresponding selected node on `GraphView`
     /// </summary>
     /// <typeparam name="TNodeComponent">type of node object</typeparam>
-    public class ActiveSelectedNodePresenter<TNodeComponent> : ITickablePresenter
+    public class ActiveSelectedNodePresenter<TNodeComponent> : ITickableWindowSystem
     {
         [NotNull] private readonly IReadOnlyDictionary<NodeId, Node> _nodes;
         [NotNull] private readonly IReadOnlyDictionary<NodeId, TNodeComponent> _nodeObjects;

@@ -10,7 +10,7 @@ namespace GraphExt.Editor
     /// <summary>
     /// set node position on node moved in `GraphView`
     /// </summary>
-    public class SyncNodePositionPresenter : IViewPresenter, IDisposable
+    public class SyncNodePositionPresenter : IWindowSystem, IDisposable
     {
         [NotNull] private readonly UnityEditor.Experimental.GraphView.GraphView _graphView;
         [NotNull] private readonly IReadOnlyDictionary<Node, NodeId> _nodeViews;

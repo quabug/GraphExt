@@ -5,7 +5,7 @@ using UnityEditor.Experimental.GraphView;
 
 namespace GraphExt.Editor
 {
-    public class StickyNotePresenter : IViewPresenter
+    public class StickyNotePresenter : IWindowSystem
     {
         [NotNull] private readonly UnityEditor.Experimental.GraphView.GraphView _graphView;
         [NotNull] private readonly IStickyNoteViewFactory _viewFactory;
