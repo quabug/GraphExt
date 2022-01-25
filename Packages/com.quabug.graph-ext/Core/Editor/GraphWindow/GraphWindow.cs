@@ -34,7 +34,7 @@ namespace GraphExt.Editor
             {
                 _config.GraphWindowExtension.Clear();
                 var graphViewRoot = _graphRoot.Value.Q<VisualElement>("graph-content");
-                _config.GraphWindowExtension.RecreateGraphView(graphViewRoot);
+                _config.GraphWindowExtension.Recreate(graphViewRoot);
             }
         }
 

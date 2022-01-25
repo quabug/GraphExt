@@ -21,28 +21,38 @@ namespace GraphExt.Editor
         protected Container _Container;
         protected MenuBuilder _MenuBuilder;
         protected WindowSystems _Systems;
+        protected VisualElement _Root;
 
-        public void RecreateGraphView(VisualElement root)
+        public void Recreate(VisualElement root)
         {
+            _Root = root;
             _Container = new Container();
+            Recreate();
+        }
+
+        protected virtual void Recreate()
+        {
             Install(_Container);
             InstantiateSystems(_Container);
-            RecreateGraphView(root, _Container);
+            ReplaceGraphView(_Container.Resolve<UnityEditor.Experimental.GraphView.GraphView>());
         }
 
         public void Tick()
         {
-            _Systems.Tick();
+            _Systems?.Tick();
         }
 
         public void Clear()
         {
             _MenuBuilder?.Dispose();
+            _MenuBuilder = null;
             _Systems?.Dispose();
+            _Systems = null;
             _Container?.Dispose();
+            _Container = null;
         }
 
-        protected virtual void Install(Container container)
+        protected void Install(Container container)
         {
             container.RegisterInstance(this);
             container.RegisterTypeNameArraySingleton<IWindowSystem>(AdditionalWindowSystems);
@@ -50,14 +60,19 @@ namespace GraphExt.Editor
             foreach (var installer in MenuEntries) installer.Install(container);
         }
 
-        protected virtual void RecreateGraphView(VisualElement root, Container container)
+        protected void RemoveGraphView()
         {
-            var graph = root.Q<UnityEditor.Experimental.GraphView.GraphView>();
-            graph?.parent.Remove(graph);
-            root.Add(container.Resolve<UnityEditor.Experimental.GraphView.GraphView>());
+            var graph = _Root.Q<UnityEditor.Experimental.GraphView.GraphView>();
+            if (graph != null) _Root.Remove(graph);
         }
 
-        protected virtual void InstantiateSystems(Container container)
+        protected void ReplaceGraphView(UnityEditor.Experimental.GraphView.GraphView graphView)
+        {
+            RemoveGraphView();
+            _Root.Add(graphView);
+        }
+
+        protected void InstantiateSystems(Container container)
         {
             _Systems = container.Instantiate<WindowSystems>();
             _MenuBuilder = container.Instantiate<MenuBuilder>();

@@ -52,5 +52,15 @@ namespace GraphExt.Editor
         {
             foreach (var type in typeNames) container.RegisterTypeNameSingleton<T>(type);
         }
+
+        public static void RegisterGraphBackend<TNode, TNodeComponent>(this Container container, IGraphBackend<TNode, TNodeComponent> graph)
+            where TNode : INode<GraphRuntime<TNode>>
+        {
+            container.RegisterInstance(graph);
+            container.RegisterGraphRuntimeInstance(graph.Runtime);
+            container.RegisterInstance(graph.Nodes);
+            container.RegisterInstance(graph.NodeObjectMap);
+            container.RegisterInstance(graph.ObjectNodeMap);
+        }
     }
 }

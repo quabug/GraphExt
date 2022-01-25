@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace GraphExt
 {
-    public class GraphScriptableObject<TNode, TNodeScriptableObject> : ScriptableObject
+    public class GraphScriptableObject<TNode, TNodeScriptableObject> : ScriptableObject, IGraphBackend<TNode, TNodeScriptableObject>
         where TNode : INode<GraphRuntime<TNode>>
         where TNodeScriptableObject : NodeScriptableObject<TNode>
     {
@@ -14,11 +14,16 @@ namespace GraphExt
         [NotNull] public TNodeScriptableObject this[in NodeId nodeId] => _nodesCache[nodeId];
         public NodeId this[[NotNull] TNodeScriptableObject node] => _nodesCache.GetKey(node);
 
-        [SerializeField, HideInInspector] private List<TNodeScriptableObject> _nodes = new List<TNodeScriptableObject>();
+        [SerializeField] private List<TNodeScriptableObject> _nodes = new List<TNodeScriptableObject>();
 
         public IReadOnlyList<TNodeScriptableObject> Nodes => _nodes;
         public IReadOnlyDictionary<NodeId, TNodeScriptableObject> NodeObjectMap => _nodesCache.Forward;
         public IReadOnlyDictionary<TNodeScriptableObject, NodeId> ObjectNodeMap => _nodesCache.Reverse;
+
+#if UNITY_EDITOR
+        private Dictionary<NodeId, UnityEditor.SerializedObject> _serializedObjects;
+        public IReadOnlyDictionary<NodeId, UnityEditor.SerializedObject> SerializedObjects => _serializedObjects;
+#endif
 
         private void Awake()
         {
@@ -30,6 +35,9 @@ namespace GraphExt
             UnInitialize();
             Runtime = new GraphRuntime<TNode>();
             _nodesCache = new BiDictionary<NodeId, TNodeScriptableObject>();
+#if UNITY_EDITOR
+            _serializedObjects = new Dictionary<NodeId, UnityEditor.SerializedObject>();
+#endif
             for (var i = _nodes.Count - 1; i >= 0; i--)
             {
                 var node = _nodes[i];
@@ -40,6 +48,9 @@ namespace GraphExt
                 }
                 else
                 {
+#if UNITY_EDITOR
+                    _serializedObjects.Add(node.Id, new UnityEditor.SerializedObject(node));
+#endif
                     Runtime.AddNode(node.Id, node.Node);
                     _nodesCache[node.Id] = node;
                 }
@@ -80,6 +91,7 @@ namespace GraphExt
             _nodes.Add(nodeInstance);
             _nodesCache[id] = nodeInstance;
 #if UNITY_EDITOR
+            _serializedObjects.Add(id, new UnityEditor.SerializedObject(nodeInstance));
             UnityEditor.AssetDatabase.AddObjectToAsset(nodeInstance, this);
             nodeInstance.name = node.GetType().Name;
             UnityEditor.AssetDatabase.SaveAssets();
@@ -94,6 +106,7 @@ namespace GraphExt
                 _nodesCache.Remove(id);
                 _nodes.Remove(nodeObject);
 #if UNITY_EDITOR
+                _serializedObjects.Remove(id);
                 UnityEditor.AssetDatabase.RemoveObjectFromAsset(nodeObject);
                 UnityEditor.AssetDatabase.SaveAssets();
                 UnityEditor.AssetDatabase.Refresh();

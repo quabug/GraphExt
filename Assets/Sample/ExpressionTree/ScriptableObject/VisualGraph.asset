@@ -1,35 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7907137653543368059
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: daff2ae279b345d29db328108eed3faf, type: 3}
-  m_Name: ValueNode
-  m_EditorClassIdentifier: 
-  Node:
-    id: 0
-  _serializableEdges:
-  - InputNode: b48c2065-1a24-4764-90e5-945511f2e979
-    InputPort: _Input
-    InputPortId: in
-    OutputNode: d47a7d36-3a6a-4652-a6b9-2c1cd6dcf17b
-    OutputPort: _Output
-    OutputPortId: out
-  _nodeId: b48c2065-1a24-4764-90e5-945511f2e979
-  Position: {x: 578, y: 185}
-  references:
-    version: 1
-    00000000:
-      type: {class: ValueNode, ns: , asm: GraphExt.Sample.ExpressionTree}
-      data:
-        Value: 1
---- !u!114 &-7300237601666675703
+--- !u!114 &-119134412291321925
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -43,69 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Node:
     id: 0
-  _serializableEdges:
-  - InputNode: 806281aa-4c07-4e0b-adef-5875e2605445
-    InputPort: _Input
-    InputPortId: in
-    OutputNode: d47a7d36-3a6a-4652-a6b9-2c1cd6dcf17b
-    OutputPort: _Output
-    OutputPortId: out
-  - InputNode: b48c2065-1a24-4764-90e5-945511f2e979
-    InputPort: _Input
-    InputPortId: in
-    OutputNode: d47a7d36-3a6a-4652-a6b9-2c1cd6dcf17b
-    OutputPort: _Output
-    OutputPortId: out
-  _nodeId: d47a7d36-3a6a-4652-a6b9-2c1cd6dcf17b
-  Position: {x: 408, y: 260.5}
+  _serializableEdges: []
+  _nodeId: a7e53aeb-c812-47a0-91ca-b3c654c1aa7a
+  Position: {x: 0, y: 0}
   references:
     version: 1
     00000000:
       type: {class: AddNode, ns: , asm: GraphExt.Sample.ExpressionTree}
---- !u!114 &-6518323576404188088
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b337b2087ee4508b6034f89b64fdc16, type: 3}
-  m_Name: Note
-  m_EditorClassIdentifier: 
-  _id: E8616C13-79C0-4D86-828B-E56753951D95
-  Data:
-    X: 824
-    Y: 206
-    Width: 200
-    Height: 200
-    Title: Note
-    Content: 
-    Theme: 1
-    FontSize: 0
---- !u!114 &-5409653261649164649
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b337b2087ee4508b6034f89b64fdc16, type: 3}
-  m_Name: Note
-  m_EditorClassIdentifier: 
-  _id: 4c04f003-0050-47e3-bf8a-d00aac74c37d
-  Data:
-    X: 641
-    Y: 491
-    Width: 200
-    Height: 200
-    Title: Note
-    Content: 
-    Theme: 1
-    FontSize: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -119,35 +34,4 @@ MonoBehaviour:
   m_Name: VisualGraph
   m_EditorClassIdentifier: 
   _nodes:
-  - {fileID: -7300237601666675703}
-  - {fileID: 8542206064291794866}
-  - {fileID: -7907137653543368059}
---- !u!114 &8542206064291794866
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: daff2ae279b345d29db328108eed3faf, type: 3}
-  m_Name: ValueNode
-  m_EditorClassIdentifier: 
-  Node:
-    id: 0
-  _serializableEdges:
-  - InputNode: 806281aa-4c07-4e0b-adef-5875e2605445
-    InputPort: _Input
-    InputPortId: in
-    OutputNode: d47a7d36-3a6a-4652-a6b9-2c1cd6dcf17b
-    OutputPort: _Output
-    OutputPortId: out
-  _nodeId: 806281aa-4c07-4e0b-adef-5875e2605445
-  Position: {x: 579, y: 337.5}
-  references:
-    version: 1
-    00000000:
-      type: {class: ValueNode, ns: , asm: GraphExt.Sample.ExpressionTree}
-      data:
-        Value: 2
+  - {fileID: -119134412291321925}

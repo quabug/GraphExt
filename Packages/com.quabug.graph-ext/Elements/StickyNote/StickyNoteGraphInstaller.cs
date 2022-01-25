@@ -10,7 +10,7 @@ namespace GraphExt.Editor
         where TStickyNoteSystem : StickyNoteSystem
     {
         [SerializedType(typeof(IStickyNoteViewFactory), Nullable = false, InstantializableType = true, RenamePatter = @"\w*\.||")]
-        public string ViewFactory;
+        public string ViewFactory = typeof(DefaultStickyNoteViewFactory).AssemblyQualifiedName;
 
         public void Install(Container container)
         {

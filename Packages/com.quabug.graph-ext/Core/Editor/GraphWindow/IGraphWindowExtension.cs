@@ -5,7 +5,7 @@ namespace GraphExt.Editor
 {
     public interface IGraphWindowExtension
     {
-        void RecreateGraphView([NotNull] VisualElement root);
+        void Recreate([NotNull] VisualElement root);
         void Tick();
         void Clear();
     }
