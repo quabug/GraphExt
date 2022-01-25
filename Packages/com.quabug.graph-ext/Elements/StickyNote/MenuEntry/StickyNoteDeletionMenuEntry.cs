@@ -20,9 +20,9 @@ namespace GraphExt.Editor
 
         public void MakeEntry(UnityEditor.Experimental.GraphView.GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
         {
-            if (graph.selection != null && graph.selection.Any())
+            if (graph.selection != null && graph.selection.Any(selection => selection is StickyNote))
             {
-                menu.AddItem(new GUIContent("Delete"), false, () =>
+                menu.AddItem(new GUIContent("Delete Note"), false, () =>
                 {
                     var count = graph.selection.Count;
                     for (var i = count - 1; i >= 0; i--)

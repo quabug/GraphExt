@@ -24,7 +24,7 @@ namespace GraphExt.Editor
         {
             evt.StopPropagation();
             var context = new GenericMenu();
-            foreach (var menu in _entries) menu.MakeEntry(_graphView, evt, context);
+            foreach (var menu in _entries.Reverse()) menu.MakeEntry(_graphView, evt, context);
             var popup = GenericMenuPopup.Get(context, "");
             popup.showSearch = true;
             popup.showTooltip = false;

@@ -29,7 +29,6 @@ namespace GraphExt.Editor
             container.RegisterInstance(PortViewFactory);
             container.RegisterInstance(EdgeViewFactory);
 
-            container.RegisterGraphRuntimeInstance(new GraphRuntime<TNode>());
             container.RegisterGraphView();
 
             container.RegisterBiDictionaryInstance(new BiDictionary<NodeId, Node>());

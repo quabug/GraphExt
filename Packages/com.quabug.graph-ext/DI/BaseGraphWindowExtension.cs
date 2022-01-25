@@ -47,7 +47,7 @@ namespace GraphExt.Editor
             container.RegisterInstance(this);
             container.RegisterTypeNameArraySingleton<IWindowSystem>(AdditionalWindowSystems);
             foreach (var installer in Installers) installer.Install(container);
-            foreach (var installer in MenuEntries.Reverse()) installer.Install(container);
+            foreach (var installer in MenuEntries) installer.Install(container);
         }
 
         protected virtual void RecreateGraphView(VisualElement root, Container container)
