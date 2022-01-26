@@ -25,21 +25,23 @@ MonoBehaviour:
         - id: 1
         - id: 2
         - id: 3
-        MenuEntries:
         - id: 4
         - id: 5
+        MenuEntries:
+        - id: 6
+        - id: 7
         AdditionalWindowSystems: []
     00000001:
       type: {class: VisualNodeBasicGraphInstaller, ns: , asm: GraphExt.Sample.ExpressionTree}
       data:
         GraphViewFactory:
-          id: 6
-        NodeViewFactory:
-          id: 7
-        PortViewFactory:
           id: 8
-        EdgeViewFactory:
+        NodeViewFactory:
           id: 9
+        PortViewFactory:
+          id: 10
+        EdgeViewFactory:
+          id: 11
     00000002:
       type: {class: VisualMemoryGraphInstaller, ns: , asm: GraphExt.Sample.ExpressionTree}
     00000003:
@@ -48,6 +50,13 @@ MonoBehaviour:
         ViewFactory: GraphExt.Editor.DefaultStickyNoteViewFactory, GraphExt.StickyNote,
           Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     00000004:
+      type: {class: InitializeMemoryNodePositionInstaller, ns: GraphExt.Editor, asm: GraphExt.Memory}
+    00000005:
+      type: {class: VisualTagTreePortInstaller, ns: , asm: GraphExt.Sample.ExpressionTree}
+      data:
+        AdditionalClasses:
+        - tree
+    00000006:
       type: {class: TypeNameMenuEntriesInstaller, ns: GraphExt.Editor, asm: GraphExt.DI}
       data:
         MenuEntries:
@@ -61,21 +70,21 @@ MonoBehaviour:
           Culture=neutral, PublicKeyToken=null
         - GraphExt.Editor.StickyNoteDeletionMenuEntry, GraphExt.StickyNote, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
-    00000005:
+    00000007:
       type: {class: JsonFileSaveLoadMenuEntry, ns: , asm: GraphExt.Sample.ExpressionTree}
       data:
         JsonFile: {fileID: 4900000, guid: 31302eb9b13030545af48e0350da8d52, type: 3}
-    00000006:
+    00000008:
       type: {class: DefaultGraphViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
-    00000007:
+    00000009:
       type: {class: DefaultNodeViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
       data:
         NodePropertyViewFactory:
           Factories:
-          - id: 10
-    00000008:
-      type: {class: DefaultPortViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
-    00000009:
-      type: {class: DefaultEdgeViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
+          - id: 12
     0000000A:
+      type: {class: DefaultPortViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
+    0000000B:
+      type: {class: DefaultEdgeViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
+    0000000C:
       type: {class: DefaultPropertyViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
