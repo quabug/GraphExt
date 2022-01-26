@@ -28,7 +28,7 @@ namespace GraphExt.Editor
             container.RegisterInstance(PortViewFactory);
             container.RegisterInstance(EdgeViewFactory);
 
-            RegisterGraphView(container);
+            RegisterGraphView(container, typeContainers);
 
             container.RegisterBiDictionaryInstance(new BiDictionary<NodeId, Node>());
             container.RegisterBiDictionaryInstance(new BiDictionary<PortId, Port>());
@@ -41,22 +41,29 @@ namespace GraphExt.Editor
             container.RegisterSingleton<IWindowSystem>(container.Resolve<ElementMovedEventEmitter>);
         }
 
-        void RegisterGraphView(Container container)
+        void RegisterGraphView(Container container, TypeContainers typeContainers)
         {
+            var graphContainer = typeContainers.CreateTypeContainer(
+                container,
+                typeof(IGraphViewFactory),
+                typeof(GraphView),
+                typeof(UnityEditor.Experimental.GraphView.GraphView)
+            );
+
             Func<GraphRuntime<TNode>, IReadOnlyDictionary<PortId, PortData>, IsEdgeCompatibleFunc>
                 isCompatible = EdgeFunctions.CreateIsCompatibleFunc;
-            container.RegisterSingleton(() => container.Call<IsEdgeCompatibleFunc>(isCompatible));
+            graphContainer.RegisterSingleton(() => graphContainer.Call<IsEdgeCompatibleFunc>(isCompatible));
 
             Func<IReadOnlyDictionary<Port, PortId>, IsEdgeCompatibleFunc, GraphView.FindCompatiblePorts>
                 findCompatible = EdgeFunctions.CreateFindCompatiblePortsFunc;
-            container.RegisterSingleton(() => container.Call<GraphView.FindCompatiblePorts>(findCompatible));
+            graphContainer.RegisterSingleton(() => graphContainer.Call<GraphView.FindCompatiblePorts>(findCompatible));
 
-            container.RegisterSingleton(() =>
+            graphContainer.RegisterSingleton(() =>
             {
-                Func<GraphView.FindCompatiblePorts, GraphView> create = container.Resolve<IGraphViewFactory>().Create;
-                return container.Call<GraphView>(create);
+                Func<GraphView.FindCompatiblePorts, GraphView> create = graphContainer.Resolve<IGraphViewFactory>().Create;
+                return graphContainer.Call<GraphView>(create);
             });
-            container.Register<UnityEditor.Experimental.GraphView.GraphView>(container.Resolve<GraphView>);
+            container.Register<UnityEditor.Experimental.GraphView.GraphView>(graphContainer.Resolve<GraphView>);
         }
 
         void RegisterNodeViewPresenter(Container container, TypeContainers typeContainers)

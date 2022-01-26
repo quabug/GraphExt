@@ -27,20 +27,21 @@ MonoBehaviour:
         - id: 3
         - id: 4
         - id: 5
-        MenuEntries:
         - id: 6
+        MenuEntries:
+        - id: 7
         AdditionalWindowSystems: []
     00000001:
       type: {class: VisualNodeBasicGraphInstaller, ns: , asm: GraphExt.Sample.ExpressionTree}
       data:
         GraphViewFactory:
-          id: 7
-        NodeViewFactory:
           id: 8
-        PortViewFactory:
+        NodeViewFactory:
           id: 9
-        EdgeViewFactory:
+        PortViewFactory:
           id: 10
+        EdgeViewFactory:
+          id: 11
     00000002:
       type: {class: PrefabStickyNoteGraphInstaller, ns: GraphExt.Editor, asm: GraphExt.StickyNote}
       data:
@@ -56,6 +57,8 @@ MonoBehaviour:
         AdditionalClasses:
         - tree
     00000006:
+      type: {class: VisualPrefabIsPortCompatibleInstaller, ns: , asm: GraphExt.Sample.ExpressionTree}
+    00000007:
       type: {class: TypeNameMenuEntriesInstaller, ns: GraphExt.Editor, asm: GraphExt.DI}
       data:
         MenuEntries:
@@ -69,17 +72,17 @@ MonoBehaviour:
           Culture=neutral, PublicKeyToken=null
         - GraphExt.Editor.StickyNoteDeletionMenuEntry, GraphExt.StickyNote, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
-    00000007:
-      type: {class: DefaultGraphViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
     00000008:
+      type: {class: DefaultGraphViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
+    00000009:
       type: {class: DefaultNodeViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
       data:
         NodePropertyViewFactory:
           Factories:
-          - id: 11
-    00000009:
-      type: {class: DefaultPortViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
+          - id: 12
     0000000A:
-      type: {class: DefaultEdgeViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
+      type: {class: DefaultPortViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
     0000000B:
+      type: {class: DefaultEdgeViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
+    0000000C:
       type: {class: DefaultPropertyViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}

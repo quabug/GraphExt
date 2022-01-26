@@ -23,7 +23,7 @@ namespace GraphExt.Editor
 
             container.RegisterSingleton<IWindowSystem>(() =>
             {
-                var graphView = container.Resolve<GraphView>();
+                var graphView = container.Resolve<UnityEditor.Experimental.GraphView.GraphView>();
                 var nodeViews = container.Resolve<IReadOnlyDictionary<NodeId, Node>>();
                 var nodes = container.Resolve<IReadOnlyDictionary<TNodeComponent, NodeId>>();
                 return new FocusActiveNodePresenter<TNodeComponent>(
