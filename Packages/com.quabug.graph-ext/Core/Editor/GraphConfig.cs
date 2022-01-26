@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -11,33 +8,19 @@ namespace GraphExt.Editor
     {
         public string WindowName = "Graph Window";
 
-        [SerializeReference, SerializeReferenceDrawer] public IMenuEntry[] Menu;
-        [SerializeReference, SerializeReferenceDrawer] public INodeViewFactory NodeViewFactory = new DefaultNodeViewFactory();
-        [SerializeReference, SerializeReferenceDrawer] public IPortViewFactory PortViewFactory = new DefaultPortViewFactory();
-        [SerializeReference, SerializeReferenceDrawer] public IEdgeViewFactory EdgeViewFactory = new DefaultEdgeViewFactory();
-
         public StyleSheet WindowStyleSheet;
 
-        private void Reset()
-        {
-            Menu = TypeCache
-                .GetTypesDerivedFrom<IMenuEntry>()
-                .Where(type => !type.IsAbstract && !type.IsGenericType && type.GetConstructor(Array.Empty<Type>()) != null)
-                .Select(type => (IMenuEntry)Activator.CreateInstance(type))
-                .ToArray()
-            ;
-            NodeViewFactory = new DefaultNodeViewFactory();
-            PortViewFactory = new DefaultPortViewFactory();
-            EdgeViewFactory = new DefaultEdgeViewFactory();
-        }
+        [SerializeReference, SerializeReferenceDrawer(Nullable = false, RenamePatter = @"\w*\.||")]
+        public IGraphWindowExtension GraphWindowExtension;
 
         [ContextMenu("Open Window")]
         public void OpenWindow()
         {
             var window = Window.GetOrCreate<GraphWindow>(WindowName);
             window.titleContent.text = WindowName;
-            window.Init(this);
+            window.Show(immediateDisplay: true);
             window.Focus();
+            window.SetGraphConfig(this);
         }
     }
 }

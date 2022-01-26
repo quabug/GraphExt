@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 
 namespace GraphExt.Editor
 {
-    public interface INodeViewFactory
+    public interface INodeViewFactory : IGraphElementViewFactory
     {
         [NotNull] Node Create(NodeData nodeData);
     }

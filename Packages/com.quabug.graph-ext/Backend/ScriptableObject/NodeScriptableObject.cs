@@ -5,19 +5,22 @@ using UnityEngine;
 
 namespace GraphExt
 {
-    public class NodeScriptableObject<TNode> : ScriptableObject where TNode : INode<GraphRuntime<TNode>>
+    public class NodeScriptableObject : ScriptableObject
     {
-        [SerializeReference, NodeProperty(CustomFactory = typeof(InnerNodeProperty.Factory))]
-        public TNode Node;
-
-        [SerializeField, HideInInspector] private List<SerializableEdge> _serializableEdges = new List<SerializableEdge>();
-        private readonly HashSet<EdgeId> _edges = new HashSet<EdgeId>();
+        [SerializeField, HideInInspector] protected List<SerializableEdge> _serializableEdges = new List<SerializableEdge>();
+        protected readonly HashSet<EdgeId> _edges = new HashSet<EdgeId>();
 
         [SerializeField, HideInInspector] private string _nodeId;
         public NodeId Id { get => Guid.Parse(_nodeId); set => _nodeId = value.ToString(); }
 
-        [SerializeField, HideInInspector, NodeProperty(CustomFactory = typeof(NodePositionProperty.Factory))]
+        [SerializeField, NodeProperty(CustomFactory = typeof(NodeSerializedPositionProperty.Factory))]
         public Vector2 Position;
+    }
+
+    public class NodeScriptableObject<TNode> : NodeScriptableObject where TNode : INode<GraphRuntime<TNode>>
+    {
+        [SerializeReference, NodeProperty(CustomFactory = typeof(InnerNodeProperty.Factory))]
+        public TNode Node;
 
         public IReadOnlySet<EdgeId> GetEdges(GraphRuntime<TNode> graph)
         {

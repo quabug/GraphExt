@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace GraphExt
 {
-    public class GameObjectNodes<TNode, TComponent> : IDisposable
+    public class GameObjectNodes<TNode, TComponent> : ISerializableGraphBackend<TNode, TComponent>, IDisposable
         where TNode : INode<GraphRuntime<TNode>>
         where TComponent : MonoBehaviour, INodeComponent<TNode, TComponent>
     {
@@ -16,10 +16,11 @@ namespace GraphExt
         private readonly GameObject _root;
         private readonly BiDictionary<NodeId, TComponent> _nodeObjectMap = new BiDictionary<NodeId, TComponent>();
 
-        public IReadOnlyDictionary<NodeId, TComponent> NodeObjectMap => _nodeObjectMap.Forward;
-        public IReadOnlyDictionary<TComponent, NodeId> ObjectNodeMap => _nodeObjectMap.Reverse;
         [NotNull] public TComponent this[in NodeId id] => _nodeObjectMap[id];
         public NodeId this[[NotNull] TComponent obj] => _nodeObjectMap.GetKey(obj);
+
+        public IReadOnlyList<TComponent> Nodes => _root.GetComponentsInChildren<TComponent>();
+        public IReadOnlyBiDictionary<NodeId, TComponent> NodeMap => _nodeObjectMap;
 
 #if UNITY_EDITOR
         private readonly Dictionary<NodeId, UnityEditor.SerializedObject> _serializedObjects = new Dictionary<NodeId, UnityEditor.SerializedObject>();

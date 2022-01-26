@@ -6,7 +6,7 @@ namespace GraphExt
 {
     [AttributeUsage(AttributeTargets.Field)]
     [BaseTypeRequired(typeof(string))]
-    internal class SerializedTypeAttribute : PropertyAttribute
+    public class SerializedTypeAttribute : PropertyAttribute
     {
         public Type BaseType;
         public string RenamePatter;
@@ -15,6 +15,8 @@ namespace GraphExt
         public string CategoryName;
         public bool Nullable = true;
         public string Where = "";
+        public bool InstantializableType = false;
+        public bool HasDefaultConstructor = false;
         public SerializedTypeAttribute(Type baseType = null) => BaseType = baseType;
     }
 

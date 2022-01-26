@@ -10,7 +10,7 @@ namespace GraphExt.Editor
     /// Make `GraphView` focus on selected object of `Selection`
     /// </summary>
     /// <typeparam name="TNodeComponent">type of node object</typeparam>
-    public class FocusActiveNodePresenter<TNodeComponent> : IViewPresenter, IDisposable
+    public class FocusActiveNodePresenter<TNodeComponent> : IWindowSystem, IDisposable
         where TNodeComponent : Object
     {
         [NotNull] private readonly UnityEditor.Experimental.GraphView.GraphView _graphView;

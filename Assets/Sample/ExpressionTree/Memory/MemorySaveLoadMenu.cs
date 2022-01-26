@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,17 +16,20 @@ public class MemorySaveLoadMenu<TNode> : IMenuEntry where TNode : INode<GraphRun
 {
     [NotNull] private readonly GraphRuntime<TNode> _graphRuntime;
     [NotNull] private readonly IReadOnlyDictionary<NodeId, Vector2> _nodePositions;
-    [NotNull] private readonly IReadOnlyDictionary<NodeId, StickyNoteData> _notes;
+    [NotNull] private readonly IReadOnlyDictionary<StickyNoteId, StickyNoteData> _notes;
+    [NotNull] private readonly Action<TextAsset> _setJsonFile;
 
     public MemorySaveLoadMenu(
         [NotNull] GraphRuntime<TNode> graphRuntime,
         [NotNull] IReadOnlyDictionary<NodeId, Vector2> nodePositions,
-        [NotNull] IReadOnlyDictionary<NodeId, StickyNoteData> notes
+        [NotNull] IReadOnlyDictionary<StickyNoteId, StickyNoteData> notes,
+        [NotNull] Action<TextAsset> setJsonFile
     )
     {
         _graphRuntime = graphRuntime;
         _nodePositions = nodePositions;
         _notes = notes;
+        _setJsonFile = setJsonFile;
     }
 
     public void MakeEntry(UnityEditor.Experimental.GraphView.GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
@@ -46,7 +50,7 @@ public class MemorySaveLoadMenu<TNode> : IMenuEntry where TNode : INode<GraphRun
                 new JsonEditorUtility.GraphViewData<TNode>(_nodePositions),
                 _notes
             ));
-            ChangeWindowFilePath(jsonAsset);
+            _setJsonFile(jsonAsset);
         });
 
         menu.AddItem(new GUIContent("Load"), false, () =>
@@ -55,14 +59,14 @@ public class MemorySaveLoadMenu<TNode> : IMenuEntry where TNode : INode<GraphRun
 
             var path = EditorUtility.OpenFilePanel("load path", Application.dataPath, "json");
             var jsonAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(ToRelativePath(path));
-            ChangeWindowFilePath(jsonAsset);
-            GetWindow()?.Reset();
+            _setJsonFile(jsonAsset);
+            GetWindow()?.CreateGUI();
         });
 
         menu.AddItem(new GUIContent("Reset"), false, () =>
         {
             ClosePopupWindow();
-            GetWindow()?.Reset();
+            GetWindow()?.CreateGUI();
         });
 
         menu.AddItem(new GUIContent("ClearGraph"), false, () =>
@@ -79,25 +83,13 @@ public class MemorySaveLoadMenu<TNode> : IMenuEntry where TNode : INode<GraphRun
 
     string ToRelativePath([PathReference] string absolutePath) => "Assets" + absolutePath.Substring(Application.dataPath.Length);
 
-    void ChangeWindowFilePath(TextAsset json)
-    {
-        var window = GetWindow();
-        if (window != null) window.JsonFile = json;
-    }
-
-    TextAsset CurrentWindowJsonAsset()
-    {
-        var window = GetWindow();
-        return window == null ? null : window.JsonFile;
-    }
-
     void ClosePopupWindow()
     {
         var window = EditorWindow.focusedWindow as PopupWindow;
         if (window != null) window.Close();
     }
 
-    MemoryExpressionTreeWindow GetWindow() => EditorWindow.focusedWindow as MemoryExpressionTreeWindow;
+    GraphWindow GetWindow() => EditorWindow.focusedWindow as GraphWindow;
 }
 
 #endif

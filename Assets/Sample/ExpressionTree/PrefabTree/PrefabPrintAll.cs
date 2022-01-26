@@ -8,7 +8,7 @@ public class PrefabPrintAll : MonoBehaviour
     private void Awake()
     {
         var nodes = new GameObjectNodes<IVisualNode, VisualTreeComponent>(Root);
-        foreach (var pair in nodes.Runtime.NodeMap)
+        foreach (var pair in nodes.Runtime.IdNodeMap)
         {
             var node = pair.Value;
             Debug.Log($"{node.GetType().Name} = {node.GetValue(nodes.Runtime)}");

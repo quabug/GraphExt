@@ -21,11 +21,11 @@ namespace GraphExt
             AdditionalClasses = additionalClasses;
         }
 
-        public PortData AddClass(string @class)
+        public PortData AddClass(params string[] additionalClasses)
         {
-            var classes = new string[AdditionalClasses.Length + 1];
+            var classes = new string[AdditionalClasses.Length + additionalClasses.Length];
             Array.Copy(AdditionalClasses, classes, AdditionalClasses.Length);
-            classes[AdditionalClasses.Length] = @class;
+            Array.Copy(additionalClasses, 0, classes, AdditionalClasses.Length, additionalClasses.Length);
             return new PortData(Name, Orientation, Direction, Capacity, PortType, classes);
         }
 
