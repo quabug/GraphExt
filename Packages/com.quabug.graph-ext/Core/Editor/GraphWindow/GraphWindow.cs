@@ -9,15 +9,13 @@ namespace GraphExt.Editor
     public sealed class GraphWindow : EditorWindow
     {
         [SerializeField] private GraphConfig _config;
-        public GraphConfig Config
+e
+        public void SetGraphConfig(GraphConfig config)
         {
-            set
+            if (_config != config)
             {
-                if (_config != value)
-                {
-                    _config = value;
-                    CreateGUI();
-                }
+                _config = config;
+                CreateGUI();
             }
         }
 

@@ -20,7 +20,7 @@ namespace GraphExt.Editor
             window.titleContent.text = WindowName;
             window.Show(immediateDisplay: true);
             window.Focus();
-            window.Config = this;
+            window.SetGraphConfig(this);
         }
     }
 }
