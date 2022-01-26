@@ -7,7 +7,7 @@ namespace GraphExt
 {
     public class NodeScriptableObject : ScriptableObject
     {
-        [SerializeField] protected List<SerializableEdge> _serializableEdges = new List<SerializableEdge>();
+        [SerializeField, HideInInspector] protected List<SerializableEdge> _serializableEdges = new List<SerializableEdge>();
         protected readonly HashSet<EdgeId> _edges = new HashSet<EdgeId>();
 
         [SerializeField, HideInInspector] private string _nodeId;

@@ -17,7 +17,7 @@ namespace GraphExt
         [SerializeField, HideInInspector] private string _nodeId;
         public NodeId Id { get => Guid.Parse(_nodeId); set => _nodeId = value.ToString(); }
 
-        [SerializeField, HideInInspector, NodeProperty(CustomFactory = typeof(NodeSerializedPositionProperty.Factory))]
+        [SerializeField, NodeProperty(CustomFactory = typeof(NodeSerializedPositionProperty.Factory))]
         protected Vector2 _Position;
         public Vector2 Position { get => _Position; set => _Position = value; }
 

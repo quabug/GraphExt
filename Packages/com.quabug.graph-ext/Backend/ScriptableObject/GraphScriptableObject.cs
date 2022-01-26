@@ -14,7 +14,7 @@ namespace GraphExt
         [NotNull] public TNodeScriptableObject this[in NodeId nodeId] => _nodesCache[nodeId];
         public NodeId this[[NotNull] TNodeScriptableObject node] => _nodesCache.GetKey(node);
 
-        [SerializeField] private List<TNodeScriptableObject> _nodes = new List<TNodeScriptableObject>();
+        [SerializeField, HideInInspector] private List<TNodeScriptableObject> _nodes = new List<TNodeScriptableObject>();
         public IReadOnlyList<TNodeScriptableObject> Nodes => _nodes;
         public IReadOnlyBiDictionary<NodeId, TNodeScriptableObject> NodeMap => _nodesCache;
 
