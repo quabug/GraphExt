@@ -22,7 +22,6 @@ namespace GraphExt.Editor
         protected MenuBuilder _MenuBuilder;
         protected WindowSystems _Systems;
         protected VisualElement _Root;
-        protected TypeContainers _typeContainers;
 
         public void Recreate(VisualElement root)
         {

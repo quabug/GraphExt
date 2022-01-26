@@ -56,5 +56,16 @@ namespace GraphExt.Editor
             container.RegisterInstance(graph.NodeObjectMap);
             container.RegisterInstance(graph.ObjectNodeMap);
         }
+
+        public static void RegisterSerializableGraphBackend<TNode, TNodeComponent>(
+            this Container container,
+            ISerializableGraphBackend<TNode, TNodeComponent> graph
+        ) where TNode : INode<GraphRuntime<TNode>>
+        {
+            container.RegisterGraphBackend(graph);
+#if UNITY_EDITOR
+            container.RegisterInstance(graph.SerializedObjects);
+#endif
+        }
     }
 }

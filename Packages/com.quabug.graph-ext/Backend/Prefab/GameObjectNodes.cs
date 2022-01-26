@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace GraphExt
 {
-    public class GameObjectNodes<TNode, TComponent> : IGraphBackend<TNode, TComponent>, IDisposable
+    public class GameObjectNodes<TNode, TComponent> : ISerializableGraphBackend<TNode, TComponent>, IDisposable
         where TNode : INode<GraphRuntime<TNode>>
         where TComponent : MonoBehaviour, INodeComponent<TNode, TComponent>
     {

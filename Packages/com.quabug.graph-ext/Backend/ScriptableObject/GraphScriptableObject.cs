@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace GraphExt
 {
-    public class GraphScriptableObject<TNode, TNodeScriptableObject> : ScriptableObject, IGraphBackend<TNode, TNodeScriptableObject>
+    public class GraphScriptableObject<TNode, TNodeScriptableObject> : ScriptableObject, ISerializableGraphBackend<TNode, TNodeScriptableObject>
         where TNode : INode<GraphRuntime<TNode>>
         where TNodeScriptableObject : NodeScriptableObject<TNode>
     {

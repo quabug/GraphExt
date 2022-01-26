@@ -1,27 +1,24 @@
 #if UNITY_EDITOR
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace GraphExt.Editor
 {
+    public delegate void InitializeNodePosition(in NodeId nodeId, Vector2 nodePosition);
+
     public class NodeMenuEntry<TNode> : IMenuEntry where TNode : INode<GraphRuntime<TNode>>
     {
-        [NotNull] private readonly GraphRuntime<TNode> _graphRuntime;
-        [NotNull] private readonly IDictionary<NodeId, Vector2> _positions;
+        private readonly GraphRuntime<TNode> _graphRuntime;
+        private readonly InitializeNodePosition _initializeNodePosition;
 
-        public NodeMenuEntry(
-            [NotNull] GraphRuntime<TNode> graphRuntime,
-            [NotNull] IDictionary<NodeId, Vector2> positions
-        )
+        public NodeMenuEntry(GraphRuntime<TNode> graphRuntime, InitializeNodePosition initializeNodePosition)
         {
             _graphRuntime = graphRuntime;
-            _positions = positions;
+            _initializeNodePosition = initializeNodePosition;
         }
 
         public void MakeEntry(UnityEditor.Experimental.GraphView.GraphView graph, ContextualMenuPopulateEvent evt, GenericMenu menu)
@@ -40,7 +37,7 @@ namespace GraphExt.Editor
                 var node = (TNode)Activator.CreateInstance(nodeType);
                 var nodeId = Guid.NewGuid();
                 _graphRuntime.AddNode(nodeId, node);
-                _positions[nodeId] = menuPosition;
+                _initializeNodePosition(nodeId, menuPosition);
             }
         }
     }

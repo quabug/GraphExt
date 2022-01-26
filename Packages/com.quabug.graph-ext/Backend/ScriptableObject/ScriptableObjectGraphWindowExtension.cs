@@ -1,5 +1,7 @@
 #if UNITY_EDITOR
 
+using System;
+using System.Collections.Generic;
 using OneShot;
 using UnityEditor;
 using UnityEngine;
@@ -32,7 +34,12 @@ namespace GraphExt.Editor
                 graph.Initialize();
                 _Container.RegisterInstance(graph);
                 _Container.RegisterInstance<ScriptableObject>(graph);
-                _Container.RegisterGraphBackend(graph);
+                _Container.RegisterSerializableGraphBackend(graph);
+                _Container.Register<Func<NodeId, NodeScriptableObject>>(() =>
+                {
+                    var nodes = _Container.Resolve<IReadOnlyDictionary<NodeId, TNodeScriptableObject>>();
+                    return id => nodes[id];
+                });
                 base.Recreate();
             }
             _graph = graph;

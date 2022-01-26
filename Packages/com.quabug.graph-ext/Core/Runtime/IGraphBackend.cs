@@ -9,4 +9,11 @@ namespace GraphExt
         public IReadOnlyDictionary<NodeId, TNodeComponent> NodeObjectMap { get; }
         public IReadOnlyDictionary<TNodeComponent, NodeId> ObjectNodeMap { get; }
     }
+
+    public interface ISerializableGraphBackend<TNode, TNodeComponent> : IGraphBackend<TNode, TNodeComponent> where TNode : INode<GraphRuntime<TNode>>
+    {
+#if UNITY_EDITOR
+        IReadOnlyDictionary<NodeId, UnityEditor.SerializedObject> SerializedObjects { get; }
+#endif
+    }
 }
