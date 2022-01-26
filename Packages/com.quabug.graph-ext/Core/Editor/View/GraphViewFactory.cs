@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using JetBrains.Annotations;
-using UnityEditor.Experimental.GraphView;
+﻿using JetBrains.Annotations;
 
 namespace GraphExt.Editor
 {
@@ -18,26 +16,6 @@ namespace GraphExt.Editor
             graphView.SetupDefaultManipulators();
             graphView.SetupMiniMap();
             return graphView;
-        }
-
-        public static GraphView.FindCompatiblePorts GetFindCompatiblePortsFunc(
-            [NotNull] IReadOnlyDictionary<Port, PortId> ports,
-            [NotNull] IsEdgeCompatibleFunc isEdgeCompatible
-        )
-        {
-            return GetCompatiblePorts;
-
-            IEnumerable<Port> GetCompatiblePorts(Port startPort)
-            {
-                foreach (var endPort in ports.Keys)
-                {
-                    if (startPort.orientation != endPort.orientation || startPort.direction == endPort.direction) continue;
-                    var startPortId = ports[startPort];
-                    var endPortId = ports[endPort];
-                    if (!isEdgeCompatible(input: endPortId, output: startPortId)) continue;
-                    yield return endPort;
-                }
-            }
         }
     }
 }

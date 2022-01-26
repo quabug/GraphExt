@@ -22,24 +22,18 @@ namespace GraphExt.Editor
             container.Register(() => container.Resolve<BiDictionary<TId, TView>>().Reverse);
         }
 
-        public static void RegisterGraphView(this Container container)
-        {
-            container.RegisterSingleton(() =>
-            {
-                Func<GraphView.FindCompatiblePorts, GraphView> create = container.Resolve<IGraphViewFactory>().Create;
-                return container.Call<GraphView>(create);
-            });
-            container.Register<UnityEditor.Experimental.GraphView.GraphView>(container.Resolve<GraphView>);
-        }
-
         public static void RegisterGraphRuntimeInstance<TNode>(this Container container, GraphRuntime<TNode> graphRuntime)
             where TNode : INode<GraphRuntime<TNode>>
         {
             container.RegisterInstance(graphRuntime);
             container.Register<IReadOnlyGraphRuntime<TNode>>(container.Resolve<GraphRuntime<TNode>>);
-            container.Register(() => container.Resolve<GraphRuntime<TNode>>().NodeMap);
             container.Register(() => container.Resolve<GraphRuntime<TNode>>().NodeIdMap);
+            container.Register(() => container.Resolve<GraphRuntime<TNode>>().NodeMap);
+            container.Register(() => container.Resolve<IReadOnlyDictionary<NodeId, TNode>>().Keys);
+            container.Register(() => container.Resolve<IReadOnlyDictionary<NodeId, TNode>>().Values);
             container.Register(() => container.Resolve<GraphRuntime<TNode>>().Edges);
+            container.Register<IReadOnlyCollection<EdgeId>>(container.Resolve<IReadOnlySet<EdgeId>>);
+            container.Register<IEnumerable<EdgeId>>(container.Resolve<IReadOnlySet<EdgeId>>);
         }
 
         public static void RegisterTypeNameSingleton<T>(this Container container, string typeName) where T : class

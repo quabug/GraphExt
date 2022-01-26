@@ -22,6 +22,7 @@ namespace GraphExt.Editor
         protected MenuBuilder _MenuBuilder;
         protected WindowSystems _Systems;
         protected VisualElement _Root;
+        protected TypeContainers _typeContainers;
 
         public void Recreate(VisualElement root)
         {
@@ -32,7 +33,7 @@ namespace GraphExt.Editor
 
         protected virtual void Recreate()
         {
-            Install(_Container);
+            Install(_Container, new TypeContainers());
             InstantiateSystems(_Container);
             ReplaceGraphView(_Container.Resolve<UnityEditor.Experimental.GraphView.GraphView>());
         }
@@ -52,11 +53,11 @@ namespace GraphExt.Editor
             _Container = null;
         }
 
-        protected void Install(Container container)
+        protected void Install(Container container, TypeContainers typeContainers)
         {
             container.RegisterInstance(this);
             container.RegisterTypeNameArraySingleton<IWindowSystem>(AdditionalWindowSystems);
-            foreach (var installer in Installers) installer.Install(container);
+            foreach (var installer in Installers) installer.Install(container, typeContainers);
             foreach (var installer in MenuEntries) installer.Install(container);
         }
 
@@ -76,6 +77,7 @@ namespace GraphExt.Editor
         {
             _Systems = container.Instantiate<WindowSystems>();
             _MenuBuilder = container.Instantiate<MenuBuilder>();
+            _Systems.Initialize();
         }
 
         protected class WindowSystems : IDisposable
@@ -85,6 +87,11 @@ namespace GraphExt.Editor
             public WindowSystems(IWindowSystem[] systems)
             {
                 _systems = systems;
+            }
+
+            public void Initialize()
+            {
+                foreach (var system in _systems.OfType<IInitializableWindowSystem>()) system.Initialize();
             }
 
             public void Tick()

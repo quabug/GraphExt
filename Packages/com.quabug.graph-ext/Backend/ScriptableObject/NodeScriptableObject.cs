@@ -10,7 +10,7 @@ namespace GraphExt
         [SerializeReference, NodeProperty(CustomFactory = typeof(InnerNodeProperty.Factory))]
         public TNode Node;
 
-        [SerializeField, HideInInspector] private List<SerializableEdge> _serializableEdges = new List<SerializableEdge>();
+        [SerializeField] private List<SerializableEdge> _serializableEdges = new List<SerializableEdge>();
         private readonly HashSet<EdgeId> _edges = new HashSet<EdgeId>();
 
         [SerializeField, HideInInspector] private string _nodeId;

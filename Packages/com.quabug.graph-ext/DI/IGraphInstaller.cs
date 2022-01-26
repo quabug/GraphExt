@@ -4,6 +4,6 @@ namespace GraphExt.Editor
 {
     public interface IGraphInstaller
     {
-        void Install(Container container);
+        void Install(Container container, TypeContainers typeContainers);
     }
 }

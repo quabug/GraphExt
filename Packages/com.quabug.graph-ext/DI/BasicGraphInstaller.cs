@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using OneShot;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -22,46 +21,27 @@ namespace GraphExt.Editor
         [SerializeReference, SerializeReferenceDrawer(Nullable = false, RenamePatter = @"\w*\.||")]
         public IEdgeViewFactory EdgeViewFactory = new DefaultEdgeViewFactory();
 
-        public void Install(Container container)
+        public void Install(Container container, TypeContainers typeContainers)
         {
             container.RegisterInstance(GraphViewFactory);
             container.RegisterInstance(NodeViewFactory);
             container.RegisterInstance(PortViewFactory);
             container.RegisterInstance(EdgeViewFactory);
 
-            container.RegisterGraphView();
+            RegisterGraphView(container);
 
             container.RegisterBiDictionaryInstance(new BiDictionary<NodeId, Node>());
             container.RegisterBiDictionaryInstance(new BiDictionary<PortId, Port>());
             container.RegisterBiDictionaryInstance(new BiDictionary<EdgeId, Edge>());
             container.RegisterDictionaryInstance(new Dictionary<PortId, PortData>());
 
-            RegisterNodeViewPresenter(container);
-            RegisterEdgeViewPresenter(container);
+            RegisterNodeViewPresenter(container, typeContainers);
+            RegisterEdgeViewPresenter(container, typeContainers);
             container.RegisterSingleton<ElementMovedEventEmitter>();
             container.RegisterSingleton<IWindowSystem>(container.Resolve<ElementMovedEventEmitter>);
         }
 
-        void RegisterNodeViewPresenter(Container container)
-        {
-            Func<IReadOnlyDictionary<NodeId, TNode>, IReadOnlyDictionary<NodeId, Vector2>, ConvertToNodeData>
-                toNodeData = NodeDataConvertor.ToNodeData;
-            container.RegisterSingleton(() => container.Call<ConvertToNodeData>(toNodeData));
-
-            Func<IReadOnlyDictionary<NodeId, TNode>, FindPortData> findPortData = PortDataConvertor.FindPorts;
-            container.RegisterSingleton(() => container.Call<FindPortData>(findPortData));
-
-            container.RegisterSingleton<Func<IEnumerable<NodeId>>>(() =>
-            {
-                var graph = container.Resolve<GraphRuntime<TNode>>();
-                return () => graph.Nodes.Select(n => n.Item1);
-            });
-
-            container.RegisterSingleton<NodeViewPresenter>();
-            container.Register<IWindowSystem>(container.Resolve<NodeViewPresenter>);
-        }
-
-        void RegisterEdgeViewPresenter(Container container)
+        void RegisterGraphView(Container container)
         {
             Func<GraphRuntime<TNode>, IReadOnlyDictionary<PortId, PortData>, IsEdgeCompatibleFunc>
                 isCompatible = EdgeFunctions.CreateIsCompatibleFunc;
@@ -71,20 +51,50 @@ namespace GraphExt.Editor
                 findCompatible = EdgeFunctions.CreateFindCompatiblePortsFunc;
             container.RegisterSingleton(() => container.Call<GraphView.FindCompatiblePorts>(findCompatible));
 
-            Func<GraphRuntime<TNode>, EdgeConnectFunc> connect = EdgeFunctions.Connect;
-            container.RegisterSingleton(() => container.Call<EdgeConnectFunc>(connect));
-
-            Func<GraphRuntime<TNode>, EdgeDisconnectFunc> disconnect = EdgeFunctions.Disconnect;
-            container.RegisterSingleton(() => container.Call<EdgeDisconnectFunc>(disconnect));
-
-            container.RegisterSingleton<Func<IEnumerable<EdgeId>>>(() =>
+            container.RegisterSingleton(() =>
             {
-                var graph = container.Resolve<GraphRuntime<TNode>>();
-                return () => graph.Edges;
+                Func<GraphView.FindCompatiblePorts, GraphView> create = container.Resolve<IGraphViewFactory>().Create;
+                return container.Call<GraphView>(create);
+            });
+            container.Register<UnityEditor.Experimental.GraphView.GraphView>(container.Resolve<GraphView>);
+        }
+
+        void RegisterNodeViewPresenter(Container container, TypeContainers typeContainers)
+        {
+            var presenterContainer = typeContainers.CreateSystemContainer(container, typeof(NodeViewPresenter));
+
+            presenterContainer.RegisterSingleton(() => NodeDataConvertor.ToNodeData(
+                presenterContainer.Resolve<IReadOnlyDictionary<NodeId, TNode>>(),
+                presenterContainer.Resolve<IReadOnlyDictionary<NodeId, Vector2>>()
+            ));
+
+            presenterContainer.RegisterSingleton(() => PortDataConvertor.FindPorts(
+                presenterContainer.Resolve<IReadOnlyDictionary<NodeId, TNode>>()
+            ));
+
+            // TODO: RX?
+            presenterContainer.RegisterSingleton(() =>
+            {
+                var graphRuntime = presenterContainer.Resolve<GraphRuntime<TNode>>();
+                var added = new NodeViewPresenter.NodeAddedEvent();
+                graphRuntime.OnNodeAdded += (in NodeId id, TNode _) => added.Event?.Invoke(id);
+                return added;
             });
 
-            container.RegisterSingleton<EdgeViewPresenter>();
-            container.Register<IWindowSystem>(container.Resolve<EdgeViewPresenter>);
+            presenterContainer.RegisterSingleton(() =>
+            {
+                var graphRuntime = presenterContainer.Resolve<GraphRuntime<TNode>>();
+                var deleted = new NodeViewPresenter.NodeDeletedEvent();
+                graphRuntime.OnNodeWillDelete += (in NodeId id, TNode _) => deleted.Event?.Invoke(id);
+                return deleted;
+            });
+        }
+
+        void RegisterEdgeViewPresenter(Container container, TypeContainers typeContainers)
+        {
+            var presenterContainer = typeContainers.CreateSystemContainer(container, typeof(EdgeViewInitializer), typeof(EdgeViewObserver));
+            presenterContainer.RegisterSingleton(() => EdgeFunctions.Connect(presenterContainer.Resolve<GraphRuntime<TNode>>()));
+            presenterContainer.RegisterSingleton(() => EdgeFunctions.Disconnect(presenterContainer.Resolve<GraphRuntime<TNode>>()));
         }
     }
 }

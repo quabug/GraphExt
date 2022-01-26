@@ -12,9 +12,10 @@ namespace GraphExt.Editor
         where TNode : INode<GraphRuntime<TNode>>
         where TNodeScriptableObject : NodeScriptableObject<TNode>
     {
-        public void Install(Container container)
+        public void Install(Container container, TypeContainers typeContainers)
         {
-            container.RegisterSingleton<ConvertToNodeData>(() => {
+            var presenterContainer = typeContainers.GetTypeContainer(typeof(NodeViewPresenter));
+            presenterContainer.RegisterSingleton<ConvertToNodeData>(() => {
                 var graph = container.Resolve<GraphScriptableObject<TNode, TNodeScriptableObject>>();
                 return NodeDataConvertor.ToNodeData(id => graph.NodeObjectMap[id], id => graph.SerializedObjects[id]);
             });

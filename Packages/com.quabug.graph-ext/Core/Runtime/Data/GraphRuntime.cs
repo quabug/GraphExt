@@ -4,15 +4,15 @@ using JetBrains.Annotations;
 
 namespace GraphExt
 {
+    public delegate void OnNodeAddedFunc<in TNode>(in NodeId id, [NotNull] TNode node) where TNode : INode<GraphRuntime<TNode>>;
+    public delegate void OnNodeWillDeleteFunc<in TNode>(in NodeId id, [NotNull] TNode node) where TNode : INode<GraphRuntime<TNode>>;
+    public delegate void OnEdgeConnectedFunc(in EdgeId edge);
+    public delegate void OnEdgeWillDisconnectFunc(in EdgeId edge);
+
     public interface IReadOnlyGraphRuntime<TNode> where TNode : INode<GraphRuntime<TNode>>
     {
-        public delegate void OnNodeAddedFunc(in NodeId id, [NotNull] TNode node);
-        public delegate void OnNodeWillDeleteFunc(in NodeId id, [NotNull] TNode node);
-        public delegate void OnEdgeConnectedFunc(in EdgeId edge);
-        public delegate void OnEdgeWillDisconnectFunc(in EdgeId edge);
-
-        public event OnNodeAddedFunc OnNodeAdded;
-        public event OnNodeWillDeleteFunc OnNodeWillDelete;
+        public event OnNodeAddedFunc<TNode> OnNodeAdded;
+        public event OnNodeWillDeleteFunc<TNode> OnNodeWillDelete;
         public event OnEdgeConnectedFunc OnEdgeConnected;
         public event OnEdgeWillDisconnectFunc OnEdgeWillDisconnect;
 
@@ -30,10 +30,10 @@ namespace GraphExt
     /// <typeparam name="TNode">type of <seealso cref="INode{TGraph}"/></typeparam>
     public sealed class GraphRuntime<TNode> : IReadOnlyGraphRuntime<TNode> where TNode : INode<GraphRuntime<TNode>>
     {
-        public event IReadOnlyGraphRuntime<TNode>.OnNodeAddedFunc OnNodeAdded;
-        public event IReadOnlyGraphRuntime<TNode>.OnNodeWillDeleteFunc OnNodeWillDelete;
-        public event IReadOnlyGraphRuntime<TNode>.OnEdgeConnectedFunc OnEdgeConnected;
-        public event IReadOnlyGraphRuntime<TNode>.OnEdgeWillDisconnectFunc OnEdgeWillDisconnect;
+        public event OnNodeAddedFunc<TNode> OnNodeAdded;
+        public event OnNodeWillDeleteFunc<TNode> OnNodeWillDelete;
+        public event OnEdgeConnectedFunc OnEdgeConnected;
+        public event OnEdgeWillDisconnectFunc OnEdgeWillDisconnect;
 
         private readonly BiDictionary<NodeId, TNode> _nodeMap;
         private readonly HashSet<EdgeId> _edges;

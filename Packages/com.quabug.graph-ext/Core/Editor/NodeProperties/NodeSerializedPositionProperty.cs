@@ -31,12 +31,17 @@ namespace GraphExt.Editor
 
             public View([NotNull] Node node, [NotNull] SerializedProperty positionProperty)
             {
-                var position = positionProperty.vector2Value;
-                node.SetPosition(new Rect(position.x, position.y, 0, 0));
                 _node = node;
                 _positionProperty = positionProperty;
+                SetPosition(positionProperty);
                 style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
                 _node.RegisterCallback<ElementMovedEvent>(OnNodeMoved);
+                this.TrackPropertyValue(positionProperty, SetPosition);
+
+                void SetPosition(SerializedProperty position)
+                {
+                    node.SetPosition(new Rect(position.vector2Value.x, position.vector2Value.y, 0, 0));
+                }
             }
 
             public void Dispose()
