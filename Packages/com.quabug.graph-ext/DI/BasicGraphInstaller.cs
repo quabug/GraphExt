@@ -63,12 +63,12 @@ namespace GraphExt.Editor
         {
             var presenterContainer = typeContainers.CreateSystemContainer(container, typeof(NodeViewPresenter));
 
-            presenterContainer.RegisterSingleton(() => NodeDataConvertor.ToNodeData(
+            presenterContainer.RegisterSingleton<ConvertToNodeData>(() => NodeDataConvertor.ToNodeData(
                 presenterContainer.Resolve<IReadOnlyDictionary<NodeId, TNode>>(),
                 presenterContainer.Resolve<IReadOnlyDictionary<NodeId, Vector2>>()
             ));
 
-            presenterContainer.RegisterSingleton(() => PortDataConvertor.FindPorts(
+            presenterContainer.RegisterSingleton<FindPortData>(() => PortDataConvertor.FindPorts(
                 presenterContainer.Resolve<IReadOnlyDictionary<NodeId, TNode>>()
             ));
 

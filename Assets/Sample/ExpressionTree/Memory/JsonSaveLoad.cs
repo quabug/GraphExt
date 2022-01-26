@@ -62,7 +62,7 @@ public static class JsonUtility
 
         public GraphRuntimeData(IReadOnlyGraphRuntime<TNode> graph)
         {
-            Nodes = graph.NodeMap.ToDictionary(pair => pair.Key.Id, pair => pair.Value);
+            Nodes = graph.IdNodeMap.ToDictionary(pair => pair.Key.Id, pair => pair.Value);
             Edges = graph.Edges.Distinct().Select(edge => edge.ToSerializable(graph)).ToArray();
         }
 

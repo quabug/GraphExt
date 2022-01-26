@@ -15,10 +15,8 @@ namespace GraphExt
         public NodeId this[[NotNull] TNodeScriptableObject node] => _nodesCache.GetKey(node);
 
         [SerializeField] private List<TNodeScriptableObject> _nodes = new List<TNodeScriptableObject>();
-
         public IReadOnlyList<TNodeScriptableObject> Nodes => _nodes;
-        public IReadOnlyDictionary<NodeId, TNodeScriptableObject> NodeObjectMap => _nodesCache.Forward;
-        public IReadOnlyDictionary<TNodeScriptableObject, NodeId> ObjectNodeMap => _nodesCache.Reverse;
+        public IReadOnlyBiDictionary<NodeId, TNodeScriptableObject> NodeMap => _nodesCache;
 
 #if UNITY_EDITOR
         private Dictionary<NodeId, UnityEditor.SerializedObject> _serializedObjects;

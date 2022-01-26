@@ -28,6 +28,7 @@ namespace GraphExt.Editor
             container.RegisterInstance(graphRuntime);
             container.Register<IReadOnlyGraphRuntime<TNode>>(container.Resolve<GraphRuntime<TNode>>);
             container.Register(() => container.Resolve<GraphRuntime<TNode>>().NodeIdMap);
+            container.Register(() => container.Resolve<GraphRuntime<TNode>>().IdNodeMap);
             container.Register(() => container.Resolve<GraphRuntime<TNode>>().NodeMap);
             container.Register(() => container.Resolve<IReadOnlyDictionary<NodeId, TNode>>().Keys);
             container.Register(() => container.Resolve<IReadOnlyDictionary<NodeId, TNode>>().Values);
@@ -53,8 +54,9 @@ namespace GraphExt.Editor
             container.RegisterInstance(graph);
             container.RegisterGraphRuntimeInstance(graph.Runtime);
             container.RegisterInstance(graph.Nodes);
-            container.RegisterInstance(graph.NodeObjectMap);
-            container.RegisterInstance(graph.ObjectNodeMap);
+            container.RegisterInstance(graph.NodeMap);
+            container.Register(() => container.Resolve<IReadOnlyBiDictionary<NodeId, TNodeComponent>>().Forward);
+            container.Register(() => container.Resolve<IReadOnlyBiDictionary<NodeId, TNodeComponent>>().Reverse);
         }
 
         public static void RegisterSerializableGraphBackend<TNode, TNodeComponent>(

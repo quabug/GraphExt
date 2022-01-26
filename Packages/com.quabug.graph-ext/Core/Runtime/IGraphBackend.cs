@@ -6,8 +6,7 @@ namespace GraphExt
     {
         GraphRuntime<TNode> Runtime { get; }
         public IReadOnlyList<TNodeComponent> Nodes { get; }
-        public IReadOnlyDictionary<NodeId, TNodeComponent> NodeObjectMap { get; }
-        public IReadOnlyDictionary<TNodeComponent, NodeId> ObjectNodeMap { get; }
+        public IReadOnlyBiDictionary<NodeId, TNodeComponent> NodeMap { get; }
     }
 
     public interface ISerializableGraphBackend<TNode, TNodeComponent> : IGraphBackend<TNode, TNodeComponent> where TNode : INode<GraphRuntime<TNode>>

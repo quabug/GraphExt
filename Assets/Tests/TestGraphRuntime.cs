@@ -262,7 +262,7 @@ public class TestGraphRuntime
 
     void CheckGraphNodes(GraphRuntime<TestNode> graph, IReadOnlyCollection<(NodeId id, TestNode node)> nodes)
     {
-        Assert.That(graph.NodeMap, Is.EqualTo(nodes.Select(ToPair)));
+        Assert.That(graph.IdNodeMap, Is.EqualTo(nodes.Select(ToPair)));
         Assert.That(graph.NodeIdMap, Is.EqualTo(nodes.Select(ToReversePair)));
         foreach (var (id, node) in nodes)
         {
