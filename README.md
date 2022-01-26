@@ -90,35 +90,30 @@ public class ExpressionGraphScriptableObject : GraphScriptableObject<IExpression
 ```
 ![image](https://user-images.githubusercontent.com/683655/147674310-bdeae924-014a-4dd9-a5a1-ae6effd8644e.png)
 
-### 3. Create a new graph window of scriptable object backend:
-``` C#
-public class ScriptableObjectExpressionTreeWindow : ScriptableObjectGraphWindow<IVisualNode, VisualNodeScriptableObject>
+### 3. Define graph menu entries and window extension to use `ExpressionGraphScriptableObject` as backend:
+``` c#
+public class ExpressionNodeBasicGraphInstaller : BasicGraphInstaller<IExpressionNode> {}
+public class ExpressionNodeGraphWindowExtension : ScriptableObjectNodeCreationMenuEntry<IExpressionNode, ExpressionNodeScriptableObject> {}
+public class ExpressionNodeInstaller : ScriptableObjectWindowExtension<IExpressionNode, ExpressionNodeScriptableObject> {}
+public class ExpressionNodeMenuEntry : NodeMenuEntry<IExpressionNode>
 {
-    private MenuBuilder _menuBuilder;
-
-    [MenuItem("Graph/ScriptableObject Expression Tree")]
-    public static void OpenWindow()
+    public VisualNodeMenuEntry(GraphRuntime<IExpressionNode> graphRuntime, InitializeNodePosition initializeNodePosition) : base(graphRuntime, initializeNodePosition)
     {
-        OpenWindow<ScriptableObjectExpressionTreeWindow>("Scriptable Object");
-    }
-
-    protected override void CreateMenu()
-    {
-        _menuBuilder = new MenuBuilder(_GraphSetup.GraphView, new IMenuEntry[]
-        {
-            new PrintValueMenu(_GraphSetup.GraphRuntime, _GraphSetup.NodeViews.Reverse),
-            new SelectionEntry<IVisualNode>(_GraphSetup.GraphRuntime, _GraphSetup.NodeViews.Reverse, _GraphSetup.EdgeViews.Reverse),
-            new NodeMenuEntry<IVisualNode>(_GraphSetup.GraphRuntime, _GraphSetup.NodePositions)
-        });
     }
 }
 ```
 
-### 4. Open expression graph window and choose a "Expression Graph" to modifying:
-![image](https://user-images.githubusercontent.com/683655/149827415-12e86d6f-c933-478f-a24c-de0ead625bfd.png)
+### 4. Create a new graph window config file and set to use expression extensions:
+![image](https://user-images.githubusercontent.com/683655/147674011-a0a5b768-2cd7-4f65-91bf-9a064ebe393c.png)
+<img width="380" alt="image" src="https://user-images.githubusercontent.com/683655/151151527-835f912d-87d5-4ed4-821b-5bd4e478cf62.png" />
+
+### 5. Open expression graph window and choose a "Expression Graph" to modifying:
+    
+<img width="463" alt="image" src="https://user-images.githubusercontent.com/683655/151151699-c2b312e6-58e1-4e4e-91ef-687b4dfebb83.png" />
+    
 ![image](https://user-images.githubusercontent.com/683655/147678357-a8385a57-5070-4404-9a65-d1c1077bb9d5.png)
 
-### 5. (Optional) Make it nicer:
+### 6. (Optional) Make it nicer:
 - compact node look of `AddNode`:![image](https://user-images.githubusercontent.com/683655/147679433-baf816ef-d6ab-475c-9388-1396870f1191.png)
 ``` c#
 public class AddNode : IExpressionNode
@@ -187,33 +182,47 @@ public class AddNode : ExpressionNode
     public class ExpressionTreeNodeComponent : TreeNodeComponent<IExpressionNode, ExpressionTreeNodeComponent> {}
     ```
     
-    3. Create prefab window:
-
+    3. Define window extension and installers of prefab:
     ``` c#
-    public class PrefabExpressionTreeWindow : PrefabGraphWindow<IVisualNode, VisualTreeComponent>
-    {
-        private MenuBuilder _menuBuilder;
-
-        [MenuItem("Graph/Prefab Expression Tree")]
-        public static void OpenWindow()
-        {
-            OpenWindow<PrefabExpressionTreeWindow>("Prefab");
-        }
-
-        protected override void CreateMenu()
-        {
-            _menuBuilder = new MenuBuilder(_GraphSetup.GraphView, new IMenuEntry[]
-            {
-                new PrintValueMenu(_GraphSetup.GraphRuntime, _GraphSetup.NodeViews.Reverse),
-                new SelectionEntry<IVisualNode>(_GraphSetup.GraphRuntime, _GraphSetup.NodeViews.Reverse, _GraphSetup.EdgeViews.Reverse),
-                new NodeMenuEntry<IVisualNode>(_GraphSetup.GraphRuntime, _GraphSetup.NodePositions)
-            });
-        }
-    }
+    public class ExpressionPrefabGraphWindowExtension : PrefabGraphWindowExtension<IExpressionNode, ExpressionTreeNodeComponent> {}
+    public class ExpressionPrefabInstaller : SerializableGraphBackendInstaller<IExpressionNode, ExpressionTreeNodeComponent> {}
+    public class ExpressionPrefabIsPortCompatibleInstaller : PrefabIsPortCompatibleInstaller<IExpressionNode, ExpressionTreeNodeComponent> {}
     ```
+    
+    3. Create window config:
+
+    <img width="379" alt="image" src="https://user-images.githubusercontent.com/683655/151153503-ab02f784-361a-4c55-bdc2-5b44446e45fa.png">
     
     4. Open a prefab and start to modify:
  
     ![image](https://user-images.githubusercontent.com/683655/147681512-e63c90b3-6727-4353-8434-a9179c6cdf62.png)
     
 </details>
+
+  
+## HowTo
+### Customize graph menu
+1. Implement a class of [`IMenuEntry`](Packages/com.quabug.graph-ext/Core/Editor/Menu/IMenuEntry.cs)
+2. Add it into _Menu Entries_ of `GraphConfig.WindowExtension`
+    
+<img width="383" alt="image" src="https://user-images.githubusercontent.com/683655/151153702-5e2ab4b7-f308-4138-94d5-fee829a4ab51.png">
+
+### Customize view of node property
+1. Implement a property factory of [`INodePropertyFactory`](Packages/com.quabug.graph-ext/Core/Editor/View/NodePropertyViewFactory.cs)
+``` c#
+    public class FloatFieldViewFactory : INodePropertyViewFactory
+    {
+        public VisualElement Create(Node node, INodeProperty property, INodePropertyViewFactory factory)
+        {
+            return property is FieldInfoProperty<float> _ ? new Label("replace view") : null;
+        }
+    }
+```
+
+2. Add it into the top of _Factories_ of _Node Property View Factory_
+
+<img width="386" alt="image" src="https://user-images.githubusercontent.com/683655/151153808-7fb6dfc4-e682-4d09-b998-de5dce27a747.png">
+
+3. Create a node and will change its property view.
+
+![image](https://user-images.githubusercontent.com/683655/147737633-a7c982f0-1e86-4e34-8ca8-d89025014ece.png)
