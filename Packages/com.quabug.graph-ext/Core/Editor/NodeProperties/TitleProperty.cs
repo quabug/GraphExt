@@ -1,9 +1,7 @@
-using System;
 using System.Reflection;
 using JetBrains.Annotations;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace GraphExt.Editor
@@ -27,14 +25,7 @@ namespace GraphExt.Editor
         {
             protected override VisualElement CreateView(Node node, TitleProperty property, INodePropertyViewFactory _)
             {
-                var titleLabel = new Label(property.Value);
-                titleLabel.name = "title-property";
-                titleLabel.style.height = 40;
-                titleLabel.style.flexGrow = 1;
-                titleLabel.style.unityTextAlign = new StyleEnum<TextAnchor>(TextAnchor.MiddleCenter);
-                titleLabel.style.fontSize = new StyleLength(14);
-                titleLabel.style.unityFontStyleAndWeight = new StyleEnum<FontStyle>(FontStyle.Bold);
-                return titleLabel;
+                return new TitleLabel(property.Value);
             }
         }
     }
