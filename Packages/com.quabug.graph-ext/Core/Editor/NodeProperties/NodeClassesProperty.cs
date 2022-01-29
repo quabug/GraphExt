@@ -7,7 +7,7 @@ namespace GraphExt.Editor
 {
     public class NodeClassesProperty : INodeProperty
     {
-        public int Order => 0;
+        public int Order { get; set; } = 0;
         public string[] AdditionalClasses { get; }
         public NodeClassesProperty(IEnumerable<string> classes) => AdditionalClasses = classes.ToArray();
 

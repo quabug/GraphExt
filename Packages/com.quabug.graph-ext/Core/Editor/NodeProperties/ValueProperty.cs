@@ -13,7 +13,7 @@ namespace GraphExt.Editor
 
     public class ReadOnlyValueProperty<TValue> : IReadOnlyValueProperty<TValue>
     {
-        public int Order => 0;
+        public int Order { get; set; } = 0;
         private readonly Func<TValue> _getter;
         public TValue Value => _getter();
         public ReadOnlyValueProperty(Func<TValue> getter) => _getter = getter;
@@ -26,7 +26,7 @@ namespace GraphExt.Editor
 
     public class ValueProperty<TValue> : IValueProperty<TValue>
     {
-        public int Order => 0;
+        public int Order { get; set; } = 0;
         private readonly Func<TValue> _getter;
         private readonly Action<TValue> _setter;
 

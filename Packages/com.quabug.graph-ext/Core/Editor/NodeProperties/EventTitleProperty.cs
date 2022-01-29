@@ -6,7 +6,7 @@ namespace GraphExt.Editor
 {
     public class EventTitleProperty : INodeProperty
     {
-        public int Order => 0;
+        public int Order { get; set; } = -1;
         private string _title;
         public string Title
         {

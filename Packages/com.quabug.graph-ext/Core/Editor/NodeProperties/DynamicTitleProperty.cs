@@ -5,7 +5,7 @@ namespace GraphExt.Editor
 {
     public class DynamicTitleProperty : INodeProperty
     {
-        public int Order => 0;
+        public int Order { get; set; } = -1;
 
         public Func<string> GetName;
         public DynamicTitleProperty(Func<string> getName) => GetName = getName;
