@@ -10,7 +10,7 @@ namespace GraphExt.Editor
 {
     public class InnerNodeProperty : INodeProperty
     {
-        public int Order => 0;
+        public int Order { get; set; } = 0;
         private readonly INodeProperty[] _properties;
 
         public InnerNodeProperty(object nodeObj, NodeId nodeId, SerializedProperty nodeSerializedProperty)

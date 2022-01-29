@@ -9,7 +9,7 @@ namespace GraphExt.Editor
 {
     public class SerializedTitleProperty : INodeProperty
     {
-        public int Order => 0;
+        public int Order { get; set; } = 0;
         public SerializedProperty Property;
 
         public class Factory : INodePropertyFactory

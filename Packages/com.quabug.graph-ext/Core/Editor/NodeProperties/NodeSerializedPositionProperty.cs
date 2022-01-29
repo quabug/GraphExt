@@ -11,7 +11,7 @@ namespace GraphExt.Editor
 {
     public class NodeSerializedPositionProperty : INodeProperty
     {
-        public int Order => 0;
+        public int Order { get; set; } = 0;
         public SerializedProperty PositionProperty;
 
         public class Factory : INodePropertyFactory
