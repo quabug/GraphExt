@@ -16,9 +16,8 @@ namespace GraphExt.Editor
         {
             var presenterContainer = typeContainers.GetTypeContainer(typeof(NodeViewPresenter));
             presenterContainer.RegisterSingleton<ConvertToNodeData>(() => {
-                var serializedObjects = container.Resolve<IReadOnlyDictionary<NodeId, SerializedObject>>();
-                var nodes = container.Resolve<IReadOnlyDictionary<NodeId, TNodeComponent>>();
-                return NodeDataConvertor.ToNodeData(id => nodes[id], id => serializedObjects[id]);
+                var graph = container.Resolve<ISerializableGraphBackend<TNode, TNodeComponent>>();
+                return NodeDataConvertor.ToNodeData(id => graph.NodeMap[id], id => graph.SerializedObjects[id]);
             });
 
             container.RegisterSingleton<IWindowSystem>(() =>

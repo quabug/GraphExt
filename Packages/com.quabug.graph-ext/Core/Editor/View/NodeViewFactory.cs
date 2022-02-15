@@ -42,6 +42,5 @@ namespace GraphExt.Editor
                 return NodePropertyViewFactory.Create(nodeView, property, NodePropertyViewFactory);
             }
         }
-
     }
 }

@@ -63,10 +63,15 @@ namespace OneShot
             return (T) container.Resolve(typeof(T));
         }
 
-        [NotNull] private static IEnumerable<object> ResolveGroupWithoutException([NotNull] this Container container, Type type)
+        [NotNull] public static IEnumerable<object> ResolveGroupWithoutException([NotNull] this Container container, Type type)
         {
             var creators = FindCreatorsInHierarchy(container, type).SelectMany(creators => creators);
             return creators.Select(creator => creator());
+        }
+
+        [NotNull] public static IEnumerable<T> ResolveGroupWithoutException<T>([NotNull] this Container container)
+        {
+            return container.ResolveGroupWithoutException(typeof(T)).OfType<T>();
         }
 
         [NotNull] public static IEnumerable<object> ResolveGroup([NotNull] this Container container, Type type)

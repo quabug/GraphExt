@@ -63,14 +63,14 @@ namespace GraphExt
             }
         }
 
-        private Transform FindStageRoot(Transform transform)
+        public Transform FindStageRoot(Transform transform)
         {
             var self = transform;
             while (self.parent != null) self = self.parent;
             return self;
         }
 
-        private void SetParent(Transform self, Transform parent)
+        public void SetParent(Transform self, Transform parent)
         {
             if (!IsTransforming)
             {

@@ -81,30 +81,25 @@ namespace GraphExt
         public void Connect(in PortId input, in PortId output)
         {
             var edge = new EdgeId(input, output);
-            CheckPortNodeExistence(input);
-            CheckPortNodeExistence(output);
             if (_edges.Contains(edge)) throw new EdgeAlreadyConnectedException(edge);
             _edges.Add(edge);
-            GetNodeByPort(input).OnConnected(this, input, output);
-            GetNodeByPort(output).OnConnected(this, input, output);
+            if (_nodeMap.TryGetValue(edge.Input.NodeId, out var inputNode))
+                inputNode.OnConnected(this, input, output);
+            if (_nodeMap.TryGetValue(edge.Output.NodeId, out var outputNode))
+                outputNode.OnConnected(this, input, output);
             OnEdgeConnected?.Invoke(edge);
         }
 
         public void Disconnect(in PortId input, in PortId output)
         {
             var edge = new EdgeId(input, output);
-            CheckPortNodeExistence(input);
-            CheckPortNodeExistence(output);
             if (!_edges.Contains(edge)) throw new EdgeAlreadyDisconnectedException(edge);
             OnEdgeWillDisconnect?.Invoke(edge);
             _edges.Remove(edge);
-            GetNodeByPort(input).OnDisconnected(this, input, output);
-            GetNodeByPort(output).OnDisconnected(this, input, output);
-        }
-
-        void CheckPortNodeExistence(in PortId portId)
-        {
-            if (!_nodeMap.ContainsKey(portId.NodeId)) throw new InvalidPortException(portId);
+            if (_nodeMap.TryGetValue(edge.Input.NodeId, out var inputNode))
+                inputNode.OnDisconnected(this, input, output);
+            if (_nodeMap.TryGetValue(edge.Output.NodeId, out var outputNode))
+                outputNode.OnDisconnected(this, input, output);
         }
 
         private void RemoveNodeEdges(NodeId nodeId)

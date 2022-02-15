@@ -72,7 +72,7 @@ namespace GraphExt
 
         private bool IsNodeComponentPortCompatible(in NodeId nodeId, in PortId input, in PortId output)
         {
-            return _nodeObjectMap[nodeId].IsPortCompatible(this, input, output);
+            return !_nodeObjectMap.TryGetValue(nodeId, out var node) || node.IsPortCompatible(this, input, output);
         }
 
         private void OnNodeComponentConnect(in NodeId nodeId, in EdgeId edge)
@@ -121,8 +121,8 @@ namespace GraphExt
 
         private void OnConnected(in EdgeId edge)
         {
-            var inputComponent = _nodeObjectMap[edge.Input.NodeId];
-            var outputComponent = _nodeObjectMap[edge.Output.NodeId];
+            _nodeObjectMap.TryGetValue(edge.Input.NodeId, out var inputComponent);
+            _nodeObjectMap.TryGetValue(edge.Output.NodeId, out var outputComponent);
             if (inputComponent != null) inputComponent.OnConnected(this, edge);
             if (outputComponent != null) outputComponent.OnConnected(this, edge);
             SavePrefab();
@@ -130,8 +130,8 @@ namespace GraphExt
 
         private void OnWillDisconnect(in EdgeId edge)
         {
-            var inputComponent = _nodeObjectMap[edge.Input.NodeId];
-            var outputComponent = _nodeObjectMap[edge.Output.NodeId];
+            _nodeObjectMap.TryGetValue(edge.Input.NodeId, out var inputComponent);
+            _nodeObjectMap.TryGetValue(edge.Output.NodeId, out var outputComponent);
             if (inputComponent != null) inputComponent.OnDisconnected(this, edge);
             if (outputComponent != null) outputComponent.OnDisconnected(this, edge);
             SavePrefab();

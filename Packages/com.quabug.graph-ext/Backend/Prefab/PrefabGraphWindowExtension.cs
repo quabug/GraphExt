@@ -25,6 +25,7 @@ namespace GraphExt.Editor
             if (prefabStage == null)
             {
                 RemoveGraphView();
+                Clear();
             }
             else
             {
