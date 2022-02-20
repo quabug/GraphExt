@@ -1,5 +1,4 @@
 #node-border {
-    -unity-background-image-tint-color: rgb(0, 0, 0);
     border-left-color: rgb(37, 37, 37);
     border-right-color: rgb(37, 37, 37);
     border-top-color: rgb(37, 37, 37);
@@ -9,12 +8,7 @@
     border-right-width: 2px;
     border-top-width: 2px;
     border-bottom-width: 2px;
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
     min-width: 100px;
-    -unity-text-align: upper-center;
 }
 
 #input {
@@ -39,10 +33,6 @@
     top: 0;
     right: 0;
     bottom: 0;
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
 }
 
 #activation {

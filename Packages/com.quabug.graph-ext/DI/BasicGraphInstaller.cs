@@ -100,6 +100,7 @@ namespace GraphExt.Editor
         void RegisterEdgeViewPresenter(Container container, TypeContainers typeContainers)
         {
             var presenterContainer = typeContainers.CreateSystemContainer(container, typeof(EdgeViewInitializer), typeof(EdgeViewObserver));
+            presenterContainer.Register<IEnumerable<EdgeId>>(() => container.Resolve<GraphRuntime<TNode>>().Edges);
             presenterContainer.RegisterSingleton(() => EdgeFunctions.Connect(presenterContainer.Resolve<GraphRuntime<TNode>>()));
             presenterContainer.RegisterSingleton(() => EdgeFunctions.Disconnect(presenterContainer.Resolve<GraphRuntime<TNode>>()));
         }

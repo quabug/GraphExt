@@ -11,7 +11,7 @@ namespace GraphExt
         public readonly Type PortType;
         public readonly string[] AdditionalClasses;
 
-        public PortData(string name, PortOrientation orientation, PortDirection direction, int capacity, Type portType, string[] additionalClasses = null)
+        public PortData(string name, PortOrientation orientation, PortDirection direction, int capacity, Type portType, params string[] additionalClasses)
         {
             Name = name;
             Orientation = orientation;

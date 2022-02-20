@@ -1,7 +1,7 @@
-using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEditor.Experimental.GraphView;
+using UnityEngine;
 
 namespace GraphExt.Editor
 {
@@ -37,7 +37,10 @@ namespace GraphExt.Editor
             {
                 var (input, output) = edge;
                 if (!_portViews.ContainsKey(input) || !_portViews.ContainsKey(output))
-                    throw new ArgumentException("port is not created yet");
+                {
+                    Debug.LogError("port is not created yet");
+                    continue;
+                }
                 var edgeView = _edgeViewFactory.CreateEdge(_portViews[output], _portViews[input]);
                 _edgeViews.Add(edge, edgeView);
                 _view.AddElement(edgeView);

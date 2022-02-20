@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
@@ -12,6 +13,7 @@ namespace GraphExt.Editor
         [NotNull] Node Create(NodeData nodeData);
     }
 
+    [Serializable]
     public class DefaultNodeViewFactory : INodeViewFactory
     {
         public GroupNodePropertyViewFactory NodePropertyViewFactory = new GroupNodePropertyViewFactory
@@ -21,8 +23,7 @@ namespace GraphExt.Editor
 
         public Node Create(NodeData data)
         {
-            var defaultUxml = Path.Combine(Utilities.GetCurrentDirectoryProjectRelativePath(), "NodeView.uxml");
-            var nodeView = new Node(defaultUxml);
+            var nodeView = new Node(Path.Combine(Utilities.GetCurrentDirectoryProjectRelativePath(), "NodeView.uxml"));
             var container = nodeView.ContentContainer();
             var orders = new List<int>();
             foreach (var property in data.Properties)
