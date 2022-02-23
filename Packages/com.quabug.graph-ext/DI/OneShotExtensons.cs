@@ -7,6 +7,13 @@ namespace GraphExt.Editor
 {
     public static class OneShotExtension
     {
+        public static void Register<T, TBase>(this Container container)
+            where T : TBase
+            where TBase : class
+        {
+            container.Register<TBase>(() => (TBase)container.Resolve<T>());
+        }
+
         public static void RegisterInstanceWithBaseAndInterfaces<T>(this Container container, T instance)
         {
             container.RegisterInstance(instance);

@@ -30,7 +30,9 @@ MonoBehaviour:
         - id: 6
         MenuEntries:
         - id: 7
-        AdditionalWindowSystems: []
+        AdditionalWindowSystems:
+        - VisualPrefabNodeObjectObserver, GraphExt.Sample.ExpressionTree, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
     00000001:
       type: {class: VisualNodeBasicGraphInstaller, ns: , asm: GraphExt.Sample.ExpressionTree}
       data:

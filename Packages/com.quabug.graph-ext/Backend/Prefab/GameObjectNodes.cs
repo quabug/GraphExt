@@ -13,14 +13,14 @@ namespace GraphExt
     {
         public GraphRuntime<TNode> Runtime { get; }
 
-        private readonly GameObject _root;
-        private readonly BiDictionary<NodeId, TComponent> _nodeObjectMap = new BiDictionary<NodeId, TComponent>();
+        protected readonly GameObject _Root;
+        protected readonly BiDictionary<NodeId, TComponent> _NodeObjectMap = new BiDictionary<NodeId, TComponent>();
 
-        [NotNull] public TComponent this[in NodeId id] => _nodeObjectMap[id];
-        public NodeId this[[NotNull] TComponent obj] => _nodeObjectMap.GetKey(obj);
+        [NotNull] public TComponent this[in NodeId id] => _NodeObjectMap[id];
+        public NodeId this[[NotNull] TComponent obj] => _NodeObjectMap.GetKey(obj);
 
-        public IReadOnlyList<TComponent> Nodes => _root.GetComponentsInChildren<TComponent>();
-        public IReadOnlyBiDictionary<NodeId, TComponent> NodeMap => _nodeObjectMap;
+        public IEnumerable<TComponent> Nodes => _NodeObjectMap.Values;
+        public IReadOnlyBiDictionary<NodeId, TComponent> NodeMap => _NodeObjectMap;
 
 #if UNITY_EDITOR
         private readonly Dictionary<NodeId, UnityEditor.SerializedObject> _serializedObjects = new Dictionary<NodeId, UnityEditor.SerializedObject>();
@@ -29,7 +29,7 @@ namespace GraphExt
 
         public GameObjectNodes([NotNull] GameObject root)
         {
-            _root = root;
+            _Root = root;
             Runtime = new GraphRuntime<TNode>();
             var nodes = root.GetComponentsInChildren<TComponent>();
             foreach (var node in nodes)
@@ -54,25 +54,23 @@ namespace GraphExt
             Runtime.OnEdgeWillDisconnect -= OnWillDisconnect;
         }
 
-        public bool IsPortCompatible(in PortId input, in PortId output)
+        public virtual bool IsPortCompatible(in PortId input, in PortId output)
         {
-            return IsNodeComponentPortCompatible(input.NodeId, input, output) &&
-                   IsNodeComponentPortCompatible(output.NodeId, input, output);
+            var hasInputNode = _NodeObjectMap.TryGetValue(input.NodeId, out var inputNode);
+            var hasOutputNode = _NodeObjectMap.TryGetValue(input.NodeId, out var outputNode);
+            return (!hasInputNode || inputNode.IsPortCompatible(this, input: input, output: output)) &&
+                   (!hasOutputNode || outputNode.IsPortCompatible(this, input: input, output: output))
+            ;
         }
 
-        private void AddNode(TComponent node)
+        protected void AddNode(TComponent node)
         {
-            _nodeObjectMap[node.Id] = node;
+            _NodeObjectMap[node.Id] = node;
 #if UNITY_EDITOR
             _serializedObjects[node.Id] = new UnityEditor.SerializedObject(node);
 #endif
             node.OnNodeComponentConnect += OnNodeComponentConnect;
             node.OnNodeComponentDisconnect += OnNodeComponentDisconnect;
-        }
-
-        private bool IsNodeComponentPortCompatible(in NodeId nodeId, in PortId input, in PortId output)
-        {
-            return !_nodeObjectMap.TryGetValue(nodeId, out var node) || node.IsPortCompatible(this, input, output);
         }
 
         private void OnNodeComponentConnect(in NodeId nodeId, in EdgeId edge)
@@ -85,12 +83,12 @@ namespace GraphExt
             Runtime.Disconnect(edge.Input, edge.Output);
         }
 
-        private void OnNodeAdded(in NodeId id, TNode node)
+        protected virtual void OnNodeAdded(in NodeId id, TNode node)
         {
-            if (!_nodeObjectMap.ContainsKey(id))
+            if (!_NodeObjectMap.ContainsKey(id))
             {
                 var nodeObject = new GameObject(node.GetType().Name);
-                nodeObject.transform.SetParent(_root.transform);
+                nodeObject.transform.SetParent(_Root.transform);
                 var nodeComponent = nodeObject.AddComponent<TComponent>();
                 nodeComponent.Id = id;
                 nodeComponent.Node = node;
@@ -99,14 +97,14 @@ namespace GraphExt
             }
         }
 
-        private void OnNodeWillDelete(in NodeId id, TNode node)
+        protected virtual void OnNodeWillDelete(in NodeId id, TNode node)
         {
 #if UNITY_EDITOR
             _serializedObjects.Remove(id);
 #endif
-            if (_nodeObjectMap.TryGetValue(id, out var nodeObject))
+            if (_NodeObjectMap.TryGetValue(id, out var nodeObject))
             {
-                _nodeObjectMap.Remove(id);
+                _NodeObjectMap.Remove(id);
                 if (nodeObject != null)
                 {
 #if UNITY_EDITOR
@@ -119,26 +117,26 @@ namespace GraphExt
             }
         }
 
-        private void OnConnected(in EdgeId edge)
+        protected virtual void OnConnected(in EdgeId edge)
         {
-            _nodeObjectMap.TryGetValue(edge.Input.NodeId, out var inputComponent);
-            _nodeObjectMap.TryGetValue(edge.Output.NodeId, out var outputComponent);
+            _NodeObjectMap.TryGetValue(edge.Input.NodeId, out var inputComponent);
+            _NodeObjectMap.TryGetValue(edge.Output.NodeId, out var outputComponent);
             if (inputComponent != null) inputComponent.OnConnected(this, edge);
             if (outputComponent != null) outputComponent.OnConnected(this, edge);
             SavePrefab();
         }
 
-        private void OnWillDisconnect(in EdgeId edge)
+        protected virtual void OnWillDisconnect(in EdgeId edge)
         {
-            _nodeObjectMap.TryGetValue(edge.Input.NodeId, out var inputComponent);
-            _nodeObjectMap.TryGetValue(edge.Output.NodeId, out var outputComponent);
+            _NodeObjectMap.TryGetValue(edge.Input.NodeId, out var inputComponent);
+            _NodeObjectMap.TryGetValue(edge.Output.NodeId, out var outputComponent);
             if (inputComponent != null) inputComponent.OnDisconnected(this, edge);
             if (outputComponent != null) outputComponent.OnDisconnected(this, edge);
             SavePrefab();
         }
 
         [Conditional("UNITY_EDITOR")]
-        private void SavePrefab()
+        protected void SavePrefab()
         {
             Editor.Utility.SavePrefabStage();
         }

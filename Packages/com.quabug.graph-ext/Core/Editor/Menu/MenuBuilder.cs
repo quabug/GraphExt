@@ -13,10 +13,10 @@ namespace GraphExt.Editor
         [NotNull] private readonly UnityEditor.Experimental.GraphView.GraphView _graphView;
         [NotNull] private readonly IMenuEntry[] _entries;
 
-        public MenuBuilder([NotNull] UnityEditor.Experimental.GraphView.GraphView graphView, [NotNull] IMenuEntry[] entries)
+        public MenuBuilder([NotNull] UnityEditor.Experimental.GraphView.GraphView graphView, IMenuEntry[] entries = null)
         {
             _graphView = graphView;
-            _entries = entries;
+            _entries = entries ?? Array.Empty<IMenuEntry>();
             graphView.RegisterCallback<ContextualMenuPopulateEvent>(OnContextualMenu);
         }
 

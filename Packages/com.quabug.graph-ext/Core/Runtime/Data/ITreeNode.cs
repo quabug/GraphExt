@@ -17,7 +17,7 @@ namespace GraphExt
                    (port.Name == treeNode.InputPortName || port.Name == treeNode.OutputPortName);
         }
 
-        public static bool IsTreeEdge<TNode>([NotNull] this GraphRuntime<TNode> graph, in EdgeId edge) where TNode : ITreeNode<GraphRuntime<TNode>>
+        public static bool IsTreeEdge<TNode>([NotNull] this GraphRuntime<TNode> graph, in EdgeId edge) where TNode : INode<GraphRuntime<TNode>>
         {
             return graph.IsTreePort(edge.Input) && graph.IsTreePort(edge.Output);
         }
