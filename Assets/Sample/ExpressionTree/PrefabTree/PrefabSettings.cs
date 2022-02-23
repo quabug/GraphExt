@@ -5,7 +5,7 @@ using GraphExt.Editor;
 using UnityEditor.Experimental.SceneManagement;
 
 public class VisualPrefabGraphWindowExtension : PrefabGraphWindowExtension<IVisualNode, VisualTreeComponent> {}
-public class VisualPrefabInstaller : SerializableGraphBackendInstaller<IVisualNode, VisualTreeComponent> {}
+public class VisualPrefabInstaller : PrefabGraphBackendInstaller<IVisualNode, VisualTreeComponent> {}
 public class VisualPrefabIsPortCompatibleInstaller : PrefabIsPortCompatibleInstaller<IVisualNode, VisualTreeComponent> {}
 public class VisualPrefabNodeObjectObserver : NodeObjectDeletedObserver<IVisualNode, VisualTreeComponent>
 {

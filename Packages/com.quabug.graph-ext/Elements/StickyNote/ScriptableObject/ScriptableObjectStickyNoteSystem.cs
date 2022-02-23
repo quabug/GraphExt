@@ -9,14 +9,12 @@ using UnityEngine;
 
 namespace GraphExt.Editor
 {
-    public class ScriptableObjectStickyNoteSystem : StickyNoteSystem
+    public class ScriptableObjectStickyNoteSystem : StickyNoteSystem<StickyNoteScriptableObject>
     {
         [NotNull] private readonly ScriptableObject _graph;
 
-        private readonly Dictionary<StickyNoteId, StickyNoteScriptableObject> _notes =
-            new Dictionary<StickyNoteId, StickyNoteScriptableObject>();
-
-        public IReadOnlyDictionary<StickyNoteId, StickyNoteScriptableObject> StickyNotes => _notes;
+        private readonly BiDictionary<StickyNoteId, StickyNoteScriptableObject> _notes = new BiDictionary<StickyNoteId, StickyNoteScriptableObject>();
+        public override IReadOnlyBiDictionary<StickyNoteId, StickyNoteScriptableObject> StickyNotes => _notes;
 
         public ScriptableObjectStickyNoteSystem(
             [NotNull] StickyNotePresenter presenter,

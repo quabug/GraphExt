@@ -45,8 +45,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _id: 106cc003-5329-42d0-9510-d13b47310911
   Data:
-    X: 814
-    Y: 85.5
+    X: 1098.5
+    Y: 660
     Width: 200
     Height: 200
     Title: 1123
@@ -100,7 +100,7 @@ MonoBehaviour:
   _node:
     id: 0
   _nodeId: f71ed45f-2b5e-4bbd-85dd-76205f815043
-  _Position: {x: 892, y: 474}
+  _Position: {x: 988, y: 514}
   _flatEdges:
     _serializableEdges: []
   references:
@@ -351,7 +351,7 @@ MonoBehaviour:
   _node:
     id: 0
   _nodeId: 8513ccb8-dd23-4dc3-9fc2-a3d9fa6201d9
-  _Position: {x: 1130.5, y: 490}
+  _Position: {x: 1211.5, y: 530}
   _flatEdges:
     _serializableEdges: []
   references:
@@ -406,7 +406,7 @@ MonoBehaviour:
   _id: dcf02de4-6fca-4e44-8980-579212fed752
   Data:
     X: 1118
-    Y: 219
+    Y: 218
     Width: 200
     Height: 200
     Title: Note
