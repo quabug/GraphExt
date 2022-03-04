@@ -17,14 +17,13 @@ namespace GraphExt.Editor
 
         public SyncSelectionGraphElementPresenter(
             UnityEditor.Experimental.GraphView.GraphView graphView,
-            Func<IConvertor, System> systemFactory,
             IConvertor[] convertors = null,
             Object root = null
         )
         {
             _graphView = graphView;
             _root = root;
-            _systems = convertors == null ? Array.Empty<System>() : convertors.Select(systemFactory).ToArray();
+            _systems = convertors == null ? Array.Empty<System>() : convertors.Select(convertor => new System(_graphView, convertor)).ToArray();
             Selection.selectionChanged += OnSelectionChanged;
         }
 

@@ -25,13 +25,7 @@ namespace GraphExt.Editor
 
             void RegisterSyncSelectionGraphElementPresenter()
             {
-                var presenterContainer = typeContainers.CreateSystemContainer(container, typeof(SyncSelectionGraphElementPresenter));
-                presenterContainer.Register<Func<SyncSelectionGraphElementPresenter.IConvertor, SyncSelectionGraphElementPresenter.System>>(
-                    (resolveContainer, contractType) =>
-                    {
-                        var graphView = container.Resolve<UnityEditor.Experimental.GraphView.GraphView>();
-                        return convertor => new SyncSelectionGraphElementPresenter.System(graphView, convertor);
-                    }).AsSelf();
+                typeContainers.CreateSystemContainer(container, typeof(SyncSelectionGraphElementPresenter));
             }
         }
     }
