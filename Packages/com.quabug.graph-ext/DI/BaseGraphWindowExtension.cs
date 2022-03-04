@@ -1,6 +1,4 @@
 using System;
-using System.Linq;
-using OneShot;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -54,7 +52,7 @@ namespace GraphExt.Editor
 
         protected void Install(Container container, TypeContainers typeContainers)
         {
-            container.RegisterInstance(this);
+            container.RegisterInstance(this).AsSelf();
             container.RegisterTypeNameArraySingleton<IWindowSystem>(AdditionalWindowSystems);
             foreach (var installer in Installers) installer.Install(container, typeContainers);
             foreach (var installer in MenuEntries) installer.Install(container);

@@ -1,5 +1,3 @@
-using OneShot;
-
 namespace GraphExt.Editor
 {
     public interface IGraphInstaller

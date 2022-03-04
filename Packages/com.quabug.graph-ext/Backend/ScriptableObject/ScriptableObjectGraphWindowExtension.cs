@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using OneShot;
 using UnityEditor;
 using UnityEngine;
 
@@ -32,14 +31,13 @@ namespace GraphExt.Editor
             {
                 _Container = new Container();
                 graph.Initialize();
-                _Container.RegisterInstance(graph);
-                _Container.RegisterInstance<ScriptableObject>(graph);
+                _Container.RegisterInstance(graph).AsSelf().As<ScriptableObject>();
                 _Container.RegisterSerializableGraphBackend(graph);
-                _Container.Register<Func<NodeId, NodeScriptableObject>>(() =>
+                _Container.Register<Func<NodeId, NodeScriptableObject>>((resolveContainer, contractType) =>
                 {
                     var nodes = _Container.Resolve<IReadOnlyDictionary<NodeId, TNodeScriptableObject>>();
                     return id => nodes[id];
-                });
+                }).AsSelf();
                 base.Recreate();
             }
             _graph = graph;

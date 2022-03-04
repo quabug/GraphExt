@@ -1,32 +1,46 @@
 ﻿#if UNITY_EDITOR
 
-using OneShot;
+using System;
+using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace GraphExt.Editor
 {
-    public class PrefabGraphBackendInstaller<TNode, TNodeComponent> : SerializableGraphBackendInstaller<TNode, TNodeComponent>
+    [Serializable]
+    public class PrefabGraphBackendInstaller<TNode, TNodeComponent> : IGraphInstaller
         where TNode : INode<GraphRuntime<TNode>>
-        where TNodeComponent: Component
+        where TNodeComponent: MonoBehaviour, INodeComponent<TNode, TNodeComponent>
     {
-        public override void Install(Container container, TypeContainers typeContainers)
+        [SerializeField] private BasicGraphInstaller<TNode> _basicGraphInstaller;
+        [SerializeField] private SerializableGraphBackendInstaller<TNode, TNodeComponent> _serializableGraphBackendInstaller;
+
+        public void Install(Container container, TypeContainers typeContainers)
         {
-            base.Install(container, typeContainers);
-            container.Register<IWindowSystem>(() =>
+            _basicGraphInstaller.Install(container, typeContainers);
+            _serializableGraphBackendInstaller.Install(container, typeContainers);
+            container.Register<InitializeNodePosition>((resolveContainer, contractType) =>
             {
-                var graphView = container.Resolve<UnityEditor.Experimental.GraphView.GraphView>();
-                var nodeViews = container.Resolve<IReadOnlyBiDictionary<NodeId, Node>>();
-                var nodes = container.Resolve<IReadOnlyBiDictionary<NodeId, TNodeComponent>>();
-                return new SyncSelectionGraphElementPresenter(
-                    graphView,
-                    selectable => selectable is Node node ? nodes[nodeViews.Reverse[node]].gameObject : null,
-                    obj =>
-                    {
-                        var nodeComponent = obj is GameObject node ? node.GetComponent<TNodeComponent>() : null;
-                        return nodeComponent == null ? null : nodeViews[nodes.Reverse[nodeComponent]];
-                    });
-            });
+                var nodes = container.Resolve<Func<NodeId, INodeComponent>>();
+                return (in NodeId id, Vector2 position) => nodes(id).Position = position;
+            }).AsSelf();
+            OverrideEdgeCompatibleFunc();
+
+            typeContainers.GetTypeContainer<SyncSelectionGraphElementPresenter>().Register<PrefabNodeSelectionConvertor<NodeId, Node, TNodeComponent>>().Singleton().AsSelf().AsInterfaces();
+
+            void OverrideEdgeCompatibleFunc()
+            {
+                var graphContainer = typeContainers.GetTypeContainer(typeof(IGraphViewFactory));
+                graphContainer.Register<IsEdgeCompatibleFunc>((resolveContainer, contractType) =>
+                {
+                    var graph = container.Resolve<GameObjectNodes<TNode, TNodeComponent>>();
+                    var ports = container.Resolve<IReadOnlyDictionary<PortId, PortData>>();
+                    var isRuntimePortCompatible = EdgeFunctions.CreateIsCompatibleFunc(graph.Runtime, ports);
+                    return (in PortId input, in PortId output) =>
+                        isRuntimePortCompatible(input, output) && graph.IsPortCompatible(input, output)
+                    ;
+                }).AsSelf();
+            }
         }
     }
 }

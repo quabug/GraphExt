@@ -1,5 +1,26 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8977233964219679838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daff2ae279b345d29db328108eed3faf, type: 3}
+  m_Name: AddNode
+  m_EditorClassIdentifier: 
+  _serializableEdges: []
+  _nodeId: 484420c5-f59d-4780-85f3-3d761d63da1b
+  Position: {x: 414.0379, y: 813.04095}
+  Node:
+    id: 0
+  references:
+    version: 1
+    00000000:
+      type: {class: AddNode, ns: , asm: GraphExt.Sample.ExpressionTree}
 --- !u!114 &-8891988508144603520
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20,12 +41,6 @@ MonoBehaviour:
     OutputPort: _Output
     OutputPortId: out
   - InputNode: c7779fc2-220a-44f6-abf6-505dc43c8874
-    InputPort: _Input
-    InputPortId: in
-    OutputNode: 0c7dbd37-8a69-4934-9090-937b630ca0ec
-    OutputPort: _Output
-    OutputPortId: out
-  - InputNode: 72301d28-f1f7-47c0-8b10-d30ce2dddf02
     InputPort: _Input
     InputPortId: in
     OutputNode: 0c7dbd37-8a69-4934-9090-937b630ca0ec
@@ -194,13 +209,11 @@ MonoBehaviour:
   - {fileID: -1247446891406236091}
   - {fileID: -8891988508144603520}
   - {fileID: -2860794719236708957}
-  - {fileID: 8025334357114015468}
-  - {fileID: 7873956427524371472}
   - {fileID: 4434003870966471204}
   - {fileID: 1106695303647892279}
   - {fileID: 2021395607904723682}
   - {fileID: -449491364422697331}
-  - {fileID: 2997117028499224620}
+  - {fileID: -8977233964219679838}
 --- !u!114 &1106695303647892279
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -215,12 +228,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _serializableEdges:
   - InputNode: 1ad99ed4-25ae-43a6-bbe1-dae8e2e839fd
-    InputPort: _Input
-    InputPortId: in
-    OutputNode: cef45184-d49d-4e61-b635-cd0b0567a750
-    OutputPort: _Output
-    OutputPortId: out
-  - InputNode: 3d684fa3-5434-4af2-a497-571f8cba9a1c
     InputPort: _Input
     InputPortId: in
     OutputNode: cef45184-d49d-4e61-b635-cd0b0567a750
@@ -273,29 +280,6 @@ MonoBehaviour:
     version: 1
     00000000:
       type: {class: AddNode, ns: , asm: GraphExt.Sample.ExpressionTree}
---- !u!114 &2997117028499224620
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: daff2ae279b345d29db328108eed3faf, type: 3}
-  m_Name: ValueNode
-  m_EditorClassIdentifier: 
-  _serializableEdges: []
-  _nodeId: 4a598e95-5c83-4534-99f9-04ccf75fc3d7
-  Position: {x: 394, y: 618}
-  Node:
-    id: 0
-  references:
-    version: 1
-    00000000:
-      type: {class: ValueNode, ns: , asm: GraphExt.Sample.ExpressionTree}
-      data:
-        Value: 0
 --- !u!114 &4434003870966471204
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -325,7 +309,7 @@ MonoBehaviour:
       type: {class: ValueNode, ns: , asm: GraphExt.Sample.ExpressionTree}
       data:
         Value: 0
---- !u!114 &7873956427524371472
+--- !u!114 &8394921634437779992
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -334,52 +318,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: daff2ae279b345d29db328108eed3faf, type: 3}
-  m_Name: ValueNode
+  m_Script: {fileID: 11500000, guid: 5b337b2087ee4508b6034f89b64fdc16, type: 3}
+  m_Name: Note
   m_EditorClassIdentifier: 
-  _serializableEdges:
-  - InputNode: 3d684fa3-5434-4af2-a497-571f8cba9a1c
-    InputPort: _Input
-    InputPortId: in
-    OutputNode: cef45184-d49d-4e61-b635-cd0b0567a750
-    OutputPort: _Output
-    OutputPortId: out
-  _nodeId: 3d684fa3-5434-4af2-a497-571f8cba9a1c
-  Position: {x: 580, y: 481.5}
-  Node:
-    id: 0
-  references:
-    version: 1
-    00000000:
-      type: {class: ValueNode, ns: , asm: GraphExt.Sample.ExpressionTree}
-      data:
-        Value: 0
---- !u!114 &8025334357114015468
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: daff2ae279b345d29db328108eed3faf, type: 3}
-  m_Name: ValueNode
-  m_EditorClassIdentifier: 
-  _serializableEdges:
-  - InputNode: 72301d28-f1f7-47c0-8b10-d30ce2dddf02
-    InputPort: _Input
-    InputPortId: in
-    OutputNode: 0c7dbd37-8a69-4934-9090-937b630ca0ec
-    OutputPort: _Output
-    OutputPortId: out
-  _nodeId: 72301d28-f1f7-47c0-8b10-d30ce2dddf02
-  Position: {x: 576.5, y: 634}
-  Node:
-    id: 0
-  references:
-    version: 1
-    00000000:
-      type: {class: ValueNode, ns: , asm: GraphExt.Sample.ExpressionTree}
-      data:
-        Value: 0
+  _id: c53c98cf-7f2f-478a-9a70-d2637186b6f0
+  Data:
+    X: 23.1306
+    Y: 627.9961
+    Width: 200
+    Height: 200
+    Title: Note
+    Content: 
+    Theme: 1
+    FontSize: 0

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using OneShot;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
@@ -23,10 +22,10 @@ namespace GraphExt.Editor
 
         public void Install(Container container, TypeContainers typeContainers)
         {
-            container.RegisterInstance(GraphViewFactory);
-            container.RegisterInstance(NodeViewFactory);
-            container.RegisterInstance(PortViewFactory);
-            container.RegisterInstance(EdgeViewFactory);
+            container.RegisterInstance(GraphViewFactory).AsInterfaces();
+            container.RegisterInstance(NodeViewFactory).AsInterfaces();
+            container.RegisterInstance(PortViewFactory).AsInterfaces();
+            container.RegisterInstance(EdgeViewFactory).AsInterfaces();
 
             RegisterGraphView(container, typeContainers);
 
@@ -37,8 +36,7 @@ namespace GraphExt.Editor
 
             RegisterNodeViewPresenter(container, typeContainers);
             RegisterEdgeViewPresenter(container, typeContainers);
-            container.RegisterSingleton<ElementMovedEventEmitter>();
-            container.RegisterSingleton<IWindowSystem>(container.Resolve<ElementMovedEventEmitter>);
+            container.Register<ElementMovedEventEmitter>().Singleton().AsSelf().As<IWindowSystem>();
         }
 
         void RegisterGraphView(Container container, TypeContainers typeContainers)
@@ -52,57 +50,58 @@ namespace GraphExt.Editor
 
             Func<GraphRuntime<TNode>, IReadOnlyDictionary<PortId, PortData>, IsEdgeCompatibleFunc>
                 isCompatible = EdgeFunctions.CreateIsCompatibleFunc;
-            graphContainer.RegisterSingleton(() => graphContainer.Call<IsEdgeCompatibleFunc>(isCompatible));
+            graphContainer.Register((resolveContainer, contractType) => graphContainer.Call<IsEdgeCompatibleFunc>(isCompatible)).AsSelf();
 
             Func<IReadOnlyDictionary<Port, PortId>, IsEdgeCompatibleFunc, GraphView.FindCompatiblePorts>
                 findCompatible = EdgeFunctions.CreateFindCompatiblePortsFunc;
-            graphContainer.RegisterSingleton(() => graphContainer.Call<GraphView.FindCompatiblePorts>(findCompatible));
+            graphContainer.Register((resolveContainer, contractType) => graphContainer.Call<GraphView.FindCompatiblePorts>(findCompatible)).AsSelf();
 
-            graphContainer.RegisterSingleton(() =>
+            graphContainer.Register((resolveContainer, contractType) =>
             {
                 Func<GraphView.FindCompatiblePorts, GraphView> create = graphContainer.Resolve<IGraphViewFactory>().Create;
                 return graphContainer.Call<GraphView>(create);
-            });
-            container.Register<UnityEditor.Experimental.GraphView.GraphView>(graphContainer.Resolve<GraphView>);
+            }).Singleton().AsSelf().As<UnityEditor.Experimental.GraphView.GraphView>();
+
+            container.Register((resolverContainer, contractType) => graphContainer.Resolve<UnityEditor.Experimental.GraphView.GraphView>()).Singleton().AsSelf();
         }
 
         void RegisterNodeViewPresenter(Container container, TypeContainers typeContainers)
         {
             var presenterContainer = typeContainers.CreateSystemContainer(container, typeof(NodeViewPresenter));
 
-            presenterContainer.RegisterSingleton<ConvertToNodeData>(() => NodeDataConvertor.ToNodeData(
+            presenterContainer.Register<ConvertToNodeData>((resolveContainer, contractType) => NodeDataConvertor.ToNodeData(
                 presenterContainer.Resolve<IReadOnlyDictionary<NodeId, TNode>>(),
                 presenterContainer.Resolve<IReadOnlyDictionary<NodeId, Vector2>>()
-            ));
+            )).AsSelf();
 
-            presenterContainer.RegisterSingleton<FindPortData>(() => PortDataConvertor.FindPorts(
+            presenterContainer.Register<FindPortData>((resolveContainer, contractType) => PortDataConvertor.FindPorts(
                 presenterContainer.Resolve<IReadOnlyDictionary<NodeId, TNode>>()
-            ));
+            )).AsSelf();
 
             // TODO: RX?
-            presenterContainer.RegisterSingleton(() =>
+            presenterContainer.Register((resolveContainer, contractType) =>
             {
                 var graphRuntime = presenterContainer.Resolve<GraphRuntime<TNode>>();
                 var added = new NodeViewPresenter.NodeAddedEvent();
                 graphRuntime.OnNodeAdded += (in NodeId id, TNode _) => added.Event?.Invoke(id);
                 return added;
-            });
+            }).AsSelf();
 
-            presenterContainer.RegisterSingleton(() =>
+            presenterContainer.Register((resolveContainer, contractType) =>
             {
                 var graphRuntime = presenterContainer.Resolve<GraphRuntime<TNode>>();
                 var deleted = new NodeViewPresenter.NodeDeletedEvent();
                 graphRuntime.OnNodeWillDelete += (in NodeId id, TNode _) => deleted.Event?.Invoke(id);
                 return deleted;
-            });
+            }).AsSelf();
         }
 
         void RegisterEdgeViewPresenter(Container container, TypeContainers typeContainers)
         {
             var presenterContainer = typeContainers.CreateSystemContainer(container, typeof(EdgeViewInitializer), typeof(EdgeViewObserver), typeof(EdgeRuntimeObserver<TNode>));
-            presenterContainer.Register<IEnumerable<EdgeId>>(() => container.Resolve<GraphRuntime<TNode>>().Edges);
-            presenterContainer.RegisterSingleton(() => EdgeFunctions.Connect(presenterContainer.Resolve<GraphRuntime<TNode>>()));
-            presenterContainer.RegisterSingleton(() => EdgeFunctions.Disconnect(presenterContainer.Resolve<GraphRuntime<TNode>>()));
+            presenterContainer.Register<IEnumerable<EdgeId>>((resolveContainer, contractType) => container.Resolve<GraphRuntime<TNode>>().Edges).AsSelf();
+            presenterContainer.Register((resolveContainer, contractType) => EdgeFunctions.Connect(presenterContainer.Resolve<GraphRuntime<TNode>>())).AsSelf();
+            presenterContainer.Register((resolveContainer, contractType) => EdgeFunctions.Disconnect(presenterContainer.Resolve<GraphRuntime<TNode>>())).AsSelf();
         }
     }
 }

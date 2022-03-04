@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using OneShot;
 using UnityEditor.Experimental.SceneManagement;
 using UnityEngine;
 
@@ -31,15 +30,15 @@ namespace GraphExt.Editor
             {
                 _Container = new Container();
                 var graphBackend = new GameObjectNodes<TNode, TComponent>(prefabStage.prefabContentsRoot);
-                _Container.RegisterInstance(graphBackend);
-                _Container.RegisterInstance(prefabStage);
-                _Container.RegisterInstance(prefabStage.prefabContentsRoot);
+                _Container.RegisterInstance(graphBackend).AsSelf();
+                _Container.RegisterInstance(prefabStage).AsSelf();
+                _Container.RegisterInstance(prefabStage.prefabContentsRoot).AsSelf();
                 _Container.RegisterSerializableGraphBackend(graphBackend);
-                _Container.Register<Func<NodeId, INodeComponent>>(() =>
+                _Container.Register<Func<NodeId, INodeComponent>>((resolveContainer, contractType) =>
                 {
                     var nodes = _Container.Resolve<IReadOnlyDictionary<NodeId, TComponent>>();
                     return id => nodes[id];
-                });
+                }).AsSelf();
                 base.Recreate();
             }
         }
