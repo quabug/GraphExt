@@ -1,4 +1,5 @@
 ﻿using UnityEditor.Experimental.GraphView;
+using UnityEngine;
 
 #if UNITY_EDITOR
 
@@ -13,6 +14,7 @@ namespace GraphExt.Editor
             base.Install(container, typeContainers);
             var presenterContainer = typeContainers.GetTypeContainer(typeof(SyncSelectionGraphElementPresenter));
             presenterContainer.Register<ScriptableNodeSelectionConvertor<NodeId, Node, TNodeComponent>>().Singleton().AsSelf().AsInterfaces();
+            presenterContainer.Register((_, __) => container.Resolve<ScriptableObject>()).As<Object>();
         }
     }
 }

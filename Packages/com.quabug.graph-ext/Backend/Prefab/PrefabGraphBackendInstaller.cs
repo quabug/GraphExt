@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
+using UnityEditor.Experimental.SceneManagement;
 using UnityEngine;
 
 namespace GraphExt.Editor
@@ -26,7 +27,9 @@ namespace GraphExt.Editor
             }).AsSelf();
             OverrideEdgeCompatibleFunc();
 
-            typeContainers.GetTypeContainer<SyncSelectionGraphElementPresenter>().Register<PrefabNodeSelectionConvertor<NodeId, Node, TNodeComponent>>().Singleton().AsSelf().AsInterfaces();
+            var presenterContainer = typeContainers.GetTypeContainer<SyncSelectionGraphElementPresenter>();
+            presenterContainer.Register<PrefabNodeSelectionConvertor<NodeId, Node, TNodeComponent>>().Singleton().AsSelf().AsInterfaces();
+            presenterContainer.Register((_, __) => container.Resolve<PrefabStage>().prefabContentsRoot).As<UnityEngine.Object>();
 
             void OverrideEdgeCompatibleFunc()
             {

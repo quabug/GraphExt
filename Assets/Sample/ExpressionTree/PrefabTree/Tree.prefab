@@ -100,7 +100,7 @@ MonoBehaviour:
   _node:
     id: 0
   _nodeId: f71ed45f-2b5e-4bbd-85dd-76205f815043
-  _Position: {x: 1018.5, y: 530}
+  _Position: {x: 1034.5, y: 537}
   _flatEdges:
     _serializableEdges: []
   references:
@@ -351,7 +351,7 @@ MonoBehaviour:
   _node:
     id: 0
   _nodeId: 8513ccb8-dd23-4dc3-9fc2-a3d9fa6201d9
-  _Position: {x: 1211.5, y: 530}
+  _Position: {x: 1220.5, y: 546}
   _flatEdges:
     _serializableEdges: []
   references:
