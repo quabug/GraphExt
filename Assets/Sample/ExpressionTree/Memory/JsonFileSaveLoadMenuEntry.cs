@@ -1,6 +1,8 @@
-﻿using System;
+﻿#if UNITY_EDITOR
+
+using System;
+using GraphExt;
 using GraphExt.Editor;
-using OneShot;
 using UnityEngine;
 
 public class JsonFileSaveLoadMenuEntry : IMenuEntryInstaller
@@ -10,9 +12,8 @@ public class JsonFileSaveLoadMenuEntry : IMenuEntryInstaller
     public void Install(Container container)
     {
         var child = container.CreateChildContainer();
-        child.RegisterInstance<Action<TextAsset>>(json => JsonFile = json);
-        child.RegisterSingleton<MemorySaveLoadMenu<IVisualNode>>();
-        container.Register<IMenuEntry>(() => child.Resolve<MemorySaveLoadMenu<IVisualNode>>());
+        child.RegisterInstance<Action<TextAsset>>(json => JsonFile = json).AsSelf();
+        child.Register<MemorySaveLoadMenu<IVisualNode>>().As<IMenuEntry>();
         if (JsonFile != null)
         {
             var (graphRuntime, nodePositions, notes) = JsonEditorUtility.Deserialize<IVisualNode>(JsonFile.text);
@@ -22,3 +23,5 @@ public class JsonFileSaveLoadMenuEntry : IMenuEntryInstaller
         }
     }
 }
+
+#endif

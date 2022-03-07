@@ -1,5 +1,6 @@
+#if UNITY_EDITOR
+
 using System.Collections.Generic;
-using OneShot;
 using UnityEngine;
 
 namespace GraphExt.Editor
@@ -13,3 +14,5 @@ namespace GraphExt.Editor
         }
     }
 }
+
+#endif

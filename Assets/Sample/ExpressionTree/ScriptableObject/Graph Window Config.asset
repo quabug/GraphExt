@@ -42,12 +42,12 @@ MonoBehaviour:
         EdgeViewFactory:
           id: 10
     00000002:
+      type: {class: VisualScriptableObjectInstaller, ns: , asm: GraphExt.Sample.ExpressionTree}
+    00000003:
       type: {class: ScriptableObjectStickyNoteGraphInstaller, ns: GraphExt.Editor, asm: GraphExt.StickyNote}
       data:
         ViewFactory: GraphExt.Editor.DefaultStickyNoteViewFactory, GraphExt.StickyNote,
           Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    00000003:
-      type: {class: VisualScriptableObjectInstaller, ns: , asm: GraphExt.Sample.ExpressionTree}
     00000004:
       type: {class: InitializeScriptableObjectNodePositionInstaller, ns: GraphExt.Editor, asm: GraphExt.ScriptableObject}
     00000005:

@@ -8,15 +8,15 @@ using UnityEngine.UIElements;
 namespace GraphExt.Editor
 {
     [UsedImplicitly]
-    public class MenuBuilder : IDisposable
+    public class MenuBuilder
     {
         [NotNull] private readonly UnityEditor.Experimental.GraphView.GraphView _graphView;
         [NotNull] private readonly IMenuEntry[] _entries;
 
-        public MenuBuilder([NotNull] UnityEditor.Experimental.GraphView.GraphView graphView, [NotNull] IMenuEntry[] entries)
+        public MenuBuilder([NotNull] UnityEditor.Experimental.GraphView.GraphView graphView, IMenuEntry[] entries = null)
         {
             _graphView = graphView;
-            _entries = entries;
+            _entries = entries ?? Array.Empty<IMenuEntry>();
             graphView.RegisterCallback<ContextualMenuPopulateEvent>(OnContextualMenu);
         }
 
@@ -30,11 +30,6 @@ namespace GraphExt.Editor
             popup.showTooltip = false;
             popup.resizeToContent = true;
             popup.Show(evt.mousePosition);
-        }
-
-        public void Dispose()
-        {
-            foreach (var entry in _entries.OfType<IDisposable>()) entry.Dispose();
         }
     }
 }

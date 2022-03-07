@@ -15,7 +15,7 @@ namespace GraphExt
         public NodeId this[[NotNull] TNodeScriptableObject node] => _nodesCache.GetKey(node);
 
         [SerializeField, HideInInspector] private List<TNodeScriptableObject> _nodes = new List<TNodeScriptableObject>();
-        public IReadOnlyList<TNodeScriptableObject> Nodes => _nodes;
+        public IEnumerable<TNodeScriptableObject> Nodes => _nodes;
         public IReadOnlyBiDictionary<NodeId, TNodeScriptableObject> NodeMap => _nodesCache;
 
 #if UNITY_EDITOR

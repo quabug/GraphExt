@@ -1,7 +1,6 @@
 #if UNITY_EDITOR
 
 using System.Collections.Generic;
-using OneShot;
 using UnityEngine;
 
 namespace GraphExt.Editor
@@ -13,7 +12,7 @@ namespace GraphExt.Editor
         public void Install(Container container, TypeContainers typeContainers)
         {
             var graphContainer = typeContainers.GetTypeContainer(typeof(IGraphViewFactory));
-            graphContainer.RegisterSingleton<IsEdgeCompatibleFunc>(() =>
+            graphContainer.Register<IsEdgeCompatibleFunc>((resolveContainer, contractType) =>
             {
                 var graph = container.Resolve<GameObjectNodes<TNode, TComponent>>();
                 var ports = container.Resolve<IReadOnlyDictionary<PortId, PortData>>();
@@ -21,7 +20,7 @@ namespace GraphExt.Editor
                 return (in PortId input, in PortId output) =>
                     isRuntimePortCompatible(input, output) && graph.IsPortCompatible(input, output)
                 ;
-            });
+            }).AsSelf();
         }
     }
 }

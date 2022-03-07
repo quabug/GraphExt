@@ -1,4 +1,6 @@
-﻿using GraphExt;
+﻿#if UNITY_EDITOR
+
+using GraphExt;
 using GraphExt.Editor;
 
 public class VisualNodeMenuEntry : NodeMenuEntry<IVisualNode>
@@ -7,3 +9,5 @@ public class VisualNodeMenuEntry : NodeMenuEntry<IVisualNode>
     {
     }
 }
+
+#endif

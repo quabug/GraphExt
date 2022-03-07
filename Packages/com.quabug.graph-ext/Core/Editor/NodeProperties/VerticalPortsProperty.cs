@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using JetBrains.Annotations;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 
@@ -11,7 +15,8 @@ namespace GraphExt.Editor
         public List<INodeProperty> Ports { get; } = new List<INodeProperty>();
         public string Name { get; set; }
 
-        public class Factory : SingleNodePropertyViewFactory<VerticalPortsProperty>
+        [UsedImplicitly]
+        private class ViewFactory : SingleNodePropertyViewFactory<VerticalPortsProperty>
         {
             protected override VisualElement CreateView(Node node, VerticalPortsProperty property, INodePropertyViewFactory factory)
             {

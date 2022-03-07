@@ -1,5 +1,4 @@
 using System.Linq;
-using OneShot;
 
 namespace GraphExt.Editor
 {
@@ -10,7 +9,7 @@ namespace GraphExt.Editor
         public void Install(Container container, TypeContainers typeContainers)
         {
             var presenterContainer = typeContainers.GetTypeContainer(typeof(NodeViewPresenter));
-            presenterContainer.RegisterSingleton<FindPortData>(() =>
+            presenterContainer.Register<FindPortData>((resolveContainer, contractType) =>
             {
                 var nodes = presenterContainer.Resolve<IReadOnlyBiDictionary<NodeId, TNode>>();
                 return (in NodeId nodeId) =>
@@ -23,7 +22,7 @@ namespace GraphExt.Editor
                         return portData;
                     });
                 };
-            });
+            }).AsSelf();
         }
     }
 }

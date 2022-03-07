@@ -1,20 +1,17 @@
 ﻿#if UNITY_EDITOR
 
-using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace GraphExt.Editor
 {
-    public class PrefabStickyNoteSystem : StickyNoteSystem
+    public class PrefabStickyNoteSystem : StickyNoteSystem<StickyNoteComponent>
     {
         [NotNull] private readonly GameObject _root;
 
-        private readonly Dictionary<StickyNoteId, StickyNoteComponent> _notes =
-            new Dictionary<StickyNoteId, StickyNoteComponent>();
-
-        public IReadOnlyDictionary<StickyNoteId, StickyNoteComponent> StickyNotes => _notes;
+        private readonly BiDictionary<StickyNoteId, StickyNoteComponent> _notes = new BiDictionary<StickyNoteId, StickyNoteComponent>();
+        public override IReadOnlyBiDictionary<StickyNoteId, StickyNoteComponent> StickyNotes => _notes;
 
         public PrefabStickyNoteSystem(
             [NotNull] StickyNotePresenter presenter,

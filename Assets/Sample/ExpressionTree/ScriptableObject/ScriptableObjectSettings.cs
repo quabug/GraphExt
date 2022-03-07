@@ -3,6 +3,6 @@
 using GraphExt.Editor;
 
 public class VisualScriptableObjectGraphWindowExtension : ScriptableObjectGraphWindowExtension<IVisualNode, VisualNodeScriptableObject> {}
-public class VisualScriptableObjectInstaller : SerializableGraphBackendInstaller<IVisualNode, VisualNodeScriptableObject> {}
+public class VisualScriptableObjectInstaller : ScriptableObjectGraphBackendInstaller<IVisualNode, VisualNodeScriptableObject> {}
 
 #endif

@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Annotations;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 
@@ -20,15 +21,21 @@ namespace GraphExt.Editor
 
         private event Action<string> TitleChanged;
 
-        class View : TitleLabel
+        public class View : TitleLabel
         {
             public View(EventTitleProperty property) : base(property.Title)
             {
-                property.TitleChanged += title => text = title;
+                property.TitleChanged += title =>
+                {
+                    var displayStyle = title == null ? DisplayStyle.None : DisplayStyle.Flex;
+                    style.display = new StyleEnum<DisplayStyle>(displayStyle);
+                    text = title;
+                };
             }
         }
 
-        public class ViewFactory : SingleNodePropertyViewFactory<EventTitleProperty>
+        [UsedImplicitly]
+        private class ViewFactory : SingleNodePropertyViewFactory<EventTitleProperty>
         {
             protected override VisualElement CreateView(Node node, EventTitleProperty property, INodePropertyViewFactory factory)
             {

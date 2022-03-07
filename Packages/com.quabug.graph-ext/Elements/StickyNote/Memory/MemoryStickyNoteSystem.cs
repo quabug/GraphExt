@@ -6,10 +6,10 @@ using UnityEditor.Experimental.GraphView;
 
 namespace GraphExt.Editor
 {
-    public class MemoryStickyNoteSystem : StickyNoteSystem
+    public class MemoryStickyNoteSystem : StickyNoteSystem<StickyNoteData>
     {
-        private readonly Dictionary<StickyNoteId, StickyNoteData> _stickyNotes = new Dictionary<StickyNoteId, StickyNoteData>();
-        public IReadOnlyDictionary<StickyNoteId, StickyNoteData> StickyNotes => _stickyNotes;
+        private readonly BiDictionary<StickyNoteId, StickyNoteData> _stickyNotes = new BiDictionary<StickyNoteId, StickyNoteData>();
+        public override IReadOnlyBiDictionary<StickyNoteId, StickyNoteData> StickyNotes => _stickyNotes;
 
         public MemoryStickyNoteSystem(
             [NotNull] StickyNotePresenter presenter,

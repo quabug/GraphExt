@@ -1,32 +1,60 @@
+#if UNITY_EDITOR
+
 using System;
 using System.Collections.Generic;
-using OneShot;
 using UnityEditor.Experimental.GraphView;
 
 namespace GraphExt.Editor
 {
     [Serializable]
-    public class StickyNoteGraphInstaller<TStickyNoteSystem> : IGraphInstaller
-        where TStickyNoteSystem : StickyNoteSystem
+    public class StickyNoteGraphInstaller<TStickyNoteSystem, TStickyNoteData> : IGraphInstaller
+        where TStickyNoteSystem : StickyNoteSystem<TStickyNoteData>
     {
         [SerializedType(typeof(IStickyNoteViewFactory), Nullable = false, InstantializableType = true, RenamePatter = @"\w*\.||")]
         public string ViewFactory = typeof(DefaultStickyNoteViewFactory).AssemblyQualifiedName;
 
-        public void Install(Container container, TypeContainers typeContainers)
+        public virtual void Install(Container container, TypeContainers typeContainers)
         {
             container.RegisterTypeNameSingleton<IStickyNoteViewFactory>(ViewFactory);
-            container.RegisterSingleton<TStickyNoteSystem>();
-            container.Register<StickyNoteSystem>(container.Resolve<TStickyNoteSystem>);
+            container.Register<TStickyNoteSystem>().Singleton().AsSelf().As<StickyNoteSystem<TStickyNoteData>>();
+            container.Register((_, __) => container.Resolve<TStickyNoteSystem>().StickyNotes).As<IReadOnlyBiDictionary<StickyNoteId, TStickyNoteData>>();
             container.RegisterBiDictionaryInstance(new BiDictionary<StickyNoteId, StickyNote>());
             container.RegisterDictionaryInstance(new Dictionary<StickyNoteId, StickyNoteData>());
-            container.RegisterSingleton<StickyNotePresenter>();
-            container.Register<IWindowSystem>(container.Resolve<StickyNotePresenter>);
-            container.Register<AddNote>(() => container.Resolve<TStickyNoteSystem>().AddNote);
-            container.Register<RemoveNoteView>(() => container.Resolve<TStickyNoteSystem>().RemoveNote);
+            container.Register<StickyNotePresenter>().Singleton().AsSelf().As<IWindowSystem>();
+            container.Register<AddNote>((resolveContainer, contractType) => container.Resolve<TStickyNoteSystem>().AddNote).AsSelf();
+            container.Register<RemoveNoteView>((resolveContainer, contractType) => container.Resolve<TStickyNoteSystem>().RemoveNote).AsSelf();
         }
     }
 
-    public class MemoryStickyNoteGraphInstaller : StickyNoteGraphInstaller<MemoryStickyNoteSystem> {}
-    public class PrefabStickyNoteGraphInstaller : StickyNoteGraphInstaller<PrefabStickyNoteSystem> {}
-    public class ScriptableObjectStickyNoteGraphInstaller : StickyNoteGraphInstaller<ScriptableObjectStickyNoteSystem> {}
+    public class MemoryStickyNoteGraphInstaller : StickyNoteGraphInstaller<MemoryStickyNoteSystem, StickyNoteData> {}
+
+    public class PrefabStickyNoteGraphInstaller : StickyNoteGraphInstaller<PrefabStickyNoteSystem, StickyNoteComponent>
+    {
+        public override void Install(Container container, TypeContainers typeContainers)
+        {
+            base.Install(container, typeContainers);
+            typeContainers.GetTypeContainer<SyncSelectionGraphElementPresenter>()
+                .Register<PrefabNodeSelectionConvertor<StickyNoteId, StickyNote, StickyNoteComponent>>()
+                .Singleton()
+                .AsSelf()
+                .AsInterfaces()
+            ;
+        }
+    }
+
+    public class ScriptableObjectStickyNoteGraphInstaller : StickyNoteGraphInstaller<ScriptableObjectStickyNoteSystem, StickyNoteScriptableObject>
+    {
+        public override void Install(Container container, TypeContainers typeContainers)
+        {
+            base.Install(container, typeContainers);
+            typeContainers.GetTypeContainer<SyncSelectionGraphElementPresenter>()
+                .Register<ScriptableNodeSelectionConvertor<StickyNoteId, StickyNote, StickyNoteScriptableObject>>()
+                .Singleton()
+                .AsSelf()
+                .AsInterfaces()
+            ;
+        }
+    }
 }
+
+#endif

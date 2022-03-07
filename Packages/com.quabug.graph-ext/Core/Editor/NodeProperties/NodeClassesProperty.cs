@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using UnityEditor.Experimental.GraphView;
+﻿using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 
 namespace GraphExt.Editor
@@ -9,7 +7,7 @@ namespace GraphExt.Editor
     {
         public int Order { get; set; } = 0;
         public string[] AdditionalClasses { get; }
-        public NodeClassesProperty(IEnumerable<string> classes) => AdditionalClasses = classes.ToArray();
+        public NodeClassesProperty(params string[] classes) => AdditionalClasses = classes;
 
         public class ViewFactory : SingleNodePropertyViewFactory<NodeClassesProperty>
         {

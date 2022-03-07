@@ -12,9 +12,9 @@ namespace GraphExt.Editor
             name = "title-property";
             style.height = 40;
             style.flexGrow = 1;
-            style.unityTextAlign = new StyleEnum<TextAnchor>(TextAnchor.MiddleCenter);
-            style.fontSize = new StyleLength(14);
-            style.unityFontStyleAndWeight = new StyleEnum<FontStyle>(FontStyle.Bold);
+            style.unityTextAlign = TextAnchor.MiddleCenter;
+            style.fontSize = 14;
+            style.unityFontStyleAndWeight = FontStyle.Bold;
         }
     }
 }

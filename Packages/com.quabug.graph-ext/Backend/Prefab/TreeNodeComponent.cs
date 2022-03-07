@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using GraphExt.Editor;
 using UnityEngine;
 
 namespace GraphExt
@@ -16,14 +14,20 @@ namespace GraphExt
         where TNode : ITreeNode<GraphRuntime<TNode>>
         where TComponent : TreeNodeComponent<TNode, TComponent>
     {
-        [SerializeReference, NodeProperty(CustomFactory = typeof(InnerNodeProperty.Factory))]
+        [SerializeReference]
+#if UNITY_EDITOR
+        [NodeProperty(CustomFactory = typeof(Editor.InnerNodeProperty.Factory))]
+#endif
         protected TNode _node;
         public TNode Node { get => _node; set => _node = value; }
 
         [SerializeField, HideInInspector] private string _nodeId;
         public NodeId Id { get => Guid.Parse(_nodeId); set => _nodeId = value.ToString(); }
 
-        [SerializeField, NodeProperty(CustomFactory = typeof(NodeSerializedPositionProperty.Factory))]
+        [SerializeField]
+#if UNITY_EDITOR
+        [NodeProperty(CustomFactory = typeof(Editor.NodeSerializedPositionProperty.Factory))]
+#endif
         protected Vector2 _Position;
         public Vector2 Position { get => _Position; set => _Position = value; }
 

@@ -12,11 +12,12 @@ namespace GraphExt
     {
         public static bool IsTreePort<TNode>([NotNull] this GraphRuntime<TNode> graph, in PortId port) where TNode : INode<GraphRuntime<TNode>>
         {
-            return graph[port.NodeId] is ITreeNode<GraphRuntime<TNode>> node &&
-                   (port.Name == node.InputPortName || port.Name == node.OutputPortName);
+            graph.NodeMap.TryGetValue(port.NodeId, out var node);
+            return node is ITreeNode<GraphRuntime<TNode>> treeNode &&
+                   (port.Name == treeNode.InputPortName || port.Name == treeNode.OutputPortName);
         }
 
-        public static bool IsTreeEdge<TNode>([NotNull] this GraphRuntime<TNode> graph, in EdgeId edge) where TNode : ITreeNode<GraphRuntime<TNode>>
+        public static bool IsTreeEdge<TNode>([NotNull] this GraphRuntime<TNode> graph, in EdgeId edge) where TNode : INode<GraphRuntime<TNode>>
         {
             return graph.IsTreePort(edge.Input) && graph.IsTreePort(edge.Output);
         }

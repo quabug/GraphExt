@@ -1,6 +1,4 @@
 using System;
-using System.Linq;
-using OneShot;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -44,17 +42,15 @@ namespace GraphExt.Editor
 
         public void Clear()
         {
-            _MenuBuilder?.Dispose();
-            _MenuBuilder = null;
-            _Systems?.Dispose();
-            _Systems = null;
             _Container?.Dispose();
             _Container = null;
+            _Systems = null;
+            _MenuBuilder = null;
         }
 
         protected void Install(Container container, TypeContainers typeContainers)
         {
-            container.RegisterInstance(this);
+            container.RegisterInstance(this).AsSelf();
             container.RegisterTypeNameArraySingleton<IWindowSystem>(AdditionalWindowSystems);
             foreach (var installer in Installers) installer.Install(container, typeContainers);
             foreach (var installer in MenuEntries) installer.Install(container);
@@ -77,31 +73,6 @@ namespace GraphExt.Editor
             _Systems = container.Instantiate<WindowSystems>();
             _MenuBuilder = container.Instantiate<MenuBuilder>();
             _Systems.Initialize();
-        }
-
-        protected class WindowSystems : IDisposable
-        {
-            private readonly IWindowSystem[] _systems;
-
-            public WindowSystems(IWindowSystem[] systems)
-            {
-                _systems = systems;
-            }
-
-            public void Initialize()
-            {
-                foreach (var system in _systems.OfType<IInitializableWindowSystem>()) system.Initialize();
-            }
-
-            public void Tick()
-            {
-                foreach (var system in _systems.OfType<ITickableWindowSystem>()) system.Tick();
-            }
-
-            public void Dispose()
-            {
-                foreach (var system in _systems.OfType<IDisposable>()) system.Dispose();
-            }
         }
     }
 }

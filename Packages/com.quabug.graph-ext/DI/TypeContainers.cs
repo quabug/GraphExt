@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using OneShot;
 
 namespace GraphExt.Editor
 {
@@ -22,6 +21,11 @@ namespace GraphExt.Editor
             return _typeContainers[type];
         }
 
+        public Container GetTypeContainer<T>()
+        {
+            return GetTypeContainer(typeof(T));
+        }
+
         public Container CreateSystemContainer(Container parent, params Type[] systemTypes)
         {
             var systemContainer = parent.CreateChildContainer();
@@ -29,8 +33,8 @@ namespace GraphExt.Editor
             {
                 if (!typeof(IWindowSystem).IsAssignableFrom(type)) throw new ArgumentException();
                 _typeContainers.Add(type, systemContainer);
-                systemContainer.RegisterSingleton(type);
-                parent.Register(() => (IWindowSystem) systemContainer.Resolve(type));
+                systemContainer.Register(type).Singleton().AsSelf();
+                parent.Register((_, __) => (IWindowSystem)systemContainer.Resolve(type)).As<IWindowSystem>();
             }
             return systemContainer;
         }

@@ -33,13 +33,13 @@ namespace GraphExt.Editor
             {
                 menu.AddItem(new GUIContent("Delete"), false, () =>
                 {
-                    foreach (var edge in edges)
+                    foreach (var edge in edges.ToArray())
                     {
                         var edgeId = _edges[edge];
                         _graph.Disconnect(input: edgeId.Input, output: edgeId.Output);
                     }
 
-                    foreach (var node in nodes)
+                    foreach (var node in nodes.ToArray())
                     {
                         _graph.DeleteNode(_nodes[node]);
                     }

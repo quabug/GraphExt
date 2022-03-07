@@ -8,10 +8,11 @@ namespace GraphExt.Editor
     public delegate void AddNote(in StickyNoteId id, StickyNoteData data);
     public delegate void RemoveNoteView(StickyNote view);
 
-    public abstract class StickyNoteSystem
+    public abstract class StickyNoteSystem<TStickyNoteData>
     {
         public BiDictionary<StickyNoteId, StickyNote> NoteViews { get; }
         public StickyNotePresenter StickyNotePresenter { get; }
+        public abstract IReadOnlyBiDictionary<StickyNoteId, TStickyNoteData> StickyNotes { get; }
 
         public StickyNoteSystem(
             [NotNull] StickyNotePresenter presenter,

@@ -1,6 +1,4 @@
-﻿using OneShot;
-
-namespace GraphExt.Editor
+﻿namespace GraphExt.Editor
 {
     public class TypeNameMenuEntriesInstaller : IMenuEntryInstaller
     {
