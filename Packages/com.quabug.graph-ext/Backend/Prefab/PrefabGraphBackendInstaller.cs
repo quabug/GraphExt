@@ -31,6 +31,8 @@ namespace GraphExt.Editor
             presenterContainer.Register<PrefabNodeSelectionConvertor<NodeId, Node, TNodeComponent>>().Singleton().AsSelf().AsInterfaces();
             presenterContainer.Register((_, __) => container.Resolve<PrefabStage>().prefabContentsRoot).As<UnityEngine.Object>();
 
+            container.Register<NodeHierarchyObserver<TNode, TNodeComponent>>().Singleton().As<IWindowSystem>();
+
             void OverrideEdgeCompatibleFunc()
             {
                 var graphContainer = typeContainers.GetTypeContainer(typeof(IGraphViewFactory));

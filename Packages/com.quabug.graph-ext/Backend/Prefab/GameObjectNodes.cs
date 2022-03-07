@@ -12,7 +12,7 @@ namespace GraphExt
     {
         public GraphRuntime<TNode> Runtime { get; }
 
-        protected readonly GameObject _Root;
+        public GameObject Root { get; }
         protected readonly BiDictionary<NodeId, TComponent> _NodeObjectMap = new BiDictionary<NodeId, TComponent>();
 
         [NotNull] public TComponent this[in NodeId id] => _NodeObjectMap[id];
@@ -28,7 +28,7 @@ namespace GraphExt
 
         public GameObjectNodes([NotNull] GameObject root)
         {
-            _Root = root;
+            Root = root;
             Runtime = new GraphRuntime<TNode>();
             var nodes = root.GetComponentsInChildren<TComponent>();
             foreach (var node in nodes)
@@ -62,7 +62,7 @@ namespace GraphExt
             ;
         }
 
-        protected void AddNode(TComponent node)
+        public void AddNode(TComponent node)
         {
             _NodeObjectMap[node.Id] = node;
 #if UNITY_EDITOR
@@ -87,7 +87,7 @@ namespace GraphExt
             if (!_NodeObjectMap.ContainsKey(id))
             {
                 var nodeObject = new GameObject(node.GetType().Name);
-                nodeObject.transform.SetParent(_Root.transform);
+                nodeObject.transform.SetParent(Root.transform);
                 var nodeComponent = nodeObject.AddComponent<TComponent>();
                 nodeComponent.Id = id;
                 nodeComponent.Node = node;
