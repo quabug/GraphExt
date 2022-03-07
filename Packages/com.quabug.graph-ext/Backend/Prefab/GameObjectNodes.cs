@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -135,9 +134,10 @@ namespace GraphExt
             SavePrefab();
         }
 
-        [Conditional("UNITY_EDITOR")]
         protected void SavePrefab()
         {
+#if UNITY_EDITOR
             Editor.Utility.SavePrefabStage();
+#endif
         }
     }}

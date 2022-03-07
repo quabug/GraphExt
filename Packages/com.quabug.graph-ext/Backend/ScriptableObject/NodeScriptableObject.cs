@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using GraphExt.Editor;
 using UnityEngine;
 
 namespace GraphExt
@@ -13,13 +12,17 @@ namespace GraphExt
         [SerializeField, HideInInspector] private string _nodeId;
         public NodeId Id { get => Guid.Parse(_nodeId); set => _nodeId = value.ToString(); }
 
-        [SerializeField, NodeProperty(CustomFactory = typeof(NodeSerializedPositionProperty.Factory))]
+#if UNITY_EDITOR
+        [SerializeField, NodeProperty(CustomFactory = typeof(Editor.NodeSerializedPositionProperty.Factory))]
+#endif
         public Vector2 Position;
     }
 
     public class NodeScriptableObject<TNode> : NodeScriptableObject where TNode : INode<GraphRuntime<TNode>>
     {
-        [SerializeReference, NodeProperty(CustomFactory = typeof(InnerNodeProperty.Factory))]
+#if UNITY_EDITOR
+        [SerializeReference, NodeProperty(CustomFactory = typeof(Editor.InnerNodeProperty.Factory))]
+#endif
         public TNode Node;
 
         public IReadOnlySet<EdgeId> GetEdges(GraphRuntime<TNode> graph)
