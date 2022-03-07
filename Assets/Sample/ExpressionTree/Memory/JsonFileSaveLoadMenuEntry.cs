@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if UNITY_EDITOR
+
+using System;
 using GraphExt;
 using GraphExt.Editor;
 using UnityEngine;
@@ -21,3 +23,5 @@ public class JsonFileSaveLoadMenuEntry : IMenuEntryInstaller
         }
     }
 }
+
+#endif

@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 using System.Collections.Generic;
 using GraphExt;
 using GraphExt.Editor;
@@ -10,3 +12,5 @@ public class VisualNodeSelectionMenuEntry : SelectionEntry<IVisualNode>
     {
     }
 }
+
+#endif
