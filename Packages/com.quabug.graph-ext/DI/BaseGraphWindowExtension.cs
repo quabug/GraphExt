@@ -42,12 +42,10 @@ namespace GraphExt.Editor
 
         public void Clear()
         {
-            _MenuBuilder?.Dispose();
-            _MenuBuilder = null;
-            _Systems?.Dispose();
-            _Systems = null;
             _Container?.Dispose();
             _Container = null;
+            _Systems = null;
+            _MenuBuilder = null;
         }
 
         protected void Install(Container container, TypeContainers typeContainers)

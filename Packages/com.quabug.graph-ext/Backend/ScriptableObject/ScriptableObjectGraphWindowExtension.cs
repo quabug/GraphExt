@@ -26,6 +26,7 @@ namespace GraphExt.Editor
             if (graph == null)
             {
                 RemoveGraphView();
+                Clear();
             }
             else if (_graph != graph)
             {

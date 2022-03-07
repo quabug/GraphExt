@@ -8,7 +8,7 @@ using UnityEngine.UIElements;
 namespace GraphExt.Editor
 {
     [UsedImplicitly]
-    public class MenuBuilder : IDisposable
+    public class MenuBuilder
     {
         [NotNull] private readonly UnityEditor.Experimental.GraphView.GraphView _graphView;
         [NotNull] private readonly IMenuEntry[] _entries;
@@ -30,11 +30,6 @@ namespace GraphExt.Editor
             popup.showTooltip = false;
             popup.resizeToContent = true;
             popup.Show(evt.mousePosition);
-        }
-
-        public void Dispose()
-        {
-            foreach (var entry in _entries.OfType<IDisposable>()) entry.Dispose();
         }
     }
 }

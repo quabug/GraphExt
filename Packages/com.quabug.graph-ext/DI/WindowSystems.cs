@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace GraphExt.Editor
 {
-    public class WindowSystems : IDisposable
+    public class WindowSystems
     {
         private readonly IWindowSystem[] _systems;
 
@@ -20,11 +20,6 @@ namespace GraphExt.Editor
         public void Tick()
         {
             foreach (var system in _systems.OfType<ITickableWindowSystem>()) system.Tick();
-        }
-
-        public void Dispose()
-        {
-            foreach (var system in _systems.OfType<IDisposable>()) system.Dispose();
         }
     }
 }

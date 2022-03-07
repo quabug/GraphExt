@@ -15,9 +15,7 @@ namespace GraphExt.Editor
         {
             container.RegisterTypeNameSingleton<IStickyNoteViewFactory>(ViewFactory);
             container.Register<TStickyNoteSystem>().Singleton().AsSelf().As<StickyNoteSystem<TStickyNoteData>>();
-            container.Register<IReadOnlyBiDictionary<StickyNoteId, TStickyNoteData>>(
-                (resolveContainer, contractType) => container.Resolve<TStickyNoteSystem>().StickyNotes
-            ).AsSelf();
+            container.Register((_, __) => container.Resolve<TStickyNoteSystem>().StickyNotes).As<IReadOnlyBiDictionary<StickyNoteId, TStickyNoteData>>();
             container.RegisterBiDictionaryInstance(new BiDictionary<StickyNoteId, StickyNote>());
             container.RegisterDictionaryInstance(new Dictionary<StickyNoteId, StickyNoteData>());
             container.Register<StickyNotePresenter>().Singleton().AsSelf().As<IWindowSystem>();
