@@ -35,22 +35,6 @@ public class TestGraphRuntime
     }
 
     [Test]
-    public void should_throw_if_connect_invalid_port()
-    {
-        var graph = new GraphRuntime<TestNode>();
-        var (input, output) = EdgeIds().First();
-        Assert.Catch<InvalidPortException>(() => graph.Connect(input, output));
-    }
-
-    [Test]
-    public void should_throw_if_disconnect_invalid_port()
-    {
-        var graph = new GraphRuntime<TestNode>();
-        var (input, output) = EdgeIds().First();
-        Assert.Catch<InvalidPortException>(() => graph.Disconnect(input, output));
-    }
-
-    [Test]
     public void should_throw_if_edge_already_connected()
     {
         var graph = new GraphRuntime<TestNode>();
