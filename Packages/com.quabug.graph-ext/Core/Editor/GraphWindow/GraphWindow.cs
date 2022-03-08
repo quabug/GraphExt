@@ -48,9 +48,9 @@ namespace GraphExt.Editor
 
         private VisualElement LoadVisualTree()
         {
-            var relativeDirectory = Utilities.GetCurrentDirectoryProjectRelativePath();
-            var uxmlPath = Path.Combine(relativeDirectory, "GraphWindow.uxml");
-            var ussPath = Path.Combine(relativeDirectory, "GraphWindow.uss");
+            // HACK: use hard-coded guid to locate uxml to avoid error on different path of remote package.
+            var uxmlPath = AssetDatabase.GUIDToAssetPath("49c552bd8b2ec4931a3f23e0bc1cd0d9");
+            var ussPath = AssetDatabase.GUIDToAssetPath("3a914aa80e5b44573b6802707c369c27");
 
             var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(uxmlPath);
             visualTree.CloneTree(rootVisualElement);

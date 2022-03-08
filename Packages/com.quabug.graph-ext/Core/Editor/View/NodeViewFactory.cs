@@ -23,7 +23,9 @@ namespace GraphExt.Editor
 
         public Node Create(NodeData data)
         {
-            var nodeView = new Node(Path.Combine(Utilities.GetCurrentDirectoryProjectRelativePath(), "NodeView.uxml"));
+            // HACK: use hard-coded guid to locate uxml to avoid error on different path of remote package.
+            var nodeUxml = UnityEditor.AssetDatabase.GUIDToAssetPath("5744524cc2f5b4fc5ad6b88b4f720e5f");
+            var nodeView = new Node(nodeUxml);
             var container = nodeView.ContentContainer();
             var orders = new List<int>();
             foreach (var property in data.Properties)
