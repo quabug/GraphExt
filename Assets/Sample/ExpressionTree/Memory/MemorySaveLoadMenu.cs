@@ -39,19 +39,14 @@ public class MemorySaveLoadMenu<TNode> : IMenuEntry where TNode : INode<GraphRun
         {
             ClosePopupWindow();
             var path = EditorUtility.SaveFilePanel("save path", Application.dataPath, "graph", "json");
-            var jsonAssetPath = ToRelativePath(path);
-            var jsonAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(jsonAssetPath);
-            if (jsonAsset == null)
-            {
-                jsonAsset = new TextAsset();
-                AssetDatabase.CreateAsset(jsonAsset, jsonAssetPath);
-            }
             File.WriteAllText(path, JsonSaveLoad.Serialize(
                 new JsonUtility.GraphRuntimeData<TNode>(_graphRuntime),
                 new JsonEditorUtility.GraphViewData<TNode>(_nodes.ToDictionary(node => node.Key, node => node.Value.GetPosition().position)),
                 _notes
             ));
-            _setJsonFile(jsonAsset);
+            var assetPath = ToRelativePath(path);
+            AssetDatabase.ImportAsset(assetPath);
+            _setJsonFile(AssetDatabase.LoadAssetAtPath<TextAsset>(assetPath));
         });
 
         menu.AddItem(new GUIContent("Load"), false, () =>
