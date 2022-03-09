@@ -20,11 +20,6 @@ namespace GraphExt.Editor
         {
             _basicGraphInstaller.Install(container, typeContainers);
             _serializableGraphBackendInstaller.Install(container, typeContainers);
-            container.Register<InitializeNodePosition>((resolveContainer, contractType) =>
-            {
-                var nodes = container.Resolve<Func<NodeId, INodeComponent>>();
-                return (in NodeId id, Vector2 position) => nodes(id).Position = position;
-            }).AsSelf();
             OverrideEdgeCompatibleFunc();
 
             var presenterContainer = typeContainers.GetTypeContainer<SyncSelectionGraphElementPresenter>();

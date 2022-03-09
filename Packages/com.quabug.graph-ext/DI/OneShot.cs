@@ -215,24 +215,37 @@ namespace GraphExt
             return new ResolverBuilder(container, instance.GetType(), (c, t) => instance);
         }
 
-        public static object Call([NotNull] this Container container, Delegate func)
+        public static TReturn Call<T1, TReturn>([NotNull] this Container container, Func<T1, TReturn> func)
         {
-            var invoke = func.GetType().GetMethod("Invoke");
-            if (invoke.ReturnType == typeof(void)) throw new ArgumentException();
-            return invoke.Invoke(func, container.ResolveParameterInfos(invoke.GetParameters()));
+            return (TReturn) CallFunc(container, func);
         }
 
-        public static TReturn Call<TReturn>([NotNull] this Container container, Delegate func)
+        public static TReturn Call<T1, T2, TReturn>([NotNull] this Container container, Func<T1, T2, TReturn> func)
         {
-            var invoke = func.GetType().GetMethod("Invoke");
-            if (!typeof(TReturn).IsAssignableFrom(invoke.ReturnType)) throw new ArgumentException();
-            return (TReturn) invoke.Invoke(func, container.ResolveParameterInfos(invoke.GetParameters()));
+            return (TReturn) CallFunc(container, func);
         }
 
-        public static void CallAction([NotNull] this Container container, Delegate action)
+        public static TReturn Call<T1, T2, T3, TReturn>([NotNull] this Container container, Func<T1, T2, T3, TReturn> func)
         {
-            var invoke = action.GetType().GetMethod("Invoke");
-            invoke.Invoke(action, container.ResolveParameterInfos(invoke.GetParameters()));
+            return (TReturn) CallFunc(container, func);
+        }
+
+        public static TReturn Call<T1, T2, T3, T4, TReturn>([NotNull] this Container container, Func<T1, T2, T3, T4, TReturn> func)
+        {
+            return (TReturn) CallFunc(container, func);
+        }
+
+        public static object CallFunc<TFunc>([NotNull] this Container container, TFunc func) where TFunc : Delegate
+        {
+            var method = func.Method;
+            if (method.ReturnType == typeof(void)) throw new ArgumentException();
+            return method.Invoke(func.Target, container.ResolveParameterInfos(method.GetParameters()));
+        }
+
+        public static void CallAction<TAction>([NotNull] this Container container, TAction action) where TAction : Delegate
+        {
+            var method = action.Method;
+            method.Invoke(action.Target, container.ResolveParameterInfos(method.GetParameters()));
         }
 
         public static object Instantiate([NotNull] this Container container, Type type)

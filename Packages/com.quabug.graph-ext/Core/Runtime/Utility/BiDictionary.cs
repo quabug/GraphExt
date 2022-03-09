@@ -47,6 +47,14 @@ namespace GraphExt
             _reverse.Add(t2, t1);
         }
 
+        public void Set(T1 t1, T2 t2)
+        {
+            if (_forward.TryGetValue(t1, out var value2)) _reverse.Remove(value2);
+            if (_reverse.TryGetValue(t2, out var value1)) _forward.Remove(value1);
+            _forward[t1] = t2;
+            _reverse[t2] = t1;
+        }
+
         public bool ContainsKey(T1 key)
         {
             return _forward.ContainsKey(key);
@@ -91,7 +99,7 @@ namespace GraphExt
         public T2 this[T1 key]
         {
             get => _forward[key];
-            set => Add(key, value);
+            set => Set(key, value);
         }
 
         IEnumerable<T1> IReadOnlyDictionary<T1, T2>.Keys => _forward.Keys;

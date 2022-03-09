@@ -14,13 +14,14 @@ namespace GraphExt.Editor
     {
         public static ConvertToNodeData ToNodeData<TNode>(
             [NotNull] IReadOnlyDictionary<NodeId, TNode> nodes,
-            [NotNull] IReadOnlyDictionary<NodeId, Vector2> nodePositions
+            IReadOnlyDictionary<NodeId, Vector2> nodePositions = null
         ) where TNode: INode<GraphRuntime<TNode>>
         {
+            if (nodePositions == null) nodePositions = new Dictionary<NodeId, Vector2>();
             return (in NodeId nodeId) =>
             {
                 var node = nodes[nodeId];
-                var position = nodePositions[nodeId];
+                nodePositions.TryGetValue(nodeId, out var position);
                 var properties = new NodePositionProperty(position.x, position.y).Yield()
                     .Concat(NodePropertyUtility.CreateProperties(node, nodeId))
                 ;
