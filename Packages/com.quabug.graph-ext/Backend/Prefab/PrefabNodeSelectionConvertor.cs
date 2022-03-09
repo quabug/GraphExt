@@ -20,13 +20,18 @@ namespace GraphExt.Editor
 
         public Object ConvertGraphSelectableToObject(ISelectable selectable)
         {
-            return selectable is TNodeView node ? _nodes[_views.Reverse[node]].gameObject : null;
+            if (!(selectable is TNodeView node)) return null;
+            if (!_views.Reverse.TryGetValue(node, out var nodeId)) return null;
+            if (!_nodes.TryGetValue(nodeId, out var nodeComponent)) return null;
+            return nodeComponent == null ? null : nodeComponent.gameObject;
         }
 
         public ISelectable ConvertObjectToGraphSelectable(Object @object)
         {
             var nodeComponent = @object is GameObject node ? node.GetComponent<TNodeComponent>() : null;
-            return nodeComponent == null ? null : _views[_nodes.Reverse[nodeComponent]];
+            if (nodeComponent == null || !_nodes.Reverse.TryGetValue(nodeComponent, out var nodeId)) return null;
+            if (!_views.TryGetValue(nodeId, out var nodeView)) return null;
+            return nodeView;
         }
     }
 }
