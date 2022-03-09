@@ -199,7 +199,26 @@ public class AddNode : ExpressionNode
     
 </details>
 
-  
+## Backend
+The way to store (serialize) graph data, different backend provide different features by default.
+    
+| Feature      | Memory | Scriptable Object | Prefab |
+| ----------- | ----------- | ----------- | ----------- |
+| Focus on Selection.objects      |    no    | yes | yes |
+| Inspect chosen node   |    no     | yes | yes |
+| Tree structure | no | no | optional |
+| Copy/Paste | no | no | only in hierarchy |
+    
+### Memory Backend
+Most flexible backend, easy to extend with JSON or other text format to store graph.
+    
+### Scriptable Object Backend
+
+![Expression Tree with Scriptable Object Backend](https://user-images.githubusercontent.com/683655/157398002-f6c6678e-a704-4626-af33-060cc27930bc.gif)
+    
+### Prefab Backend
+![Expression Tree with Prefab Backend](https://user-images.githubusercontent.com/683655/157399308-3d433d7a-5931-44c4-b386-3d78a6fc2533.gif)
+
 ## HowTo
 ### Customize graph menu
 1. Implement a class of [`IMenuEntry`](Packages/com.quabug.graph-ext/Core/Editor/Menu/IMenuEntry.cs)
