@@ -29,18 +29,22 @@ namespace GraphExt.Editor
         {
             var currentNodes = new HashSet<TComponent>(_nodes.Nodes);
             var nodes = _nodes.Root.GetComponentsInChildren<TComponent>();
+            var nodeIds = new HashSet<NodeId>(_nodes.NodeMap.Keys);
             foreach (var node in nodes)
             {
                 if (currentNodes.Contains(node)) currentNodes.Remove(node);
-                else DeleteAndWarning(node);
+                else AddNode(node);
             }
 
             foreach (var removed in currentNodes) _nodes.Runtime.DeleteNode(removed.Id);
 
-            void DeleteAndWarning(TComponent node)
+            void AddNode(TComponent node)
             {
-                GameObject.DestroyImmediate(node.gameObject);
-                Debug.LogWarning("add new node in hierarchy is not supported yet.");
+                if (node.Id == Guid.Empty || nodeIds.Contains(node.Id)) node.Id = Guid.NewGuid();
+                nodeIds.Add(node.Id);
+                _nodes.AddNode(node);
+                _nodes.Runtime.AddNode(node.Id, node.Node);
+                foreach (var edge in node.GetEdges(_nodes.Runtime)) _nodes.Runtime.Connect(edge.Input, edge.Output);
             }
         }
     }
