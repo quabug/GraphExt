@@ -10,6 +10,9 @@ sysinfo.txt
 /bin/
 /LocalPackages/
 /UserSettings/
+
+# CI
+/artifacts
  
 # VS/Rider/MD/Consulo
 ExportedObj/
@@ -79,3 +82,4 @@ Packages/variant.expression/Tests/
 Packages/codegen/Tests
 Packages/codegen/Tests.meta
 Packages/variant.expression/Tests.meta
+
