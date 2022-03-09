@@ -23,10 +23,10 @@ namespace GraphExt.Editor
 
         private void ResetGraphBackend([CanBeNull] PrefabStage prefabStage)
         {
+            Clear();
             if (prefabStage == null)
             {
                 RemoveGraphView();
-                Clear();
             }
             else
             {
