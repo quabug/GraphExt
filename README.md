@@ -1,4 +1,6 @@
 > ⚠️ This is not a comprehensive Visual Script solution.
+
+[![openupm](https://img.shields.io/npm/v/com.quabug.graph-ext?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.quabug.graph-ext/)
 # GraphExt
 A library to help you customize your own Unity3D Graph solution.
 
