@@ -209,11 +209,10 @@ The way to store (serialize) graph data, different backend provide different fea
 | Tree structure | no | no | optional |
 | Copy/Paste | no | no | only in hierarchy |
     
-### Memory Backend
-Most flexible backend, easy to extend with JSON or other text format to store graph.
+### Memory Backend (with JSON serializer)
+![Expression Tree with Memory Backend](https://user-images.githubusercontent.com/683655/157448816-e80a55f4-f34e-4dbb-9f16-47a9729ca56d.gif)
     
 ### Scriptable Object Backend
-
 ![Expression Tree with Scriptable Object Backend](https://user-images.githubusercontent.com/683655/157398002-f6c6678e-a704-4626-af33-060cc27930bc.gif)
     
 ### Prefab Backend
