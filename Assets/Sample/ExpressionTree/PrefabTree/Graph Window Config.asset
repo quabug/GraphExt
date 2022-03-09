@@ -58,8 +58,8 @@ MonoBehaviour:
           PublicKeyToken=null
         - VisualNodeSelectionMenuEntry, GraphExt.Sample.ExpressionTree, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
-        - VisualNodeMenuEntry, GraphExt.Sample.ExpressionTree, Version=0.0.0.0, Culture=neutral,
-          PublicKeyToken=null
+        - VisualPrefabNodeCreationMenuEntry, GraphExt.Sample.ExpressionTree, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
         - GraphExt.Editor.StickyNoteCreationMenuEntry, GraphExt.StickyNote, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
         - GraphExt.Editor.StickyNoteDeletionMenuEntry, GraphExt.StickyNote, Version=0.0.0.0,

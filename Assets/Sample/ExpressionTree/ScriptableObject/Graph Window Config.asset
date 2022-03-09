@@ -26,21 +26,20 @@ MonoBehaviour:
         - id: 2
         - id: 3
         - id: 4
-        - id: 5
         MenuEntries:
-        - id: 6
+        - id: 5
         AdditionalWindowSystems: []
     00000001:
       type: {class: VisualNodeBasicGraphInstaller, ns: , asm: GraphExt.Sample.ExpressionTree}
       data:
         GraphViewFactory:
-          id: 7
+          id: 6
         NodeViewFactory:
-          id: 8
+          id: 7
         PortViewFactory:
-          id: 9
+          id: 8
         EdgeViewFactory:
-          id: 10
+          id: 9
     00000002:
       type: {class: VisualScriptableObjectInstaller, ns: , asm: GraphExt.Sample.ExpressionTree}
     00000003:
@@ -49,13 +48,11 @@ MonoBehaviour:
         ViewFactory: GraphExt.Editor.DefaultStickyNoteViewFactory, GraphExt.StickyNote,
           Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     00000004:
-      type: {class: InitializeScriptableObjectNodePositionInstaller, ns: GraphExt.Editor, asm: GraphExt.ScriptableObject}
-    00000005:
       type: {class: VisualTagTreePortInstaller, ns: , asm: GraphExt.Sample.ExpressionTree}
       data:
         AdditionalClasses:
         - tree
-    00000006:
+    00000005:
       type: {class: TypeNameMenuEntriesInstaller, ns: GraphExt.Editor, asm: GraphExt.DI}
       data:
         MenuEntries:
@@ -63,23 +60,23 @@ MonoBehaviour:
           PublicKeyToken=null
         - VisualNodeSelectionMenuEntry, GraphExt.Sample.ExpressionTree, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
-        - VisualNodeMenuEntry, GraphExt.Sample.ExpressionTree, Version=0.0.0.0, Culture=neutral,
-          PublicKeyToken=null
+        - VisualScriptableObjectNodeCreationMenuEntry, GraphExt.Sample.ExpressionTree,
+          Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
         - GraphExt.Editor.StickyNoteCreationMenuEntry, GraphExt.StickyNote, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
         - GraphExt.Editor.StickyNoteDeletionMenuEntry, GraphExt.StickyNote, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
-    00000007:
+    00000006:
       type: {class: DefaultGraphViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
-    00000008:
+    00000007:
       type: {class: DefaultNodeViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
       data:
         NodePropertyViewFactory:
           Factories:
-          - id: 11
-    00000009:
+          - id: 10
+    00000008:
       type: {class: DefaultPortViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
-    0000000A:
+    00000009:
       type: {class: DefaultEdgeViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}
-    0000000B:
+    0000000A:
       type: {class: DefaultPropertyViewFactory, ns: GraphExt.Editor, asm: GraphExt.Editor}

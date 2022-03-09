@@ -8,6 +8,7 @@ using GraphExt;
 using GraphExt.Editor;
 using JetBrains.Annotations;
 using UnityEditor;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 using PopupWindow = UnityEditor.PopupWindow;
@@ -15,19 +16,19 @@ using PopupWindow = UnityEditor.PopupWindow;
 public class MemorySaveLoadMenu<TNode> : IMenuEntry where TNode : INode<GraphRuntime<TNode>>
 {
     [NotNull] private readonly GraphRuntime<TNode> _graphRuntime;
-    [NotNull] private readonly IReadOnlyDictionary<NodeId, Vector2> _nodePositions;
+    [NotNull] private readonly IReadOnlyDictionary<NodeId, Node> _nodes;
     [NotNull] private readonly IReadOnlyDictionary<StickyNoteId, StickyNoteData> _notes;
     [NotNull] private readonly Action<TextAsset> _setJsonFile;
 
     public MemorySaveLoadMenu(
         [NotNull] GraphRuntime<TNode> graphRuntime,
-        [NotNull] IReadOnlyDictionary<NodeId, Vector2> nodePositions,
+        [NotNull] IReadOnlyDictionary<NodeId, Node> nodes,
         [NotNull] IReadOnlyDictionary<StickyNoteId, StickyNoteData> notes,
         [NotNull] Action<TextAsset> setJsonFile
     )
     {
         _graphRuntime = graphRuntime;
-        _nodePositions = nodePositions;
+        _nodes = nodes;
         _notes = notes;
         _setJsonFile = setJsonFile;
     }
@@ -47,7 +48,7 @@ public class MemorySaveLoadMenu<TNode> : IMenuEntry where TNode : INode<GraphRun
             }
             File.WriteAllText(path, JsonSaveLoad.Serialize(
                 new JsonUtility.GraphRuntimeData<TNode>(_graphRuntime),
-                new JsonEditorUtility.GraphViewData<TNode>(_nodePositions),
+                new JsonEditorUtility.GraphViewData<TNode>(_nodes.ToDictionary(node => node.Key, node => node.Value.GetPosition().position)),
                 _notes
             ));
             _setJsonFile(jsonAsset);

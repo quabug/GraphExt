@@ -48,18 +48,12 @@ namespace GraphExt.Editor
                 typeof(UnityEditor.Experimental.GraphView.GraphView)
             );
 
-            Func<GraphRuntime<TNode>, IReadOnlyDictionary<PortId, PortData>, IsEdgeCompatibleFunc>
-                isCompatible = EdgeFunctions.CreateIsCompatibleFunc;
-            graphContainer.Register((resolveContainer, contractType) => graphContainer.Call<IsEdgeCompatibleFunc>(isCompatible)).AsSelf();
-
-            Func<IReadOnlyDictionary<Port, PortId>, IsEdgeCompatibleFunc, GraphView.FindCompatiblePorts>
-                findCompatible = EdgeFunctions.CreateFindCompatiblePortsFunc;
-            graphContainer.Register((resolveContainer, contractType) => graphContainer.Call<GraphView.FindCompatiblePorts>(findCompatible)).AsSelf();
-
-            graphContainer.Register((resolveContainer, contractType) =>
+            graphContainer.Register((_, __) => graphContainer.Call<GraphRuntime<TNode>, IReadOnlyDictionary<PortId, PortData>, IsEdgeCompatibleFunc>(EdgeFunctions.CreateIsCompatibleFunc)).AsSelf();
+            graphContainer.Register((_, __) => graphContainer.Call<IReadOnlyDictionary<Port, PortId>, IsEdgeCompatibleFunc, GraphView.FindCompatiblePorts>(EdgeFunctions.CreateFindCompatiblePortsFunc)).AsSelf();
+            graphContainer.Register((_, __) =>
             {
                 Func<GraphView.FindCompatiblePorts, GraphView> create = graphContainer.Resolve<IGraphViewFactory>().Create;
-                return graphContainer.Call<GraphView>(create);
+                return graphContainer.Call(create);
             }).Singleton().AsSelf().As<UnityEditor.Experimental.GraphView.GraphView>();
 
             container.Register((resolverContainer, contractType) => graphContainer.Resolve<UnityEditor.Experimental.GraphView.GraphView>()).Singleton().AsSelf();
@@ -69,10 +63,7 @@ namespace GraphExt.Editor
         {
             var presenterContainer = typeContainers.CreateSystemContainer(container, typeof(NodeViewPresenter));
 
-            presenterContainer.Register<ConvertToNodeData>((resolveContainer, contractType) => NodeDataConvertor.ToNodeData(
-                presenterContainer.Resolve<IReadOnlyDictionary<NodeId, TNode>>(),
-                presenterContainer.Resolve<IReadOnlyDictionary<NodeId, Vector2>>()
-            )).AsSelf();
+            presenterContainer.Register((_, __) => container.Call<IReadOnlyDictionary<NodeId, TNode>, IReadOnlyDictionary<NodeId, Vector2>, ConvertToNodeData>(NodeDataConvertor.ToNodeData)).AsSelf();
 
             presenterContainer.Register<FindPortData>((resolveContainer, contractType) => PortDataConvertor.FindPorts(
                 presenterContainer.Resolve<IReadOnlyDictionary<NodeId, TNode>>()
