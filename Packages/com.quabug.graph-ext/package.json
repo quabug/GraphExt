@@ -1,6 +1,6 @@
 {
   "name": "com.quabug.graph-ext",
-  "version": "1.9.4",
+  "version": "1.9.5",
   "unity": "2020.3",
   "displayName": "Graph Ext",
   "dependencies": {
